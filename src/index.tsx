@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ThemeProvider, createGlobalStyle } from "styled-components";
-import { RouterProvider } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import Router from "./Router";
 
 // global style
@@ -82,8 +82,9 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <GlobalStyle />
-      {/* browserRouter 적용 */}
-      <RouterProvider router={Router} />
+      <BrowserRouter>
+        <Router />
+      </BrowserRouter>
     </QueryClientProvider>
   </React.StrictMode>
 );

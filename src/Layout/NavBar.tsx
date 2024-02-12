@@ -36,8 +36,24 @@ const Items = styled.div`
 `;
 
 const Item = styled.h2`
-  width: 70px;
   font-weight: bold;
+`;
+
+const Buttons = styled.div`
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+`;
+
+const Button = styled.button`
+  width: 80px;
+  height: 30px;
+  border: none;
+  border-radius: 30px;
 `;
 
 const HeaderVariants = {
@@ -45,7 +61,7 @@ const HeaderVariants = {
   scroll: { backgroundColor: "lightgray" },
 };
 
-function Header() {
+function NavBar() {
   // 스크롤에 따라 헤더 색상 변경
   const { scrollY } = useScroll();
   const navAnimation = useAnimation();
@@ -68,25 +84,25 @@ function Header() {
         </Link>
         <Items style={{ left: "250px" }}>
           <Link to="">
-            <Item>Ai 회화</Item>
+            <Item style={{ width: "60px" }}>Ai 회화</Item>
           </Link>
           <Link to="">
-            <Item>회화 통화</Item>
+            <Item style={{ width: "70px" }}>회화 통화</Item>
           </Link>
           <Link to="">
-            <Item>수강후기</Item>
+            <Item style={{ width: "70px" }}>수강후기</Item>
           </Link>
           <Link to="">
-            <Item>이벤트</Item>
+            <Item style={{ width: "60px" }}>이벤트</Item>
           </Link>
         </Items>
-        <Items style={{ right: "10px" }}>
-          <Item>로그인</Item>
-          <Item>회원가입</Item>
-        </Items>
+        <Buttons>
+          <Button>로그인</Button>
+          <Button>회원가입</Button>
+        </Buttons>
       </Container>
     </Wrapper>
   );
 }
 
-export default Header;
+export default NavBar;
