@@ -176,6 +176,7 @@ function MyPage() {
           <Container_t_r_name>
             <h2>OOO 님</h2>
             <Button
+              layoutId={match1 + ""}
               onClick={onEditClick}
               variants={ButtonVariants}
               whileHover="hover"
@@ -211,7 +212,12 @@ function MyPage() {
       <AnimatePresence>
         <Overlay_Back onClick={onOverlayClick} />
         {match1 ? (
-          <Overlay variants={OverlayVariants} animate="ani" exit="ex"></Overlay>
+          <Overlay
+            layoutId={match1 + ""}
+            variants={OverlayVariants}
+            animate="ani"
+            exit="ex"
+          ></Overlay>
         ) : null}
       </AnimatePresence>
     </Container>

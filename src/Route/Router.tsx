@@ -10,9 +10,10 @@ function Router() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route path="" element={<LandingPage />} />
-        <Route path="/mypage" element={<MyPage />} />
-        {/* // 임시 주소*/}
-        <Route path="/mypage/(userId)/editprofile" element={<MyPage />} />
+        <Route path="/mypage" element={<MyPage />}>
+          {/* // 임시 주소*/}
+          <Route path="/mypage/(userId)/editprofile" element={<MyPage />} />
+        </Route>
       </Route>
     </Routes>
   );
