@@ -1,12 +1,16 @@
-import { motion, useAnimate, useAnimation, useScroll } from "framer-motion";
+// 사이트 헤더
+// style component 사용
+
+import { motion, useAnimation, useScroll } from "framer-motion";
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const Wrapper = styled(motion.div)`
   position: fixed;
   height: 70px;
   width: 100%;
+  min-width: 1280px;
   z-index: 10;
   background-color: transparent;
 `;
@@ -17,13 +21,15 @@ const Container = styled.div`
   align-items: center;
 `;
 
-const Logo = styled.div`
+const Logo = styled(motion.div)`
   position: absolute;
   top: 10px;
   left: 10px;
   width: 120px;
   height: 50px;
+  transform-origin: center left;
   background-color: pink;
+  cursor: pointer;
 `;
 
 const Items = styled.div`
@@ -35,8 +41,9 @@ const Items = styled.div`
   gap: 50px;
 `;
 
-const Item = styled.h2`
+const Item = styled(motion.h2)`
   font-weight: bold;
+  cursor: pointer;
 `;
 
 const Buttons = styled.div`
@@ -49,16 +56,55 @@ const Buttons = styled.div`
   gap: 10px;
 `;
 
-const Button = styled.button`
+const Button = styled(motion.button)`
   width: 80px;
   height: 30px;
   border: none;
   border-radius: 30px;
+  cursor: pointer;
+`;
+
+// header의 item 클릭할 때마다 원이 이동
+const Circle = styled(motion.span)`
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  bottom: -5px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  background-color: pink;
+  border-radius: 50px;
 `;
 
 const HeaderVariants = {
   up: { backgroundColor: "rgba(0,0,0,0)" },
   scroll: { backgroundColor: "lightgray" },
+};
+
+const LogoVairnats = {
+  hover: {
+    scaleX: 1.2,
+  },
+  click: {
+    backgroundColor: "transparent",
+  },
+};
+
+const ButtonVariants = {
+  hover: {
+    boxShadow: "3px 3px 1.5px rgba(0, 0, 0, 0.2)",
+  },
+  click: {
+    background: "transparent",
+  },
+};
+
+const LinkVariants = {
+  hover: { scale: 1.1 },
+  click: {
+    color: "transparent",
+  },
 };
 
 function NavBar() {
@@ -75,30 +121,68 @@ function NavBar() {
     });
   });
 
+  const navigate = useNavigate();
+
   return (
     <Wrapper variants={HeaderVariants} initial="up" animate={navAnimation}>
       <Container>
-        {/* 로고 클릭 시 메인으로 이동 */}
         <Link to="">
-          <Logo />
+          {/* 로고 클릭 시 메인으로 이동 */}
+          <Logo variants={LogoVairnats} whileHover="hover" whileTap="click" />
         </Link>
         <Items style={{ left: "250px" }}>
           <Link to="">
-            <Item style={{ width: "60px" }}>Ai 회화</Item>
+            <Item
+              variants={LinkVariants}
+              whileHover="hover"
+              whileTap="click"
+              style={{ width: "60px" }}
+            >
+              Ai 회화
+              {/* {<Circle layoutId="circle" />} */}
+            </Item>
           </Link>
           <Link to="">
-            <Item style={{ width: "70px" }}>회화 통화</Item>
+            <Item
+              variants={LinkVariants}
+              whileHover="hover"
+              whileTap="click"
+              style={{ width: "70px" }}
+            >
+              회화 통화
+              {/* {<Circle layoutId="circle" />} */}
+            </Item>
           </Link>
           <Link to="">
-            <Item style={{ width: "70px" }}>수강후기</Item>
+            <Item
+              variants={LinkVariants}
+              whileHover="hover"
+              whileTap="click"
+              style={{ width: "70px" }}
+            >
+              수강후기
+              {/* {<Circle layoutId="circle" />} */}
+            </Item>
           </Link>
           <Link to="">
-            <Item style={{ width: "60px" }}>이벤트</Item>
+            <Item
+              variants={LinkVariants}
+              whileHover="hover"
+              whileTap="click"
+              style={{ width: "60px" }}
+            >
+              이벤트
+              {/* {<Circle layoutId="circle" />} */}
+            </Item>
           </Link>
         </Items>
         <Buttons>
-          <Button>로그인</Button>
-          <Button>회원가입</Button>
+          <Button variants={ButtonVariants} whileHover="hover" whileTap="click">
+            로그인
+          </Button>
+          <Button variants={ButtonVariants} whileHover="hover" whileTap="click">
+            회원가입
+          </Button>
         </Buttons>
       </Container>
     </Wrapper>

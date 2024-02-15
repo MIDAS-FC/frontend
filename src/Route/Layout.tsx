@@ -1,6 +1,8 @@
+// 전체적인 레이아웃
+
 import { Outlet } from "react-router-dom";
-import NavBar from "./Layout/NavBar";
-import Footer from "./Layout/Footer";
+import NavBar from "../Layout/NavBar";
+import Footer from "../Layout/Footer";
 
 function Layout() {
   return (

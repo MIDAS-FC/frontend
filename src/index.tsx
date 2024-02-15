@@ -4,7 +4,7 @@ import reportWebVitals from "./reportWebVitals";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ThemeProvider, createGlobalStyle } from "styled-components";
 import { BrowserRouter } from "react-router-dom";
-import Router from "./Router";
+import Router from "./Route/Router";
 
 // global style
 const GlobalStyle = createGlobalStyle`
