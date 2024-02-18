@@ -1,44 +1,24 @@
 // 메인 페이지
 
-import styled from "styled-components";
+import {
+  Banner_main,
+  Container_mid,
+  Container_top,
+  Layout,
+} from "../Styles/LandingPage.style";
 import Slider_custom from "../components/Slider_custom";
-
-const Container = styled.div`
-  position: relative;
-  width: 100%;
-  min-width: 1280px;
-  height: 200vh;
-`;
-
-const Container_top = styled.div`
-  position: absolute;
-  top: 100px;
-  width: 100%;
-`;
-
-const Container_mid = styled.div`
-  position: absolute;
-  top: 700px;
-  width: 100%;
-`;
-
-const Banner_main = styled.div`
-  width: 100%;
-  height: 400px;
-  background-color: pink;
-  cursor: pointer;
-`;
 
 function LandingPage() {
   return (
-    <Container>
+    <Layout>
       <Container_top>
-        <Banner_main />
+        <Banner_main>메인페이지-레벨테스트</Banner_main>
       </Container_top>
       <Container_mid>
-        <Slider_custom /> {/* slick을 이용한 slider */}
+        {/* slick을 이용한 slider */}
+        <Slider_custom />
       </Container_mid>
-    </Container>
+    </Layout>
   );
 }
 

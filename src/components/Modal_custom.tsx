@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import Modal from "react-modal";
 import styled from "styled-components";
 
-const Container_Modal = styled.form`
+const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -86,7 +86,7 @@ function Modal_custom({ modalIsOpen, toggleModal }: any) {
         },
       }}
     >
-      <Container_Modal onSubmit={handleSubmit(onValid)}>
+      <Form onSubmit={handleSubmit(onValid)}>
         <h2 style={{ fontSize: "20px" }}>프로필 정보 변경</h2>
         <label htmlFor="input">이름</label>
         <input
@@ -165,7 +165,7 @@ function Modal_custom({ modalIsOpen, toggleModal }: any) {
           <Button>저장</Button>
           <Button onClick={toggleModal}>취소</Button>
         </Buttons>
-      </Container_Modal>
+      </Form>
     </Modal>
   );
 }
