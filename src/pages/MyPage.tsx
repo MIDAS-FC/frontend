@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import styled from "styled-components";
 import Modal_mypage from "../components/Modal_custom";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   position: relative;
@@ -125,9 +126,12 @@ const ButtonVariants = {
 };
 
 function MyPage() {
+  const navigate = useNavigate();
+
   // Modal 관련 함수
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const toggleModal = () => {
+    navigate("/mypage/(userId)/editprofile");
     setModalIsOpen((prev) => !prev);
   };
 
