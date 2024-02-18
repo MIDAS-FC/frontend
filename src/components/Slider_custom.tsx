@@ -5,8 +5,8 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { motion } from "framer-motion";
 import { styled } from "styled-components";
-import { ReactComponent as Left } from "../Design/icons/left.svg";
-import { ReactComponent as Right } from "../Design/icons/right.svg";
+import { ReactComponent as Left } from "../Design/icons/Left.svg";
+import { ReactComponent as Right } from "../Design/icons/Right.svg";
 
 // node_modules -> slick carousel -> slick.css수정한 것
 const StyledSlider = styled.div`

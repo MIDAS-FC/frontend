@@ -2,7 +2,7 @@
 
 import { Route, Routes } from "react-router-dom";
 import LandingPage from "../pages/LandingPage";
-import MyPage from "../pages/MyPages/MyPage";
+import MyPage from "../pages/MyPage";
 import Layout from "./Layout";
 import React from "react";
 
