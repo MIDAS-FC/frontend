@@ -1,4 +1,4 @@
-//S-dot 네이밍 사용
+// LandingPage css
 
 import styled from "styled-components";
 

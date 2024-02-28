@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import LandingPage from "../pages/LandingPage";
 import MyPage from "../pages/MyPage";
 import Layout from "./Layout";
-import FreeTalkingPage from "../pages/FreeTalkingPage";
+import TalkingPage from "../pages/TalkingPage";
 
 function Router() {
   return (
@@ -16,7 +16,9 @@ function Router() {
           <Route path="/mypage/(userId)/editprofile" element={<MyPage />} />
         </Route>
         {/* Ai 프리토킹 페이지 */}
-        <Route path="/aifreetalking" element={<FreeTalkingPage />} />
+        <Route path="/aifreetalking" element={<TalkingPage />}>
+          <Route path="/aifreetalking/speaking" element={<TalkingPage />} />
+        </Route>
       </Route>
     </Routes>
   );

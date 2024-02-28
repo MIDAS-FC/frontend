@@ -1,25 +1,11 @@
 // 마이페이지
+// css: style-component
 
 import { useCallback, useRef, useState } from "react";
-import Modal_mypage from "../components/Modal_custom";
+import Modal_mypage from "../components/Modal_MyPage";
 import { useNavigate } from "react-router-dom";
-import {
-  Board,
-  Button,
-  ButtonVariants,
-  Container_mid,
-  Container_top,
-  Container_top_left,
-  Container_top_right,
-  Hr,
-  ImageBox,
-  Info_Level,
-  Info_follow,
-  Info_name,
-  Info_nation,
-  Layout,
-  ProgressBar,
-} from "../Styles/MyPage.style";
+// s-dot naming 사용
+import * as S from "../Styles/MyPage.style";
 
 function MyPage() {
   const navigate = useNavigate();
@@ -50,16 +36,16 @@ function MyPage() {
   }, []);
 
   return (
-    <Layout>
-      <Container_top>
-        <Container_top_left>
-          <ImageBox
+    <S.Layout>
+      <S.Container_top>
+        <S.Container_top_left>
+          <S.ImageBox
             style={{ width: "250px", height: "250px", marginTop: "10px" }}
           />
-          <Info_follow>
+          <S.Info_1>
             <span>팔로우 3명 | </span>
             <span>팔로잉 10명</span>
-          </Info_follow>
+          </S.Info_1>
           <input
             type="file"
             accept="image/*"
@@ -67,52 +53,49 @@ function MyPage() {
             onChange={onUploadImage}
             style={{ display: "none" }}
           />
-          <Button
+          <S.Button
             onClick={onUploadClick}
-            variants={ButtonVariants}
+            variants={S.ButtonVariants}
             whileHover="hover"
             whileTap="click"
           >
             사진 수정
-          </Button>
-          <Button
+          </S.Button>
+          <S.Button
             onClick={toggleModal}
-            variants={ButtonVariants}
+            variants={S.ButtonVariants}
             whileHover="hover"
             whileTap="click"
           >
             프로필 수정
-          </Button>
-        </Container_top_left>
-        <Container_top_right>
-          <Info_name>
-            <h2 style={{ fontSize: "50px" }}>OOO</h2>
-            <h2 style={{ marginTop: "20px" }}>님</h2>
-          </Info_name>
-          <Hr />
+          </S.Button>
+        </S.Container_top_left>
+        <S.Container_top_right>
+          <h2>이름: OOO</h2>
+          <S.Hr />
           <h2>성별: 남성</h2>
-          <Hr />
-          <Info_nation>
+          <S.Hr />
+          <S.Info_2>
             <h2>국적: 한국</h2>
-            <ImageBox style={{ width: "30px", height: "30px" }} />
-          </Info_nation>
-          <Hr />
+            <S.ImageBox style={{ width: "30px", height: "30px" }} />
+          </S.Info_2>
+          <S.Hr />
           <h2>학습언어: 영어</h2>
-          <Hr />
-          <Info_Level>
+          <S.Hr />
+          <S.Info_3>
             <h2>학습레벨: LV.3</h2>
-            <ProgressBar value="50" max="100" />
-          </Info_Level>
-        </Container_top_right>
-      </Container_top>
-      <Container_mid>
-        <Board>
-          <h2>안녕하세요!</h2>
-        </Board>
-      </Container_mid>
+            <S.ProgressBar value="50" max="100" />
+          </S.Info_3>
+          <S.Hr />
+          <h2>자기소개</h2>
+          <S.Board>
+            <h2>안녕하세요!</h2>
+          </S.Board>
+        </S.Container_top_right>
+      </S.Container_top>
       {/* react-modal: 팝업창 */}
       <Modal_mypage modalIsOpen={modalIsOpen} toggleModal={toggleModal} />
-    </Layout>
+    </S.Layout>
   );
 }
 

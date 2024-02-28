@@ -1,42 +1,10 @@
 // Mypage modal(팝업) 커스텀
+// css: style-component
 
-import { motion } from "framer-motion";
-import { useForm } from "react-hook-form";
 import Modal from "react-modal";
-import styled from "styled-components";
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  height: 600px;
-`;
-
-const Buttons = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 10px;
-`;
-
-const Button = styled(motion.button)`
-  width: 100px;
-  border-radius: 5px;
-  background-color: lightgray;
-  box-shadow: 1px 1px 0.5px rgba(0, 0, 0, 0.1);
-`;
-
-const Errorbox = styled(motion.div)`
-  width: 200px;
-  height: 40px;
-  background-color: khaki;
-  border-radius: 10px;
-  padding: 2px;
-`;
-
-const ErrorVariants = {
-  hover: { scale: 1.05 },
-};
+import { useForm } from "react-hook-form";
+//s-dot naming 사용
+import * as S from "../Styles/Modal_mypage.style";
 
 // form 요소의 타입
 interface IForm {
@@ -46,16 +14,24 @@ interface IForm {
   introduction: string;
 }
 
-function Modal_custom({ modalIsOpen, toggleModal }: any) {
+function Modal_MyPage({ modalIsOpen, toggleModal }: any) {
   // useform 사용
   const {
     register,
     handleSubmit,
-    setValue,
+    reset,
     formState: { errors },
   } = useForm<IForm>();
-  const onValid = (data: IForm) => {
-    console.log(data);
+  const onValid = ({ name, nation, language, introduction }: IForm) => {
+    // 입력받은 객체
+    const body = {
+      name,
+      nation,
+      language,
+      introduction,
+    };
+    console.log(body);
+    reset();
   };
 
   return (
@@ -86,7 +62,7 @@ function Modal_custom({ modalIsOpen, toggleModal }: any) {
         },
       }}
     >
-      <Form onSubmit={handleSubmit(onValid)}>
+      <S.Form onSubmit={handleSubmit(onValid)}>
         <h2 style={{ fontSize: "20px" }}>프로필 정보 변경</h2>
         <label htmlFor="input">이름</label>
         <input
@@ -97,9 +73,9 @@ function Modal_custom({ modalIsOpen, toggleModal }: any) {
           style={{ width: "200px" }}
         />
         {errors.name && (
-          <Errorbox variants={ErrorVariants} whileHover="hover">
+          <S.Errorbox variants={S.ErrorVariants} whileHover="hover">
             <span>{`${errors.name.message}`}</span>
-          </Errorbox>
+          </S.Errorbox>
         )}
         <label htmlFor="selectbox">국적</label>
         <select
@@ -116,9 +92,9 @@ function Modal_custom({ modalIsOpen, toggleModal }: any) {
           <option>중국</option>
         </select>
         {errors.nation && (
-          <Errorbox variants={ErrorVariants} whileHover="hover">
+          <S.Errorbox variants={S.ErrorVariants} whileHover="hover">
             <span>{`${errors.nation.message}`}</span>
-          </Errorbox>
+          </S.Errorbox>
         )}
         <label htmlFor="selectbox">학습언어</label>
         <select
@@ -135,14 +111,15 @@ function Modal_custom({ modalIsOpen, toggleModal }: any) {
           <option>중국어</option>
         </select>
         {errors.language && (
-          <Errorbox variants={ErrorVariants} whileHover="hover">
+          <S.Errorbox variants={S.ErrorVariants} whileHover="hover">
             <span>{`${errors.language.message}`}</span>
-          </Errorbox>
+          </S.Errorbox>
         )}
         <label htmlFor="input">자기소개</label>
-        <input
+        <textarea
           {...register("introduction", {
             required: { value: true, message: "⚠ 자기소개를 작성해주십시오." },
+            minLength: { value: 10, message: "10자리 이상 입력해주세요." },
           })}
           style={{
             width: "400px",
@@ -153,21 +130,21 @@ function Modal_custom({ modalIsOpen, toggleModal }: any) {
           }}
         />
         {errors.introduction && (
-          <Errorbox
-            variants={ErrorVariants}
+          <S.Errorbox
+            variants={S.ErrorVariants}
             whileHover="hover"
             style={{ width: "250px" }}
           >
             <span>{`${errors.introduction.message}`}</span>
-          </Errorbox>
+          </S.Errorbox>
         )}
-        <Buttons>
-          <Button>저장</Button>
-          <Button onClick={toggleModal}>취소</Button>
-        </Buttons>
-      </Form>
+        <S.Buttons>
+          <S.Button>저장</S.Button>
+          <S.Button onClick={toggleModal}>취소</S.Button>
+        </S.Buttons>
+      </S.Form>
     </Modal>
   );
 }
 
-export default Modal_custom;
+export default Modal_MyPage;

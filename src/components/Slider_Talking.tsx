@@ -1,21 +1,21 @@
 // 슬라이드 배너 react-slick 사용
+// css: style-component
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
+import styled from "styled-components";
 import { motion } from "framer-motion";
-import { styled } from "styled-components";
-import { ReactComponent as Left } from "../Design/icons/Left.svg";
-import { ReactComponent as Right } from "../Design/icons/Right.svg";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import Modal_Talking from "./Modal_Talking";
 
 // node_modules -> slick carousel -> slick.css수정한 것
 const StyledSlider = styled.div`
   .slick-slider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 800px;
-    left: 400px;
+    width: 1200px;
+    left: 30px;
+    margin-top: 200px;
   }
 
   /* .slick-prev,
@@ -107,37 +107,58 @@ const StyledSlider = styled.div`
   }
 `;
 
-const Banner_sub = styled(motion.div)`
-  height: 400px;
+const Box = styled(motion.div)`
+  height: 350px;
   background-color: lightgray;
   border-radius: 20px;
 `;
 
 // 임의 배너
-const offset = [0, 1, 2, 3, 4];
+const offset = [
+  "카페에서 주문",
+  "식당에서 주문",
+  "새 친구 만들기",
+  "파티에서",
+  "자유 토픽 플레이",
+];
 
-function Slider_custom() {
+function Slider_Talking() {
+  const navigate = useNavigate();
+
+  // Modal 관련 함수
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const toggleModal = () => {
+    navigate("/aifreetalking/speaking");
+    setModalIsOpen((prev) => !prev);
+  };
+
   const settings = {
+    slide: "div",
     dots: true,
     dotsClass: "slick-dots",
     arrows: true,
     infinite: true,
     speed: 500,
-    prevArrow: <Left />,
-    nextArrow: <Right />,
-    slidesToShow: 1,
-    slidesToScroll: 1,
+    // prevArrow: <Left />,
+    // nextArrow: <Right />,
+    slidesToShow: 3,
+    slidesToScroll: 3,
     draggable: true,
   };
   return (
-    <StyledSlider>
-      <Slider {...settings}>
-        {offset.map((i) => (
-          <Banner_sub key={i}>{i}</Banner_sub>
-        ))}
-      </Slider>
-    </StyledSlider>
+    <>
+      <StyledSlider>
+        <Slider {...settings}>
+          {offset.map((i) => (
+            <Box key={i} onClick={toggleModal}>
+              {i}
+            </Box>
+          ))}
+        </Slider>
+      </StyledSlider>
+      <Modal_Talking modalIsOpen={modalIsOpen} toggleModal={toggleModal} />
+    </>
   );
 }
 
-export default Slider_custom;
+export default Slider_Talking;

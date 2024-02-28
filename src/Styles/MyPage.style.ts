@@ -1,9 +1,11 @@
+// MyPage css
+
 import { motion } from "framer-motion";
 import styled from "styled-components";
 
 export const Layout = styled.div`
   position: relative;
-  /* min-width: 1280px; */
+  min-width: 1280px;
   height: 120vh;
   top: 120px;
 `;
@@ -17,38 +19,26 @@ export const Container_top_left = styled.div`
   top: 10px;
   width: 380px;
   height: 420px;
-  left: 220px;
+  left: 20%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  background-color: whitesmoke;
   border-radius: 4px;
 `;
 
 export const Container_top_right = styled.div`
   position: absolute;
   top: 10px;
-  left: 720px;
-  width: 550px;
-  height: 400px;
+  left: 50%;
+  width: 600px;
   padding-top: 10px;
   padding-left: 50px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 20px;
-  background-color: whitesmoke;
+  gap: 8px;
   border-radius: 4px;
-`;
-
-export const Container_mid = styled.div`
-  position: absolute;
-  top: 500px;
-  left: 220px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
 `;
 
 export const ImageBox = styled.div`
@@ -56,28 +46,21 @@ export const ImageBox = styled.div`
   background-color: ivory;
 `;
 
-export const Info_name = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 20px;
-`;
-
-export const Info_follow = styled.div`
+export const Info_1 = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 10px;
 `;
 
-export const Info_nation = styled.div`
+export const Info_2 = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
   gap: 15px;
 `;
 
-export const Info_Level = styled.div`
+export const Info_3 = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -93,10 +76,10 @@ export const Button = styled(motion.button)`
 
 export const Hr = styled.hr`
   width: 300px;
-  border: 0.5px solid lightgray;
   text-align: left;
   margin-left: 0;
   margin-top: 0;
+  border: dotted 1px gray;
 `;
 
 export const ProgressBar = styled.progress`
@@ -105,8 +88,9 @@ export const ProgressBar = styled.progress`
 `;
 
 export const Board = styled.div`
-  width: 1050px;
-  height: 200px;
+  width: 350px;
+  height: 350px;
+  margin-top: 5px;
   border-radius: 5px;
   background-color: whitesmoke;
 `;
