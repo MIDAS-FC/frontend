@@ -72,7 +72,7 @@ const Join = () => {
     // 이메일 인증번호 보내기
     const sendEmail = async () => {
         try{
-            const response = await axios.post('/send-email', { email, emailType: "someType", socialType: "someSocialType" });
+            const response = await axios.post('/send-email', { email, emailType: "sign-up", socialType: "CHATLY" });
             setRandomNum(response.data.randomNum);
             alert('인증번호가 전송되었습니다.');
             setIsVerified(true);
@@ -87,7 +87,7 @@ const Join = () => {
         try{
         const response = await axios.post('/verify-email', {
             email,
-            socialType: "someSocialType",
+            socialType: "CHATLY",
             randomNum,
             inputNum: verificationCode,
             sendTime: new Date(),
