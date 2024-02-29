@@ -1,4 +1,4 @@
-// browserRouter 寃쎈줈
+// browserRouter
 
 import { Route, Routes } from "react-router-dom";
 import LandingPage from "../pages/LandingPage";
