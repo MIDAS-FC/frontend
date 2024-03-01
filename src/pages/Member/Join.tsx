@@ -58,6 +58,10 @@ const JoinBtn = styled.button`
     }
 `;
 
+const nickNameBtn = styled.button`
+
+`;
+
 
 const Join = () => {
     const [email, setEmail] = useState("");
@@ -106,6 +110,23 @@ const Join = () => {
         const response = await axios.post('/resend-email', { email });
     };
 
+
+    // 닉네임 중복 여부 확인
+    const verifyNickname = async () => {
+        try{
+            const response = await axios.post('/verify-nickname', {nickName});
+            if(response.status === 204){
+                alert('사용가능한 닉네임입니다.');
+            }
+        } catch(error){
+            if (error instanceof axios.AxiosError && error.response && error.response.status === 409) {
+                alert('이미 사용하고있는 닉네임입니다. 다른 닉네임을 사용해주세요.');
+            } else {
+                console.log('Error verifying nickname:', error);
+            }
+        }
+    }
+
     
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
@@ -143,13 +164,11 @@ const Join = () => {
         
     };
     
-    
-    
-
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         await register();
     };
+
 
     return (
         <Container>
@@ -166,8 +185,11 @@ const Join = () => {
                     <JoinBtn type="button" onClick={resendEmail}>
                         이메일 재전송
                     </JoinBtn>
+                    <JoinInput name="nickName" placeholder="nickname" value={nickName} onChange={(e) => setNickName(e.target.value)} />
+                    <JoinBtn type="button" onClick={verifyNickname}>
+                        중복 확인
+                    </JoinBtn>
                     <JoinFunction onSubmit={handleSubmit}>
-                        <JoinInput name="nickName" placeholder="nickname" value={nickName} onChange={(e) => setNickName(e.target.value)} />
                         <JoinInput name="password" type="password" placeholder="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                         <input type="file" name="file" onChange={handleFileChange} />
                         <JoinBtn type="submit">Sign up</JoinBtn>
