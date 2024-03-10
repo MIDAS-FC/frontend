@@ -5,8 +5,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 
-import { ReactComponent as Left } from "../Design/icons/Left.svg";
-import { ReactComponent as Right } from "../Design/icons/Right.svg";
+import { ReactComponent as LeftIcon } from "../Design/icons/Left.svg";
+import { ReactComponent as RightIcon } from "../Design/icons/Right.svg";
 import { Banner_sub, StyledSlider } from "../Styles/Slider_LandingPage.style";
 
 // 임의 배너
@@ -20,8 +20,8 @@ function Slider_LandingPage() {
     arrows: true,
     infinite: true,
     speed: 500,
-    // prevArrow: <Left />,
-    // nextArrow: <Right />,
+    prevArrow: <LeftIcon />,
+    nextArrow: <RightIcon />,
     slidesToShow: 1,
     slidesToScroll: 1,
     draggable: true,
@@ -32,7 +32,7 @@ function Slider_LandingPage() {
     <StyledSlider>
       <Slider {...settings}>
         {offset.map((i) => (
-          <Banner_sub key={i}>{i}</Banner_sub>
+          <Banner_sub key={i}>{i}서브배너-수강후기</Banner_sub>
         ))}
       </Slider>
     </StyledSlider>

@@ -7,7 +7,6 @@ import styled from "styled-components";
 export const StyledSlider = styled.div`
   .slick-slider {
     width: 800px;
-    left: 400px;
   }
 
   /* .slick-prev,
