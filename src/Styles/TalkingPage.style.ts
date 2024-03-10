@@ -28,5 +28,5 @@ export const Container_mid = styled.div`
 export const Banner = styled.div`
   width: 1400px;
   height: 300px;
-  background-color: ${(props) => props.theme.mainColor};
+  background-color: ${(props) => props.theme.subColor};
 `;
