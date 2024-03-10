@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 // s-dot naming 사용
 import * as S from "../Styles/NavBar.style";
+import { ReactComponent as Logo } from "../Design/logos/Logo.svg";
 
 function NavBar() {
   // 스크롤에 따라 헤더 배경색상 변경
@@ -26,11 +27,9 @@ function NavBar() {
       <S.Container>
         {/* 로고 클릭 시 메인으로 이동 */}
         <Link to="">
-          <S.Logo
-            variants={S.LogoVairnats}
-            whileHover="hover"
-            whileTap="click"
-          />
+          <S.Logo variants={S.LogoVairnats} whileHover="hover" whileTap="click">
+            <Logo />
+          </S.Logo>
         </Link>
         <S.Items style={{ left: "250px" }}>
           {/* 클릭 시 FreeTalkingPage으로 이동 */}
