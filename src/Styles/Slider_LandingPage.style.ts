@@ -101,6 +101,6 @@ export const StyledSlider = styled.div`
 
 export const Banner_sub = styled(motion.div)`
   height: 400px;
-  background-color: lightgray;
+  background-color: ${(props) => props.theme.subColor};
   border-radius: 20px;
 `;

@@ -22,10 +22,7 @@ export const Logo = styled(motion.div)`
   position: absolute;
   top: 10px;
   left: 10px;
-  width: 120px;
-  height: 50px;
   transform-origin: center left;
-  background-color: pink;
   cursor: pointer;
 `;
 
@@ -75,10 +72,9 @@ export const Circle = styled(motion.span)`
 `;
 
 export const HeaderVariants = {
-  up: { backgroundColor: "rgba(0,0,0,0)" },
-  scroll: { backgroundColor: "lightgray" },
+  up: { backgroundColor: "rgba(0, 0, 0, 0)" },
+  scroll: { backgroundColor: "#E58C8A" },
 };
-
 export const LogoVairnats = {
   hover: {
     scaleX: 1.2,
