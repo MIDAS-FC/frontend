@@ -1,5 +1,5 @@
-// src/pages/Member/Login.tsx
-import React, { useRef } from 'react';
+import axios from 'axios';
+import { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -58,13 +58,13 @@ const LoginBtn = styled.button`
 `
 
 //회원가입 text link
+
 const Gray = styled.span`
   color:#b3b3b3;
 `
 const Red = styled.span`
   margin:0 5px;
   color:#FF8379;
-
   &:hover {
     text-decoration: underline;
   }
@@ -93,7 +93,6 @@ const Naver = styled.button`
   background: #FFC700;
   border-radius:50%;
   margin-right: 10px;
-
 `
 
 const Google = styled.button`
@@ -105,42 +104,59 @@ const Google = styled.button`
 `
 
 const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [socialType, setSocialType] = useState('CHATLY'); // socialType을 CHATLY로 설정
+  const navigate = useNavigate(); // Create a navigate object
 
-  const navigate = useNavigate();
-  const usernameRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const username = usernameRef.current?.value;
-    const password = passwordRef.current?.value;
-  
-    if(!username){
-      alert('아이디를 입력해주세요.');
-      return;
-    }else if(!password){
-      alert('패스워드를 입력해주세요.');
-      return;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const user = {
+        email,
+        password,
+        socialType
+    };
+
+    try {
+        const response = await axios.post('/auth/token/login', user, {
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8'
+            }
+        });
+
+        // 응답 헤더에서 AccessToken 추출
+        const accessToken = response.headers['authorization-access'];
+
+        console.log('토큰:', accessToken);
+
+        // 홈페이지로 이동
+        navigate('/');
+    } catch (error) {
+        // Handle error here
+        console.error(error);
     }
+  
   };
 
   return (
     <Container>
-    <LoginPage>
-      <LoginForm>
-        <LoginFuncion onSubmit={handleSubmit}>
-          <LoginInput ref={usernameRef} placeholder="username" type="id"></LoginInput>
-          <LoginInput ref={passwordRef} placeholder="password" type="password"></LoginInput>
-          <LoginBtn>LOGIN</LoginBtn>
-        </LoginFuncion>
-        <Gray>아직 회원이 아니신가요?</Gray><Link to="/pages/Member/Join"><Red>회원가입</Red></Link>
-        <SNS>
-          <Kakao></Kakao>
-          <Naver></Naver>
-          <Google></Google>
-        </SNS>
-      </LoginForm>
-    </LoginPage>
+      <LoginPage>
+        <LoginForm>
+          <LoginFuncion onSubmit={handleSubmit}>
+            <LoginInput value={email} onChange={e => setEmail(e.target.value)} placeholder="e-mail" type="email"></LoginInput>
+            <LoginInput value={password} onChange={e => setPassword(e.target.value)} placeholder="password" type="password"></LoginInput>
+            <LoginBtn type="submit">LOGIN</LoginBtn>
+          </LoginFuncion>
+          <Gray>아직 회원이 아니신가요?</Gray><Link to="/pages/Member/Join"><Red>회원가입</Red></Link>
+          <SNS>
+            <Kakao></Kakao>
+            <Naver></Naver>
+            <Google></Google>
+          </SNS>
+        </LoginForm>
+      </LoginPage>
     </Container>
   );
 };

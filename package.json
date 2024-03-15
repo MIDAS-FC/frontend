@@ -55,6 +55,5 @@
   "devDependencies": {
     "@types/react-query": "^1.2.9"
   },
-
   "proxy": "http://localhost:8080"
 }

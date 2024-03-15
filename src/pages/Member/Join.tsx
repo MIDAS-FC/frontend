@@ -70,6 +70,7 @@ const Join = () => {
     const [file, setFile] = useState<File | null>(null);
     const [verificationCode, setVerificationCode] = useState("");
     const [randomNum, setRandomNum] = useState("");
+    const [isSend, setIsSend] = useState(false);
     const [isVerified, setIsVerified] = useState(false);
 
 
@@ -79,7 +80,7 @@ const Join = () => {
             const response = await axios.post('/send-email', { email, emailType: "sign-up", socialType: "CHATLY" });
             setRandomNum(response.data.randomNum);
             alert('인증번호가 전송되었습니다.');
-            setIsVerified(true);
+            setIsSend(true);
         }catch (error){
             console.error('인증번호 전송 오류:', error);
         }
@@ -107,7 +108,13 @@ const Join = () => {
 
     // 이메일 재전송
     const resendEmail = async () => {
-        const response = await axios.post('/resend-email', { email });
+        try {
+            await axios.post('/resend-email', { email });
+            alert('이메일을 재전송했습니다.');
+        } catch (error) {
+            console.error('이메일 재전송 오류:', error);
+            alert('이메일을 재전송하는 동안 오류가 발생했습니다.');
+        }
     };
 
 
@@ -153,6 +160,9 @@ const Join = () => {
             const response = await axios.post('/signup', formData);
         
             console.log(response.data);
+
+            alert('회원가입이 완료되었습니다.');
+
         } catch (error) {
             console.error('Error during registration:', error);
         }
@@ -174,12 +184,12 @@ const Join = () => {
         <Container>
             <JoinPage>
                 <JoinForm>
-                    <JoinInput disabled={isVerified} name="email" placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                    <JoinBtn type="button" onClick={sendEmail} disabled={isVerified}>
+                    <JoinInput disabled={isSend} name="email" placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <JoinBtn type="button" onClick={sendEmail} disabled={isSend}>
                         인증번호 전송
                     </JoinBtn>
-                    <JoinInput name="verificationCode" placeholder="Verification Code" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} />
-                    <JoinBtn type="button" onClick={verifyEmail}>
+                    <JoinInput disabled={isVerified} name="verificationCode" placeholder="Verification Code" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} />
+                    <JoinBtn type="button" onClick={verifyEmail} disabled={isVerified}>
                         인증하기
                     </JoinBtn>
                     <JoinBtn type="button" onClick={resendEmail}>

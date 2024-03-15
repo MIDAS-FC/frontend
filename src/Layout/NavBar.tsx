@@ -1,8 +1,7 @@
 ﻿// 사이트 헤더
 // style component 사용
-
 import { motion, useAnimation, useScroll } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -111,6 +110,9 @@ function NavBar() {
   // 스크롤에 따라 헤더 색상 변경
   const { scrollY } = useScroll();
   const navAnimation = useAnimation();
+  const [userNickname, setUserNickname] = useState('');
+
+
   useEffect(() => {
     scrollY.on("change", () => {
       if (scrollY.get() > 20) {
