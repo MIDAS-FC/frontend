@@ -2,29 +2,43 @@
 // css: style-component
 
 import { useCallback, useRef, useState } from "react";
-import Modal_mypage from "../components/Modal_MyPage";
 import { useNavigate } from "react-router-dom";
 // s-dot naming 사용
-import * as S from "../Styles/MyPage.style";
+import * as S from "../Styles/Mypage.style";
+import axios from "axios";
+import Edit_Mypage from "./../Components/Modal/Edit_Mypage";
 
-function MyPage() {
+function Mypage() {
   const navigate = useNavigate();
 
   // Modal 관련 함수
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const toggleModal = () => {
-    navigate("/mypage/(userId)/editprofile");
+    // 팝업창 url로 이동
+    navigate("/mypage/editprofile");
     setModalIsOpen((prev) => !prev);
   };
 
   // 프로필 이미지 업로드 관련 함수
   const inputRef = useRef<HTMLInputElement | null>(null);
   const onUploadImage = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!e.target.files) {
-        return;
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      try {
+        if (!e.target.files) {
+          return;
+        }
+        const file = e.target.files[0];
+        const formData = new FormData();
+        //profileImage: 임의로 정한 key값
+        formData.append("profileImage", file);
+
+        // 프로필 이미지 업로드 요청
+        // "/user": 임의의 user api
+        const response = await axios.post("/user", formData);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error Uploading image: ", error);
       }
-      console.log(e.target.files[0].name);
     },
     []
   );
@@ -37,15 +51,15 @@ function MyPage() {
 
   return (
     <S.Layout>
-      <S.Container_top>
-        <S.Container_top_left>
+      <S.Section_top>
+        <S.Section_top_left>
           <S.ImageBox
             style={{ width: "250px", height: "250px", marginTop: "10px" }}
           />
-          <S.Info_1>
+          <S.Item_follow>
             <span>팔로우 3명 | </span>
             <span>팔로잉 10명</span>
-          </S.Info_1>
+          </S.Item_follow>
           <input
             type="file"
             accept="image/*"
@@ -69,34 +83,29 @@ function MyPage() {
           >
             프로필 수정
           </S.Button>
-        </S.Container_top_left>
-        <S.Container_top_right>
+        </S.Section_top_left>
+        <S.Section_top_right>
           <h2>이름: OOO</h2>
           <S.Hr />
           <h2>성별: 남성</h2>
           <S.Hr />
-          <S.Info_2>
+          <S.Item_nation>
             <h2>국적: 한국</h2>
             <S.ImageBox style={{ width: "30px", height: "30px" }} />
-          </S.Info_2>
+          </S.Item_nation>
           <S.Hr />
           <h2>학습언어: 영어</h2>
-          <S.Hr />
-          <S.Info_3>
-            <h2>학습레벨: LV.3</h2>
-            <S.ProgressBar value="50" max="100" />
-          </S.Info_3>
           <S.Hr />
           <h2>자기소개</h2>
           <S.Board>
             <h2>안녕하세요!</h2>
           </S.Board>
-        </S.Container_top_right>
-      </S.Container_top>
+        </S.Section_top_right>
+      </S.Section_top>
       {/* react-modal: 팝업창 */}
-      <Modal_mypage modalIsOpen={modalIsOpen} toggleModal={toggleModal} />
+      <Edit_Mypage modalIsOpen={modalIsOpen} toggleModal={toggleModal} />
     </S.Layout>
   );
 }
 
-export default MyPage;
+export default Mypage;

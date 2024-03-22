@@ -19,6 +19,7 @@ export const Buttons = styled.div`
 
 export const Button = styled(motion.button)`
   width: 100px;
+  border: none;
   border-radius: 5px;
   background-color: lightgray;
   box-shadow: 1px 1px 0.5px rgba(0, 0, 0, 0.1);

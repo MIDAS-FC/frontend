@@ -4,7 +4,23 @@
 import Modal from "react-modal";
 import { useForm } from "react-hook-form";
 //s-dot naming 사용
-import * as S from "../Styles/Modal_mypage.style";
+import * as S from "../../Styles/Edit_Mypage.style";
+import axios from "axios";
+
+// 유효성 검사
+const checkName = {
+  required: { value: true, message: "⚠ 이름을 작성해주십시오." },
+};
+const checkNation = {
+  required: { value: true, message: "⚠ 국적을 선택해주십시오." },
+};
+const checkLang = {
+  required: { value: true, message: "⚠ 언어를 선택해주십시오." },
+};
+const checkIntro = {
+  required: { value: true, message: "⚠ 자기소개를 작성해주십시오." },
+  minLength: { value: 10, message: "10자리 이상 입력해주세요." },
+};
 
 // form 요소의 타입
 interface IForm {
@@ -14,30 +30,33 @@ interface IForm {
   introduction: string;
 }
 
-function Modal_MyPage({ modalIsOpen, toggleModal }: any) {
+function Edit_Mypage({ modalIsOpen, toggleModal }: any) {
   // useform 사용
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<IForm>();
-  const onValid = ({ name, nation, language, introduction }: IForm) => {
-    // 입력받은 객체
-    const body = {
-      name,
-      nation,
-      language,
-      introduction,
-    };
-    console.log(body);
-    reset();
+
+  // axios를 통한 유저 정보 업데이트
+  // data: form을 통해 얻은 유저의 새로운 정보
+  const updateUserInfo = async (data: IForm) => {
+    try {
+      // "/user": 임의의 user api
+      await axios.put("/user", data);
+      console.log("Success about update userInfo");
+      // 업데이트 성공하면 modal 창 닫기
+      toggleModal();
+    } catch (error) {
+      console.log("Error about update userInfo: ", error);
+    }
   };
 
   return (
     <Modal
       isOpen={modalIsOpen}
       shouldCloseOnOverlayClick={false}
+      ariaHideApp={false}
       style={{
         overlay: {
           position: "fixed",
@@ -62,13 +81,11 @@ function Modal_MyPage({ modalIsOpen, toggleModal }: any) {
         },
       }}
     >
-      <S.Form onSubmit={handleSubmit(onValid)}>
+      <S.Form onSubmit={handleSubmit(updateUserInfo)}>
         <h2 style={{ fontSize: "20px" }}>프로필 정보 변경</h2>
         <label htmlFor="input">이름</label>
         <input
-          {...register("name", {
-            required: { value: true, message: "⚠ 이름을 작성해주십시오." },
-          })}
+          {...register("name", checkName)}
           placeholder="새로운 이름을 작성해주십시오"
           style={{ width: "200px" }}
         />
@@ -79,12 +96,11 @@ function Modal_MyPage({ modalIsOpen, toggleModal }: any) {
         )}
         <label htmlFor="selectbox">국적</label>
         <select
-          {...register("nation", {
-            required: { value: true, message: "⚠ 국적을 선택해주십시오." },
-          })}
+          {...register("nation", checkNation)}
           style={{ width: "100px" }}
+          defaultValue=""
         >
-          <option disabled selected value="">
+          <option disabled value="">
             --선택--
           </option>
           <option>한국</option>
@@ -98,12 +114,11 @@ function Modal_MyPage({ modalIsOpen, toggleModal }: any) {
         )}
         <label htmlFor="selectbox">학습언어</label>
         <select
-          {...register("language", {
-            required: { value: true, message: "⚠ 언어를 선택해주십시오." },
-          })}
+          {...register("language", checkLang)}
           style={{ width: "100px" }}
+          defaultValue=""
         >
-          <option disabled selected value="">
+          <option disabled value="">
             --선택--
           </option>
           <option>한국어</option>
@@ -117,15 +132,12 @@ function Modal_MyPage({ modalIsOpen, toggleModal }: any) {
         )}
         <label htmlFor="input">자기소개</label>
         <textarea
-          {...register("introduction", {
-            required: { value: true, message: "⚠ 자기소개를 작성해주십시오." },
-            minLength: { value: 10, message: "10자리 이상 입력해주세요." },
-          })}
+          {...register("introduction", checkIntro)}
           style={{
             width: "400px",
             height: "200px",
             backgroundColor: "whitesmoke",
-            outline: "0.5px gray",
+            border: "0.5px gray",
             marginTop: "20px",
           }}
         />
@@ -139,12 +151,14 @@ function Modal_MyPage({ modalIsOpen, toggleModal }: any) {
           </S.Errorbox>
         )}
         <S.Buttons>
-          <S.Button>저장</S.Button>
-          <S.Button onClick={toggleModal}>취소</S.Button>
+          <S.Button type="submit">저장</S.Button>
+          <S.Button type="button" onClick={toggleModal}>
+            취소
+          </S.Button>
         </S.Buttons>
       </S.Form>
     </Modal>
   );
 }
 
-export default Modal_MyPage;
+export default Edit_Mypage;

@@ -3,7 +3,7 @@
 
 //s-dot 네이밍 사용
 import * as S from "../Styles/LandingPage.style";
-import Slider_LandingPage from "./../components/Slider_LandingPage";
+import Slider_LandingPage from "../Components/Slider/Review";
 
 const offset = [0, 1, 2, 3];
 

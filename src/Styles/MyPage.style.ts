@@ -1,96 +1,98 @@
 // MyPage css
-
 import { motion } from "framer-motion";
 import styled from "styled-components";
 
 export const Layout = styled.div`
-  position: relative;
   min-width: 1280px;
-  height: 120vh;
-  top: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 120vh;
+  padding: 50px;
 `;
 
-export const Container_top = styled.div`
+export const Section_top = styled.div`
+  display: flex;
+  justify-content: space-between;
   width: 100%;
+  margin-top: 100px;
 `;
 
-export const Container_top_left = styled.div`
-  position: absolute;
-  top: 10px;
-  width: 380px;
-  height: 420px;
-  left: 20%;
+export const Section_top_left = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  border-radius: 4px;
+  width: 30%; /* 변경: 좌측 컨테이너 크기 조정 */
 `;
 
-export const Container_top_right = styled.div`
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  width: 600px;
-  padding-top: 10px;
-  padding-left: 50px;
+export const Section_top_right = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
-  border-radius: 4px;
+  gap: 20px;
+  width: 65%; /* 변경: 우측 컨테이너 크기 조정 */
 `;
 
 export const ImageBox = styled.div`
-  border-radius: 100px;
-  background-color: ivory;
+  border-radius: 50%;
+  background-color: lightgray;
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
 `;
 
-export const Info_1 = styled.div`
+export const Item_follow = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   gap: 10px;
-`;
-
-export const Info_2 = styled.div`
-  display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
-  gap: 15px;
 `;
 
-export const Info_3 = styled.div`
+export const Item_nation = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
   gap: 15px;
+  align-items: center;
 `;
 
 export const Button = styled(motion.button)`
-  width: 100px;
+  width: 120px;
+  border: none;
   border-radius: 5px;
   background-color: lightgray;
   box-shadow: 1px 1px 0.5px rgba(0, 0, 0, 0.1);
 `;
 
 export const Hr = styled.hr`
-  width: 300px;
-  text-align: left;
-  margin-left: 0;
-  margin-top: 0;
-  border: dotted 1px gray;
+  width: 100%;
+  border: none;
+  height: 1px;
+  background-color: lightgray;
+  margin: 10px 0;
 `;
 
 export const ProgressBar = styled.progress`
   width: 120px;
   height: 14px;
+  border: none;
+  border-radius: 5px;
+  overflow: hidden;
+
+  &::-webkit-progress-bar {
+    background-color: lightgray;
+    border-radius: 5px;
+  }
+
+  &::-webkit-progress-value {
+    background-color: lightgreen; /* 변경: 초록색으로 설정 */
+    border-radius: 5px;
+  }
 `;
 
 export const Board = styled.div`
-  width: 350px;
-  height: 350px;
-  margin-top: 5px;
+  width: 100%;
+  width: 600px;
+  height: 200px;
   border-radius: 5px;
   background-color: whitesmoke;
 `;

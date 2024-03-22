@@ -24,7 +24,7 @@ function NavBar() {
 
   return (
     <S.Layout variants={S.HeaderVariants} initial="up" animate={navAnimation}>
-      <S.Container>
+      <S.Section>
         {/* 로고 클릭 시 메인으로 이동 */}
         <Link to="">
           <S.Logo variants={S.LogoVairnats} whileHover="hover" whileTap="click">
@@ -33,7 +33,7 @@ function NavBar() {
         </Link>
         <S.Items style={{ left: "250px" }}>
           {/* 클릭 시 FreeTalkingPage으로 이동 */}
-          <Link to="/aifreetalking">
+          <Link to="/aispeaking">
             <S.Item
               variants={S.LinkVariants}
               whileHover="hover"
@@ -94,7 +94,7 @@ function NavBar() {
             회원가입
           </S.Button>
         </S.Buttons>
-      </S.Container>
+      </S.Section>
     </S.Layout>
   );
 }

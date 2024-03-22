@@ -6,27 +6,35 @@ export const Layout = styled.div`
   position: relative;
   width: 100%;
   min-width: 1280px;
-  height: 180vh;
+  height: 300vh;
 `;
 
-export const Container_top = styled.div`
+export const Section_top = styled.div`
   position: absolute;
   top: 150px;
   width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
+  align-items: center;
 `;
 
-export const Container_mid = styled.div`
+export const Section_mid = styled.div`
   position: absolute;
-  top: 500px;
+  top: 600px;
   width: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+`;
+
+export const Section_bot = styled.div`
+  position: absolute;
+  top: 1000px;
+  width: 100%;
 `;
 
 export const Banner = styled.div`
-  width: 1400px;
-  height: 300px;
+  width: 600px;
+  height: 400px;
   background-color: ${(props) => props.theme.subColor};
 `;

@@ -12,7 +12,7 @@ export const Layout = styled(motion.div)`
   background-color: transparent;
 `;
 
-export const Container = styled.div`
+export const Section = styled.div`
   position: relative;
   display: flex;
   align-items: center;
@@ -58,23 +58,24 @@ export const Button = styled(motion.button)`
   cursor: pointer;
 `;
 
-// header의 item 클릭할 때마다 원이 이동
-export const Circle = styled(motion.span)`
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  bottom: -5px;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  background-color: pink;
-  border-radius: 50px;
-`;
+// // header의 item 클릭할 때마다 원이 이동
+// export const Circle = styled(motion.span)`
+//   position: absolute;
+//   width: 5px;
+//   height: 5px;
+//   bottom: -5px;
+//   left: 0;
+//   right: 0;
+//   margin: 0 auto;
+//   background-color: pink;
+//   border-radius: 50px;
+// `;
 
 export const HeaderVariants = {
   up: { backgroundColor: "rgba(0, 0, 0, 0)" },
   scroll: { backgroundColor: "#E58C8A" },
 };
+
 export const LogoVairnats = {
   hover: {
     scaleX: 1.2,

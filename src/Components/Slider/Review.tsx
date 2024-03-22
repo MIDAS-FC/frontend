@@ -5,14 +5,14 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 
-import { ReactComponent as LeftIcon } from "../Design/icons/Left.svg";
-import { ReactComponent as RightIcon } from "../Design/icons/Right.svg";
-import { Banner_sub, StyledSlider } from "../Styles/Slider_LandingPage.style";
+import { ReactComponent as LeftIcon } from "../../Design/icons/Left.svg";
+import { ReactComponent as RightIcon } from "../../Design/icons/Right.svg";
+import { Banner_sub, StyledSlider } from "../../Styles/Review.style";
 
 // 임의 배너
 const offset = [0, 1, 2, 3, 4];
 
-function Slider_LandingPage() {
+function Review() {
   const settings = {
     slide: "div",
     dots: true,
@@ -39,4 +39,4 @@ function Slider_LandingPage() {
   );
 }
 
-export default Slider_LandingPage;
+export default Review;
