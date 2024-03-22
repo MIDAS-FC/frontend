@@ -1,9 +1,14 @@
 ﻿// 사이트 헤더
 // style component 사용
+import axios from 'axios';
 import { motion, useAnimation, useScroll } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useAuth } from "../AuthProvider";
+
+axios.defaults.baseURL = '/auth';
+
 
 const Wrapper = styled(motion.div)`
   position: fixed;
@@ -107,13 +112,16 @@ const LinkVariants = {
 };
 
 function NavBar() {
-  // 스크롤에 따라 헤더 색상 변경
   const { scrollY } = useScroll();
   const navAnimation = useAnimation();
-  const [userNickname, setUserNickname] = useState('');
-
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true); // 로그인 상태를 true로 변경
+    }
+
     scrollY.on("change", () => {
       if (scrollY.get() > 20) {
         navAnimation.start("scroll");
@@ -121,7 +129,7 @@ function NavBar() {
         navAnimation.start("up");
       }
     });
-  });
+  }, [isLoggedIn]);
 
   const navigate = useNavigate();
 
@@ -132,6 +140,14 @@ function NavBar() {
   const handleJoinClick = () => {
     navigate("/pages/Member/Join");
   }
+
+  const handleLogoutClick = () => {
+    alert('로그아웃 성공.');
+    localStorage.removeItem('token'); // 토큰 삭제
+    setIsLoggedIn(false); // 로그인 상태를 false로 변경
+    navigate('/'); // 홈페이지로 이동
+  }
+
 
   return (
     <Wrapper variants={HeaderVariants} initial="up" animate={navAnimation}>
@@ -187,12 +203,20 @@ function NavBar() {
           </Link>
         </Items>
         <Buttons>
-          <Button variants={ButtonVariants} whileHover="hover" whileTap="click" onClick={handleLoginClick}>
-            로그인
-          </Button>
-          <Button variants={ButtonVariants} whileHover="hover" whileTap="click" onClick={handleJoinClick}>
-            회원가입
-          </Button>
+        {!isLoggedIn ? (
+            <>
+              <Button variants={ButtonVariants} whileHover="hover" whileTap="click" onClick={handleLoginClick}>
+                로그인
+              </Button>
+              <Button variants={ButtonVariants} whileHover="hover" whileTap="click" onClick={handleJoinClick}>
+                회원가입
+              </Button>
+            </>
+          ) : (
+            <Button variants={ButtonVariants} whileHover="hover" whileTap="click" onClick={handleLogoutClick}>
+              로그아웃
+            </Button>
+          )}
         </Buttons>
       </Container>
     </Wrapper>

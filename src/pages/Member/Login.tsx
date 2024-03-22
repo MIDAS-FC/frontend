@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useAuth } from "../../AuthProvider";
 
 const Container = styled.div`
   position: relative;
@@ -107,8 +108,9 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [socialType, setSocialType] = useState('CHATLY'); // socialType을 CHATLY로 설정
-  const navigate = useNavigate(); // Create a navigate object
+  const navigate = useNavigate();
 
+  const { setIsLoggedIn } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,23 +122,28 @@ const Login = () => {
     };
 
     try {
-        const response = await axios.post('/auth/token/login', user, {
-            headers: {
-                'Content-Type': 'application/json;charset=UTF-8'
-            }
-        });
+      const response = await axios.post('/token/login', user, {
+          headers: {
+              'Content-Type': 'application/json;charset=UTF-8'
+          }
+      });
+  
+      // 응답 헤더에서 AccessToken 추출
+      const accessToken = response.headers['authorization-access'];
+  
+      console.log('토큰:', accessToken);
+  
+      localStorage.setItem('token', accessToken);
+  
+      // 홈페이지로 이동
+      setIsLoggedIn(true);
 
-        // 응답 헤더에서 AccessToken 추출
-        const accessToken = response.headers['authorization-access'];
-
-        console.log('토큰:', accessToken);
-
-        // 홈페이지로 이동
-        navigate('/');
+      navigate('/');
     } catch (error) {
-        // Handle error here
-        console.error(error);
+      // Handle error here
+      console.error(error);
     }
+  
   
   };
 

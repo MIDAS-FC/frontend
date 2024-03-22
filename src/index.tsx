@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
+import { AuthProvider } from "./AuthProvider";
 import Router from "./Route/Router";
 import reportWebVitals from "./reportWebVitals";
 
@@ -83,7 +84,9 @@ root.render(
     <QueryClientProvider client={queryClient}>
       <GlobalStyle />
       <BrowserRouter>
-        <Router />
+        <AuthProvider>
+          <Router />
+        </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
   </React.StrictMode>

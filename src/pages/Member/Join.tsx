@@ -1,6 +1,10 @@
 import axios from 'axios';
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
+
+
+axios.defaults.baseURL = '/auth';
 
 const Container = styled.div`
     position: relative;
@@ -73,6 +77,8 @@ const Join = () => {
     const [isSend, setIsSend] = useState(false);
     const [isVerified, setIsVerified] = useState(false);
 
+    const navigate = useNavigate(); // Create a navigate object
+
 
     // 이메일 인증번호 보내기
     const sendEmail = async () => {
@@ -89,18 +95,19 @@ const Join = () => {
 
     // 인증
     const verifyEmail = async () => {
-        try{
-        const response = await axios.post('/verify-email', {
-            email,
-            socialType: "CHATLY",
-            randomNum,
-            inputNum: verificationCode,
-            sendTime: new Date(),
-            expireTime: new Date(new Date().getTime() + 30*1000) //인증번호 유효시간 30초
-        });
+        try {
+            const response = await axios.post('/verify-email', {
+                email,
+                socialType: "CHATLY",
+                randomNum,
+                inputNum: verificationCode,
+                sendTime: new Date(),
+                expireTime: new Date(new Date().getTime() + 30 * 1000), //인증번호 유효시간 30초
+                emailType: "sign-up" // 또는 "reset-password" 등의 유효한 값
+            });
             alert("인증 성공!");
             setIsVerified(true);
-        } catch(error){
+        } catch (error) {
             alert("인증 실패. 다시 시도해 주세요.");
         }
     };
@@ -162,6 +169,7 @@ const Join = () => {
             console.log(response.data);
 
             alert('회원가입이 완료되었습니다.');
+            navigate('/pages/Member/Login'); //로그인 페이지로 유도
 
         } catch (error) {
             console.error('Error during registration:', error);
