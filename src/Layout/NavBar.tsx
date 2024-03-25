@@ -115,6 +115,7 @@ function NavBar() {
   const { scrollY } = useScroll();
   const navAnimation = useAnimation();
   const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const nickName = localStorage.getItem('nickName');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -213,9 +214,12 @@ function NavBar() {
               </Button>
             </>
           ) : (
+            <>
+            <p>{nickName}</p>
             <Button variants={ButtonVariants} whileHover="hover" whileTap="click" onClick={handleLogoutClick}>
               로그아웃
             </Button>
+            </>
           )}
         </Buttons>
       </Container>

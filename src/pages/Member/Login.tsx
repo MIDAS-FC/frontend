@@ -130,10 +130,13 @@ const Login = () => {
   
       // 응답 헤더에서 AccessToken 추출
       const accessToken = response.headers['authorization-access'];
-  
-      console.log('토큰:', accessToken);
+      const nickName = response.headers['nickname'];
   
       localStorage.setItem('token', accessToken);
+      localStorage.setItem('nickName', response.data.nickName);
+
+      console.log('토큰:', accessToken);
+      console.log('닉네임: ', nickName);
   
       // 홈페이지로 이동
       setIsLoggedIn(true);
@@ -143,8 +146,6 @@ const Login = () => {
       // Handle error here
       console.error(error);
     }
-  
-  
   };
 
   return (
