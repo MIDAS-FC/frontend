@@ -1,11 +1,43 @@
 // Mypage modal(팝업) 커스텀
-// css: style-component
 
 import Modal from "react-modal";
 import { useForm } from "react-hook-form";
-//s-dot naming 사용
-import * as S from "../../Styles/Edit_Mypage.style";
 import axios from "axios";
+import styled from "styled-components";
+import { motion } from "framer-motion";
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 600px;
+`;
+
+const Buttons = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+`;
+
+const Button = styled(motion.button)`
+  width: 100px;
+  border: none;
+  border-radius: 5px;
+  background-color: lightgray;
+  box-shadow: 1px 1px 0.5px rgba(0, 0, 0, 0.1);
+`;
+const Errorbox = styled(motion.div)`
+  width: 200px;
+  height: 40px;
+  background-color: khaki;
+  border-radius: 10px;
+  padding: 2px;
+`;
+
+const ErrorVariants = {
+  hover: { scale: 1.05 },
+};
 
 // 유효성 검사
 const checkName = {
@@ -30,7 +62,7 @@ interface IForm {
   introduction: string;
 }
 
-function Edit_Mypage({ modalIsOpen, toggleModal }: any) {
+function Edit_mypage({ modalIsOpen, toggleModal }: any) {
   // useform 사용
   const {
     register,
@@ -81,7 +113,7 @@ function Edit_Mypage({ modalIsOpen, toggleModal }: any) {
         },
       }}
     >
-      <S.Form onSubmit={handleSubmit(updateUserInfo)}>
+      <Form onSubmit={handleSubmit(updateUserInfo)}>
         <h2 style={{ fontSize: "20px" }}>프로필 정보 변경</h2>
         <label htmlFor="input">이름</label>
         <input
@@ -90,9 +122,9 @@ function Edit_Mypage({ modalIsOpen, toggleModal }: any) {
           style={{ width: "200px" }}
         />
         {errors.name && (
-          <S.Errorbox variants={S.ErrorVariants} whileHover="hover">
+          <Errorbox variants={ErrorVariants} whileHover="hover">
             <span>{`${errors.name.message}`}</span>
-          </S.Errorbox>
+          </Errorbox>
         )}
         <label htmlFor="selectbox">국적</label>
         <select
@@ -108,9 +140,9 @@ function Edit_Mypage({ modalIsOpen, toggleModal }: any) {
           <option>중국</option>
         </select>
         {errors.nation && (
-          <S.Errorbox variants={S.ErrorVariants} whileHover="hover">
+          <Errorbox variants={ErrorVariants} whileHover="hover">
             <span>{`${errors.nation.message}`}</span>
-          </S.Errorbox>
+          </Errorbox>
         )}
         <label htmlFor="selectbox">학습언어</label>
         <select
@@ -126,9 +158,9 @@ function Edit_Mypage({ modalIsOpen, toggleModal }: any) {
           <option>중국어</option>
         </select>
         {errors.language && (
-          <S.Errorbox variants={S.ErrorVariants} whileHover="hover">
+          <Errorbox variants={ErrorVariants} whileHover="hover">
             <span>{`${errors.language.message}`}</span>
-          </S.Errorbox>
+          </Errorbox>
         )}
         <label htmlFor="input">자기소개</label>
         <textarea
@@ -142,23 +174,23 @@ function Edit_Mypage({ modalIsOpen, toggleModal }: any) {
           }}
         />
         {errors.introduction && (
-          <S.Errorbox
-            variants={S.ErrorVariants}
+          <Errorbox
+            variants={ErrorVariants}
             whileHover="hover"
             style={{ width: "250px" }}
           >
             <span>{`${errors.introduction.message}`}</span>
-          </S.Errorbox>
+          </Errorbox>
         )}
-        <S.Buttons>
-          <S.Button type="submit">저장</S.Button>
-          <S.Button type="button" onClick={toggleModal}>
+        <Buttons>
+          <Button type="submit">저장</Button>
+          <Button type="button" onClick={toggleModal}>
             취소
-          </S.Button>
-        </S.Buttons>
-      </S.Form>
+          </Button>
+        </Buttons>
+      </Form>
     </Modal>
   );
 }
 
-export default Edit_Mypage;
+export default Edit_mypage;

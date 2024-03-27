@@ -1,10 +1,16 @@
-// slider css
+// 슬라이드 배너 react-slick 사용
 
-import { motion } from "framer-motion";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Slider from "react-slick";
+
+import { ReactComponent as LeftIcon } from "../Design/icons/left.svg";
+import { ReactComponent as RightIcon } from "../Design/icons/right.svg";
 import styled from "styled-components";
+import { motion } from "framer-motion";
 
 // node_modules -> slick carousel -> slick.css수정한 것
-export const StyledSlider = styled.div`
+const StyledSlider = styled.div`
   .slick-slider {
     width: 800px;
   }
@@ -98,8 +104,40 @@ export const StyledSlider = styled.div`
   }
 `;
 
-export const Banner_sub = styled(motion.div)`
+const Banner_sub = styled(motion.div)`
   height: 400px;
   background-color: ${(props) => props.theme.subColor};
   border-radius: 20px;
 `;
+
+// 임의 배너
+const offset = [0, 1, 2, 3, 4];
+
+function Slider_custom() {
+  const settings = {
+    slide: "div",
+    dots: true,
+    dotsClass: "slick-dots",
+    arrows: true,
+    infinite: true,
+    speed: 500,
+    prevArrow: <LeftIcon />,
+    nextArrow: <RightIcon />,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    draggable: true,
+    autoplay: true,
+    autoplaySpeed: 5000,
+  };
+  return (
+    <StyledSlider>
+      <Slider {...settings}>
+        {offset.map((i) => (
+          <Banner_sub key={i}>{i}서브배너-수강후기</Banner_sub>
+        ))}
+      </Slider>
+    </StyledSlider>
+  );
+}
+
+export default Slider_custom;
