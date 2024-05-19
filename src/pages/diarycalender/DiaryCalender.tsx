@@ -2,12 +2,46 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Calender from "./Calender";
 import * as S from "./Styles/DiaryCalender.style";
-import SongList from "./SongList";
+import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
+
+interface DiaryInfoResponse {
+  flower: string;
+  angry: number;
+  sad: number;
+  delight: number;
+  calm: number;
+  embarrassed: number;
+  anxiety: number;
+  musicId: number;
+  title: string;
+  singer: string;
+  likes: number;
+}
 
 function DiaryCalender() {
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
   const [currentMonth, setCurrentMonth] = useState<number | null>(null);
+  const [diaryInfo, setDiaryInfo] = useState<DiaryInfoResponse[] | null>(null);
+
+  useEffect(() => {
+    if (currentYear && currentMonth) {
+      fetchDiaryInfo(currentYear, currentMonth);
+    }
+  }, [currentYear, currentMonth]);
+
+  const fetchDiaryInfo = async (year: number, month: number) => {
+    try {
+      const response = await axios.get("/diary/calendar", {
+        params: { year, month },
+      });
+      setDiaryInfo(response.data);
+    } catch (error) {
+      console.error("Error fetching diary info:", error);
+    }
+  };
+  console.log(diaryInfo);
 
   useEffect(() => {
     const today = new Date();
@@ -41,6 +75,7 @@ function DiaryCalender() {
               날짜 {currentMonth}월 {selectedDate}일<div>제목</div>
               <div>내용</div>
               <S.ButtonsContainer>
+                <S.Button>작성</S.Button>
                 <S.Button>수정</S.Button>
                 <S.Button>삭제</S.Button>
               </S.ButtonsContainer>
@@ -48,9 +83,6 @@ function DiaryCalender() {
           </S.BoxContainer>
         )}
       </AnimatePresence>
-      <S.BoxContainer>
-        <SongList />
-      </S.BoxContainer>
     </S.Container>
   );
 }
