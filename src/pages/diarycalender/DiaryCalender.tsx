@@ -24,6 +24,7 @@ function DiaryCalender() {
   const [currentYear, setCurrentYear] = useState<number | null>(null);
   const [currentMonth, setCurrentMonth] = useState<number | null>(null);
   const [diaryInfo, setDiaryInfo] = useState<DiaryInfoResponse[] | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (currentYear && currentMonth) {
@@ -31,6 +32,7 @@ function DiaryCalender() {
     }
   }, [currentYear, currentMonth]);
 
+  // 일기 가져오기
   const fetchDiaryInfo = async (year: number, month: number) => {
     try {
       const response = await axios.get("/diary/calendar", {
@@ -55,6 +57,26 @@ function DiaryCalender() {
     setCurrentYear(year);
   };
 
+  // 작성 버튼 클릭 시
+  const handleCreateClick = () => {
+    if (currentYear && currentMonth && selectedDate) {
+      navigate(
+        // create-diary: 임시 url
+        `/creatediary?year=${currentYear}&month=${currentMonth}&day=${selectedDate}`
+      );
+    }
+  };
+
+  // 수정 버튼 클릭 시
+  const handleEditClick = () => {
+    if (currentYear && currentMonth && selectedDate) {
+      navigate(
+        // create-diary: 임시 url
+        `/creatediary?year=${currentYear}&month=${currentMonth}&day=${selectedDate}`
+      );
+    }
+  };
+
   return (
     <S.Container>
       <h2>
@@ -75,9 +97,8 @@ function DiaryCalender() {
               날짜 {currentMonth}월 {selectedDate}일<div>제목</div>
               <div>내용</div>
               <S.ButtonsContainer>
-                <S.Button>작성</S.Button>
-                <S.Button>수정</S.Button>
-                <S.Button>삭제</S.Button>
+                <S.Button onClick={handleCreateClick}>작성</S.Button>
+                <S.Button onClick={handleEditClick}>수정</S.Button>
               </S.ButtonsContainer>
             </S.Box>
           </S.BoxContainer>
