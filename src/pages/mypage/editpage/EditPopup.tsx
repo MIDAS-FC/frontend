@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import * as S from "./Styles/EditPopup.style";
+import * as S from "../Styles/EditPopup.style";
 import axios from "axios";
-
-// 프로필수정-프로필사진, 닉네임 변경 함께
 
 function EditPopup({ onClose }: any) {
   const [showNicknameInput, setShowNicknameInput] = useState(false);
@@ -15,18 +13,50 @@ function EditPopup({ onClose }: any) {
     setNickname(event.target.value);
   };
 
+  const handleProfileImageChange = (event: any) => {
+    setProfileImage(event.target.files[0]);
+  };
+
   const handlePasswordChange = (event: any) => {
     setPassword(event.target.value);
   };
 
-  const handleImageUpload = (event: any) => {
-    const file = event.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setProfileImage(imageUrl);
+  // 프로필 수정
+  const handleProfileUpdate = async () => {
+    // if (!profileImage && !nickname) {
+    //   alert("프로필 사진 또는 닉네임을 변경해야 합니다.");
+    //   return;
+    // }
+
+    const formData = new FormData();
+    if (profileImage) {
+      formData.append("images", profileImage);
+    }
+    if (nickname) {
+      formData.append(
+        "nickName",
+        new Blob([JSON.stringify({ nickName: nickname })], {
+          type: "application/json",
+        })
+      );
+    }
+
+    try {
+      const response = await axios.put("/reset/profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("Profile updated:", response.data);
+      if (response.data.url) {
+        setProfileImage(response.data.url);
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
     }
   };
 
+  // 비밀번호 초기화
   const handlePasswordConfirm = async () => {
     try {
       const response = await axios.put("/auth/reset/password", {
@@ -48,9 +78,7 @@ function EditPopup({ onClose }: any) {
             <S.GrayCircle>
               <input
                 type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                style={{ display: "none" }}
+                onChange={handleProfileImageChange}
                 id="image-upload"
               />
               <label htmlFor="image-upload">📷</label>
@@ -73,6 +101,9 @@ function EditPopup({ onClose }: any) {
                 />
               </S.InputContainer>
             )}
+            <button onClick={handleProfileUpdate}>
+              프로필 변경(사진,닉네임)
+            </button>
             <S.ResetPasswordButton
               onClick={() => setShowPasswordInput(!showPasswordInput)}
             >

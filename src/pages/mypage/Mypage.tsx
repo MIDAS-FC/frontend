@@ -1,5 +1,5 @@
-import EditProfile from "./EditProfile";
-import SongList from "./SongList";
+import EditProfile from "./editpage/EditProfile";
+import SongList from "./songlist/SongList";
 import WeeklyReport from "./WeeklyReport";
 
 function Mypage() {

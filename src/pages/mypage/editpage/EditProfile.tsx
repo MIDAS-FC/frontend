@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import * as S from "./Styles/EditProfile.style";
+import * as S from "../Styles/EditProfile.style";
 import { AnimatePresence, motion } from "framer-motion";
 import EditPopup from "./EditPopup";
 
@@ -17,7 +17,6 @@ function EditProfile() {
       </S.ProfileImageContainer>
       <S.UserInfo>
         <S.UserName>UserName</S.UserName>
-
         <button onClick={() => setShowPopup(true)}>프로필 수정</button>
       </S.UserInfo>
       <AnimatePresence>

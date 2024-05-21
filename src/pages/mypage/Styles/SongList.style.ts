@@ -1,18 +1,15 @@
 import styled from "styled-components";
+import { motion } from "framer-motion";
 
 export const SliderContainer = styled.div`
-  width: 100%;
-  .slick-slide {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .slick-dots {
-    bottom: -30px;
-  }
+  width: 90%;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
 `;
 
-export const SliderItem = styled.div`
+export const SliderItem = styled(motion.div)`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -39,4 +36,33 @@ export const ArtistName = styled.p`
   font-size: 12px;
   color: #888;
   margin: 0;
+`;
+
+export const Arrow = styled.div<{ position: string }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  color: black;
+  background-color: gray;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1;
+  user-select: none;
+  position: absolute;
+  top: 50%;
+  ${(props) => (props.position === "left" ? "left: 10px;" : "right: 10px;")}
+  transform: translateY(-50%);
+
+  &:hover {
+    background-color: darkgray;
+  }
+`;
+
+export const Row = styled(motion.div)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 `;
