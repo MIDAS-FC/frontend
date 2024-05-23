@@ -10,6 +10,7 @@ export const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100vw;
   height: 100vh;
   background: linear-gradient(to bottom, #000428, #004e92);
   position: relative;
@@ -30,6 +31,8 @@ export const Content = styled.div`
   align-items: center;
   position: absolute;
   right: 10%;
+  top: 40%;
+  transform: translateY(-50%);
 `;
 
 export const Logo = styled.h2`
@@ -38,23 +41,60 @@ export const Logo = styled.h2`
   margin-bottom: 20px;
 `;
 
+export const Bigtext = styled.p`
+  color: white;
+  font-size: 2vw; /* 반응형 폰트 크기 */
+  font-weight: bold;
+  margin-bottom: 10px;
+
+  @media (max-width: 768px) {
+    font-size: 4vw;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 6vw;
+  }
+`;
+
+export const Smalltext = styled.p`
+  color: white;
+  font-size: 1.5vw; /* 반응형 폰트 크기 */
+  margin-bottom: 10px;
+
+  @media (max-width: 768px) {
+    font-size: 3vw;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 5vw;
+  }
+`;
+
+export const ButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+`;
+
 export const StartButton = styled.button`
   padding: 10px 20px;
   font-size: 16px;
   color: white;
-  background-color: #007bff;
+  background-color: #87ceeb;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  margin-left: 10px;
   &:hover {
-    background-color: #0056b3;
+    background-color: #00bfff;
   }
 `;
 
 export const Star = styled.div`
-  width: 2px;
-  height: 2px;
-  background: white;
+  width: 4px;
+  height: 4px;
+  background: #f8f8ff;
+  border-radius: 100%;
   position: absolute;
   top: ${(props) => Math.random() * 100}%;
   left: ${(props) => Math.random() * 100}%;
