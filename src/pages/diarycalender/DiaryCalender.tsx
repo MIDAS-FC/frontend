@@ -26,6 +26,14 @@ function DiaryCalender() {
   const [diaryInfo, setDiaryInfo] = useState<DiaryInfoResponse[] | null>(null);
   const navigate = useNavigate();
 
+  // 첫 렌더링 시 현재 날짜에 대한 일기 정보
+  useEffect(() => {
+    const today = new Date();
+    setCurrentYear(today.getFullYear());
+    setCurrentMonth(today.getMonth() + 1);
+    setSelectedDate(today.getDate());
+  }, []);
+
   useEffect(() => {
     if (currentYear && currentMonth) {
       fetchDiaryInfo(currentYear, currentMonth);
@@ -80,7 +88,7 @@ function DiaryCalender() {
   return (
     <S.Container>
       <h2>
-        {currentYear}년{currentMonth}월
+        {currentYear}년 {currentMonth}월
       </h2>
       <Calender onDateSelect={handleDateSelect} />
       <AnimatePresence>
@@ -94,8 +102,25 @@ function DiaryCalender() {
               exit="exit"
               transition={{ duration: 0.3 }}
             >
-              날짜 {currentMonth}월 {selectedDate}일<div>제목</div>
-              <div>내용</div>
+              <S.ImageContainer>
+                <img src="/path/to/image.png" alt="Diary Entry" />
+              </S.ImageContainer>
+              {/* 날짜 {currentMonth}월 {selectedDate}일<div>제목</div>
+              <div>내용</div> */}
+              <S.InfoContainer>
+                <S.InfoTitle>날짜</S.InfoTitle>
+                <S.InfoText>
+                  {currentMonth}월 {selectedDate}일
+                </S.InfoText>
+              </S.InfoContainer>
+              <S.InfoContainer>
+                <S.InfoTitle>제목</S.InfoTitle>
+                <S.InfoText>제목 내용</S.InfoText>
+              </S.InfoContainer>
+              <S.InfoContainer>
+                <S.InfoTitle>내용</S.InfoTitle>
+                <S.InfoText>일기 내용</S.InfoText>
+              </S.InfoContainer>
               <S.ButtonsContainer>
                 <S.Button onClick={handleCreateClick}>작성</S.Button>
                 <S.Button onClick={handleEditClick}>수정</S.Button>

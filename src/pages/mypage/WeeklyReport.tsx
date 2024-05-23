@@ -35,6 +35,11 @@ function WeeklyReport() {
 
   return (
     <S.Container>
+      <h1>주간 감정 요약을 통해 자신을 더 깊이 이해하세요</h1>
+      <p>
+        상단의 캘린더 각 날짜를 클릭하면 그 날의 주요 감정을 살펴볼 수 있습니다.
+        각 날짜에 해당하는 꽃 이모티콘을 통해 주요 감정 상태를 볼 수 있습니다.
+      </p>
       <S.Header>
         <button onClick={goToPreviousWeek}>◀</button>
         <h2>
@@ -43,8 +48,16 @@ function WeeklyReport() {
         <button onClick={goToNextWeek}>▶</button>
       </S.Header>
       <Calender onDateSelect={handleDateSelect} currentDate={currentDate} />
-      <Graph />
+      <p>
+        아래의 그래프는 각자의 감정이 일주일 동안 어떻게 변해왔는지 보여줍니다.
+        다양한 색상은 각각 다른 감정을 나타내며, 여덟의 높이는 감정의 수치를
+        표현합니다.
+      </p>
+      <S.GraphContainer>
+        <Graph />
+      </S.GraphContainer>
       <S.ReportBox>
+        <h3>이번 주 감정 분석 리포트</h3>
         <S.List>
           <S.ListItem>
             기쁨: 이번 주에 기쁨 점정은 전주 대비 20% 상승하였습니다.

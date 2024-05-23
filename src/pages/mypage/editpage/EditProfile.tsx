@@ -12,12 +12,18 @@ function EditProfile() {
 
   return (
     <S.Container>
+      <S.Title>프로필 수정</S.Title>
       <S.ProfileImageContainer>
         <S.ProfileImage src="path/to/profile-image.jpg" alt="Profile" />
       </S.ProfileImageContainer>
       <S.UserInfo>
         <S.UserName>UserName</S.UserName>
-        <button onClick={() => setShowPopup(true)}>프로필 수정</button>
+        <S.EditSection>
+          <S.EditText>프로필 수정을 원하시면</S.EditText>
+          <S.EditButton onClick={() => setShowPopup(true)}>
+            프로필 수정
+          </S.EditButton>
+        </S.EditSection>
       </S.UserInfo>
       <AnimatePresence>
         {showPopup && (

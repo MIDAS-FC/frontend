@@ -33,46 +33,63 @@ const songs = [
 function SongList() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [leaving, setLeaving] = useState(false);
+
+  const toggleLeaving = () => setLeaving((prev) => !prev);
 
   const nextSlide = () => {
+    if (leaving) return;
+    toggleLeaving();
     setDirection(1);
     setCurrentIndex((prev) => (prev === songs.length - 1 ? 0 : prev + 1));
   };
 
   const prevSlide = () => {
+    if (leaving) return;
+    toggleLeaving();
     setDirection(-1);
     setCurrentIndex((prev) => (prev === 0 ? songs.length - 1 : prev - 1));
   };
 
   return (
-    <S.SliderContainer>
-      <S.Arrow onClick={prevSlide} position="left">
-        <FontAwesomeIcon icon={faChevronLeft} />
-      </S.Arrow>
-      <AnimatePresence initial={false} custom={direction}>
-        <S.Row
-          key={currentIndex}
+    <div>
+      <h2>마음에 든 노래</h2>
+      <S.SliderContainer>
+        <S.Arrow onClick={prevSlide} position="left">
+          <FontAwesomeIcon icon={faChevronLeft} />
+        </S.Arrow>
+        <AnimatePresence
+          initial={false}
           custom={direction}
-          variants={rowVariants}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
+          onExitComplete={toggleLeaving}
         >
-          {songs.map((song, index) => (
-            <S.SliderItem key={index}>
-              <S.AlbumCover src={song.albumCover} alt={`${song.title} cover`} />
-              <S.SongDetails>
-                <S.SongTitle>{song.title}</S.SongTitle>
-                <S.ArtistName>{song.artist}</S.ArtistName>
-              </S.SongDetails>
-            </S.SliderItem>
-          ))}
-        </S.Row>
-      </AnimatePresence>
-      <S.Arrow onClick={nextSlide} position="right">
-        <FontAwesomeIcon icon={faChevronRight} />
-      </S.Arrow>
-    </S.SliderContainer>
+          <S.Row
+            key={currentIndex}
+            custom={direction}
+            variants={rowVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            {songs.map((song, index) => (
+              <S.SliderItem key={index}>
+                <S.AlbumCover
+                  src={song.albumCover}
+                  alt={`${song.title} cover`}
+                />
+                <S.SongDetails>
+                  <S.SongTitle>{song.title}</S.SongTitle>
+                  <S.ArtistName>{song.artist}</S.ArtistName>
+                </S.SongDetails>
+              </S.SliderItem>
+            ))}
+          </S.Row>
+        </AnimatePresence>
+        <S.Arrow onClick={nextSlide} position="right">
+          <FontAwesomeIcon icon={faChevronRight} />
+        </S.Arrow>
+      </S.SliderContainer>
+    </div>
   );
 }
 
@@ -87,14 +104,16 @@ const rowVariants = {
     x: 0,
     opacity: 1,
     transition: {
-      duration: 0.5,
+      x: { type: "spring", stiffness: 300, damping: 30 },
+      opacity: { duration: 0.2 },
     },
   },
   exit: (direction: number) => ({
     x: direction < 0 ? 1000 : -1000,
     opacity: 0,
     transition: {
-      duration: 0.5,
+      x: { type: "spring", stiffness: 300, damping: 30 },
+      opacity: { duration: 0.2 },
     },
   }),
 };

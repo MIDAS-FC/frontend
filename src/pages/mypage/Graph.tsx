@@ -60,6 +60,14 @@ function Chart() {
     scales: {
       y: {
         beginAtZero: true,
+        grid: {
+          display: false,
+        },
+      },
+      x: {
+        grid: {
+          display: false,
+        },
       },
     },
     maintainAspectRatio: false,
