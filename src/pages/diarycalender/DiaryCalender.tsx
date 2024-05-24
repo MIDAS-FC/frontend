@@ -1,13 +1,16 @@
+import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import Calender from "./Calender";
-import * as S from "./Styles/DiaryCalender.style";
 import SongList from "./SongList";
+import * as S from "./Styles/DiaryCalender.style";
 
 function DiaryCalender() {
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
   const [currentMonth, setCurrentMonth] = useState<number | null>(null);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const today = new Date();
@@ -20,6 +23,15 @@ function DiaryCalender() {
     setCurrentMonth(month);
     setCurrentYear(year);
   };
+
+  const handleWriteButtonClick = () => {
+    if (selectedDate && currentMonth && currentYear) {
+      navigate("/WriteDiary", { state: { day: selectedDate, month: currentMonth, year: currentYear } });
+    } else {
+      alert("날짜를 선택해주세요!");
+    }
+  };
+
 
   return (
     <S.Container>
@@ -41,6 +53,7 @@ function DiaryCalender() {
               날짜 {currentMonth}월 {selectedDate}일<div>제목</div>
               <div>내용</div>
               <S.ButtonsContainer>
+                <S.Button onClick={handleWriteButtonClick}>작성</S.Button>
                 <S.Button>수정</S.Button>
                 <S.Button>삭제</S.Button>
               </S.ButtonsContainer>

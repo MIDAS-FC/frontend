@@ -1,15 +1,19 @@
 import { Outlet } from "react-router-dom";
+import { AuthProvider } from "../../AuthProvider";
+import Footer from "./Footer";
 import Header from "./Header";
 import SideBar from "./SideBar";
-import Footer from "./Footer";
+
 
 function Layout() {
   return (
     <>
-      <Header />
-      <SideBar />
-      <Outlet />
-      <Footer />
+      <AuthProvider>
+        <Header />
+        <SideBar />
+        <Outlet />
+        <Footer />
+      </AuthProvider>
     </>
   );
 }
