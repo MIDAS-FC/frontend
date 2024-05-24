@@ -21,7 +21,11 @@ const Main: React.FC = () => {
 
   const handleLogoutClick = () => {
     alert("로그아웃 성공.");
-    localStorage.removeItem("token"); // 토큰 삭제
+    localStorage.removeItem("accessToken"); // 토큰 삭제
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("nickName");
+    localStorage.removeItem("email");
     setIsLoggedIn(false); // 로그인 상태를 false로 변경
     navigate("/"); // 홈페이지로 이동
   };

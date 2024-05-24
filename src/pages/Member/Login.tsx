@@ -31,9 +31,10 @@ const Login = () => {
       const accessToken = response.headers['authorization-access'];
       const nickName = response.headers['nickname'];
 
-      localStorage.setItem('token', accessToken);
+      localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('nickName', nickName);
       localStorage.setItem('email', email);
+      localStorage.setItem('isLoggedIn', 'true'); // 로그인 상태 저장
 
       // 사용자 정보 업데이트
       setNickname(nickName); // 닉네임

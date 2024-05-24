@@ -1,52 +1,45 @@
-import axios from 'axios';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
 // AuthContext 타입 정의
 interface AuthContextType {
-    isLoggedIn: boolean;
-    nickname: string;
-    email: string;
-    setIsLoggedIn: (isLoggedIn: boolean) => void;
-    setNickname: (nickname: string) => void;
-    setEmail: (email: string) => void;
+  isLoggedIn: boolean;
+  setIsLoggedIn: (isLoggedIn: boolean) => void;
+  nickname: string;
+  setNickname: (nickname: string) => void;
+  email: string;
+  setEmail: (email: string) => void;
 }
 
-// 기본값 설정
-const AuthContext = createContext<AuthContextType>({
-    isLoggedIn: false,
-    nickname: '',
-    email: '',
-    setIsLoggedIn: () => {},
-    setNickname: () => {},
-    setEmail: () => {},
-});
+// AuthContext 생성
+const AuthContext = createContext<AuthContextType | null>(null);
 
-export const useAuth = () => useContext(AuthContext);
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [nickname, setNickname] = useState('');
-    const [email, setEmail] = useState('');
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
+    return localStorage.getItem('isLoggedIn') === 'true';
+  });
+  const [nickname, setNickname] = useState<string>(() => {
+    return localStorage.getItem('nickName') || '';
+  });
+  const [email, setEmail] = useState<string>(() => {
+    return localStorage.getItem('email') || '';
+  });
 
-    useEffect(() => {
-        // 로컬 스토리지에서 토큰과 사용자 정보를 읽어와 상태를 업데이트
-        const token = localStorage.getItem('token');
-        const storedNickname = localStorage.getItem('nickName');
-        const storedEmail = localStorage.getItem('email');
+  useEffect(() => {
+    // 로그인 상태와 사용자 정보를 localStorage에 저장
+    localStorage.setItem('isLoggedIn', String(isLoggedIn));
+    localStorage.setItem('nickName', nickname);
+    localStorage.setItem('email', email);
+  }, [isLoggedIn, nickname, email]);
 
-        if (token && storedNickname && storedEmail) {
-            setIsLoggedIn(true);
-            setNickname(storedNickname);
-            setEmail(storedEmail);
-
-            // axios 기본 헤더에 토큰 설정
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        }
-    }, []);
-
-    return (
-        <AuthContext.Provider value={{ isLoggedIn, nickname, email, setIsLoggedIn, setNickname, setEmail }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  return (
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, nickname, setNickname, email, setEmail }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
+
+export const useAuth = () => useContext(AuthContext) as AuthContextType;
