@@ -6,7 +6,7 @@ export const CalendarWrapper = styled.div`
   margin: auto;
   padding: 20px;
   border-radius: 12px;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.8); /* 투명도 추가 */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   &:hover {

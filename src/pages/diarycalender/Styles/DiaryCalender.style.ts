@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import styled from "styled-components";
+import backgroundImage from "src/assets/images/background.webp";
 
 export const Container = styled.div`
   width: 100%;
@@ -7,6 +8,9 @@ export const Container = styled.div`
   margin: auto;
   padding: 20px;
   background-color: #fafafa;
+  background-image: url(${backgroundImage});
+  background-size: cover;
+  background-position: center;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -29,14 +33,14 @@ export const Box = styled(motion.div)`
   height: auto;
   position: relative;
   border-radius: 20px;
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.8); /* 투명도 추가 */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   overflow: hidden;
   transition: background-color 0.3s ease, transform 0.3s ease,
     box-shadow 0.3s ease;
   &:hover {
-    background-color: #f5f5f5;
+    background-color: rgba(245, 245, 245, 0.8); /* hover 시 투명도 추가 */
     transform: scale(1.02);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
   }

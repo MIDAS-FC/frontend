@@ -16,7 +16,7 @@ const GuestMain = () => {
   const navigate = useNavigate();
 
   const handleStartClick = () => {
-    navigate("/login");
+    navigate("/Login");
   };
 
   return (

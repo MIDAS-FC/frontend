@@ -1,14 +1,20 @@
+import React from "react";
 import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import SideBar from "./SideBar";
 import Footer from "./Footer";
+import * as S from "./Styles/Layout.style";
 
 function Layout() {
   return (
     <>
       <Header />
-      <SideBar />
-      <Outlet />
+      <S.MainContent>
+        <SideBar />
+        <S.Content>
+          <Outlet />
+        </S.Content>
+      </S.MainContent>
       <Footer />
     </>
   );
