@@ -1,24 +1,47 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
+import { useAuth } from "../AuthProvider";
 import Layout from "../components/layouts/Layout";
-import Main from "../pages/Main";
 import Join from "../pages/Member/Join";
 import Login from "../pages/Member/Login";
 import LoginRedirectPage from "../pages/Member/LoginRedirectPage";
 import WriteDiary from "../pages/diary/diary";
 import DiaryCalender from "../pages/diarycalender/DiaryCalender";
-import WeeklyReport from "../pages/weeklyreport/WeeklyReport";
+import GuestMain from "../pages/mainpage/GuestMain";
+import Mypage from "../pages/mypage/Mypage";
 
 function Router() {
+  const { isLoggedIn } = useAuth();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    }
+    setLoading(false);
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route path="" element={<Main />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Join" element={<Join />} />
         <Route path="/login-success" element={<LoginRedirectPage />} />
-        <Route path="/DiaryCalender" element={<DiaryCalender />} />
-        <Route path="/WeeklyReport" element={<WeeklyReport />} />
-        <Route path="/WriteDiary" element={<WriteDiary/>}></Route>
+        
+        <Route path="/WriteDiary" element={<WriteDiary />} />
+        <Route path="/mypage" element={<Mypage />} />
+        {isLoggedIn ? (
+          <Route path="/" element={<DiaryCalender />} />
+        ):(
+          <Route path="/" element={<GuestMain />} />
+        )}
+        
       </Route>
     </Routes>
   );
