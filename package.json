@@ -1,4 +1,8 @@
 {
+  "proxy": "http://localhost:8080",
+  "devDependencies": {
+        "@types/react-slick": "^0.23.13"
+  },
   "name": "flowervoice",
   "version": "0.1.0",
   "private": true,
@@ -53,9 +57,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/react-slick": "^0.23.13"
-  },
-  "proxy": "http://localhost:8080"
+  }
 }

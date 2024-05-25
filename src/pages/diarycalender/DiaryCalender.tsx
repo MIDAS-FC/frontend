@@ -1,9 +1,9 @@
+import axios from "axios";
+import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import Calender from "./Calender";
 import * as S from "./Styles/DiaryCalender.style";
-import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
 
 interface DiaryInfoResponse {
   flower: string;
@@ -65,12 +65,13 @@ function DiaryCalender() {
     setCurrentYear(year);
   };
 
+
   // 작성 버튼 클릭 시
   const handleCreateClick = () => {
     if (currentYear && currentMonth && selectedDate) {
       navigate(
         // create-diary: 임시 url
-        `/creatediary?year=${currentYear}&month=${currentMonth}&day=${selectedDate}`
+        `/WriteDiary?year=${currentYear}&month=${currentMonth}&day=${selectedDate}`
       );
     }
   };
@@ -80,7 +81,7 @@ function DiaryCalender() {
     if (currentYear && currentMonth && selectedDate) {
       navigate(
         // create-diary: 임시 url
-        `/creatediary?year=${currentYear}&month=${currentMonth}&day=${selectedDate}`
+        `/WriteDiary?year=${currentYear}&month=${currentMonth}&day=${selectedDate}`
       );
     }
   };

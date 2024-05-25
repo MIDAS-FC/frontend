@@ -23,3 +23,14 @@ export const Logo = styled.img`
   margin-right: 20px;
   cursor: pointer;
 `;
+
+export const Button = styled.button`
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  border: none;
+  background: #d38b8b;
+  color: #fff;
+`;

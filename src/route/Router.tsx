@@ -1,26 +1,46 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
+import { useAuth } from "../AuthProvider";
 import Layout from "../components/layouts/Layout";
-import DiaryCalender from "../pages/diarycalender/DiaryCalender";
 import Join from "../pages/Member/Join";
 import Login from "../pages/Member/Login";
 import LoginRedirectPage from "../pages/Member/LoginRedirectPage";
-import WriteDiary from "../pages/diary/WriteDiary";
-import Mypage from "../pages/mypage/Mypage";
+import WriteDiary from "../pages/diary/diary";
+import DiaryCalender from "../pages/diarycalender/DiaryCalender";
 import GuestMain from "../pages/mainpage/GuestMain";
-import Main from "../pages/Main";
+import Mypage from "../pages/mypage/Mypage";
 
 function Router() {
+  const { isLoggedIn } = useAuth();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    }
+    setLoading(false);
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={<Navigate to="/guest" replace />} />
-        <Route path="guest" element={<GuestMain />} /> {/* 비회원 메인페이지 */}
-        <Route path="" element={<DiaryCalender />} /> {/* 회원 메인페이지 */}
-        <Route path="mypage" element={<Mypage />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Join" element={<Join />} />
         <Route path="/login-success" element={<LoginRedirectPage />} />
-        <Route path="/WriteDiary" element={<WriteDiary />}></Route>
+
+        <Route path="/WriteDiary" element={<WriteDiary />} />
+        <Route path="/mypage" element={<Mypage />} />
+        {isLoggedIn ? (
+          <Route path="/" element={<DiaryCalender />} />
+        ) : (
+          <Route path="/" element={<GuestMain />} />
+        )}
       </Route>
     </Routes>
   );
