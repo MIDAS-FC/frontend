@@ -6,6 +6,8 @@ import { useAuth } from "../AuthProvider";
 
 axios.defaults.baseURL = "/auth";
 
+// 첫 접속하면 "/guest"로, 로그인을 진행하면 "/"로 이동
+
 const Main: React.FC = () => {
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement>(null);
