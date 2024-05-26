@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "../AuthProvider";
 import Layout from "../components/layouts/Layout";
 import Join from "../pages/Member/Join";
@@ -33,7 +33,6 @@ function Router() {
         <Route path="/Login" element={<Login />} />
         <Route path="/Join" element={<Join />} />
         <Route path="/login-success" element={<LoginRedirectPage />} />
-
         <Route path="/WriteDiary" element={<WriteDiary />} />
         <Route path="/mypage" element={<Mypage />} />
         {isLoggedIn ? (
