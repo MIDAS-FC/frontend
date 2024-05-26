@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Calender from "./Calender";
 import * as S from "./Styles/DiaryCalender.style";
-import api from "./api";
+import api from "../../api";
 import axios from "axios";
 
 interface DiaryInfoResponse {
@@ -25,9 +25,11 @@ function DiaryCalender() {
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
   const [currentMonth, setCurrentMonth] = useState<number | null>(null);
-  const [diaryInfo, setDiaryInfo] = useState<DiaryInfoResponse[] | null>(null);
+  const [monthInfo, setMonthInfo] = useState<DiaryInfoResponse[] | null>(null);
+  const [dayInfo, setDayInfo] = useState<DiaryInfoResponse[] | null>(null);
   const navigate = useNavigate();
 
+  // 토큰 관련
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
@@ -37,6 +39,7 @@ function DiaryCalender() {
     }
   }, []);
 
+  // 현재 날짜 가져오기
   useEffect(() => {
     const today = new Date();
     setCurrentYear(today.getFullYear());
@@ -44,32 +47,68 @@ function DiaryCalender() {
     setSelectedDate(today.getDate());
   }, []);
 
+  // 달력 month 정보 가져오기
   useEffect(() => {
     if (currentYear && currentMonth) {
-      fetchDiaryInfo(currentYear, currentMonth);
+      fetchMonthCalendar(currentYear, currentMonth);
     }
   }, [currentYear, currentMonth]);
 
-  const fetchDiaryInfo = async (year: number, month: number) => {
+  // 달력 day 정보 가져오기
+  useEffect(() => {
+    if (currentYear && currentMonth && selectedDate) {
+      fetchDayCalendar(currentYear, currentMonth, selectedDate);
+    }
+  }, [selectedDate]);
+
+  // 달력 month 정보 가져오기
+  const fetchMonthCalendar = async (year: number, month: number) => {
     try {
       const response = await api.get("/diary/calendar/month", {
         params: { year, month },
       });
 
-      console.log("response: ", response.data);
-      setDiaryInfo(response.data);
+      console.log("month response: ", response.data);
+      setMonthInfo(response.data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(
-          "일기 정보를 가져오는 중 오류 발생: Network Error",
+          "일기 정보(month)를 가져오는 중 오류 발생: Network Error",
           error.message
         );
-        console.error("오류 세부 사항:", error.config);
+        console.error("오류 세부 사항(month):", error.config);
         if (error.response) {
-          console.error("오류 응답:", error.response.data);
+          console.error("오류 응답(month):", error.response.data);
         }
       } else {
-        console.error("Error: ", error);
+        console.error("Error(month): ", error);
+      }
+    }
+  };
+
+  // 달력 day 정보 가져오기
+  const fetchDayCalendar = async (year: number, month: number, day: number) => {
+    console.log("Fetching day info with:", { year, month, day });
+    try {
+      const response = await api.get("/diary/calendar/day", {
+        params: { year, month, day },
+      });
+
+      console.log("day response: ", response.data);
+
+      setDayInfo(response.data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "일기 정보(Day)를 가져오는 중 오류 발생: Network Error",
+          error.message
+        );
+        console.error("오류 세부 사항(Day):", error.config);
+        if (error.response) {
+          console.error("오류 응답(Day):", error.response.data);
+        }
+      } else {
+        console.error("Error(Day): ", error);
       }
     }
   };
@@ -103,6 +142,7 @@ function DiaryCalender() {
       </h2>
       <Calender onDateSelect={handleDateSelect} />
       <AnimatePresence>
+        {/* {selectedDate && dayInfo && dayInfo.length > 0 && ( */}
         {selectedDate && (
           <S.BoxContainer>
             <S.Box
@@ -114,7 +154,7 @@ function DiaryCalender() {
               transition={{ duration: 0.3 }}
             >
               <S.ImageContainer>
-                <img src="/mnt/data/image.png" alt="Diary Entry" />
+                <img src="" alt="Diary Entry" />
               </S.ImageContainer>
               <S.InfoContainer>
                 <S.InfoTitle>날짜</S.InfoTitle>

@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 interface HeaderContainerProps {
-  isScrolled: boolean;
+  $isScrolled: boolean;
 }
 
 export const HeaderContainer = styled.header<HeaderContainerProps>`
@@ -9,7 +9,7 @@ export const HeaderContainer = styled.header<HeaderContainerProps>`
   align-items: center;
   padding: 10px;
   background: ${(props) =>
-    props.isScrolled ? "transparent" : "rgba(135, 206, 235, 0.1)"};
+    props.$isScrolled ? "rgba(0, 0, 0, 0)" : "rgba(135, 206, 235, 0.1)"};
   transition: background 0.3s ease;
   position: fixed;
   top: 0;

@@ -47,7 +47,7 @@ function Header() {
   }, []);
 
   return (
-    <S.HeaderContainer isScrolled={isScrolled}>
+    <S.HeaderContainer $isScrolled={isScrolled}>
       <S.Logo src={logo} alt="Logo" onClick={handleLogoClick} />
       {!isLoggedIn ? (
         <>
