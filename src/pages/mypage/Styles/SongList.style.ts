@@ -87,3 +87,10 @@ export const Row = styled(motion.div)`
   align-items: center;
   width: 100%;
 `;
+
+export const NoSongsMessage = styled.div`
+  text-align: center;
+  margin-top: 80px;
+  font-size: 18px;
+  color: #666;
+`;

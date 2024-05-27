@@ -94,36 +94,39 @@ function SongList() {
   return (
     <div>
       <h2>마음에 든 노래</h2>
-      <S.SliderContainer>
-        <S.Arrow onClick={prevSlide} position="left">
-          <FontAwesomeIcon icon={faChevronLeft} />
-        </S.Arrow>
-        <AnimatePresence
-          initial={false}
-          custom={direction}
-          onExitComplete={toggleLeaving}
-        >
-          <S.Row
-            key={page}
+      {songs.length === 0 ? (
+        <S.NoSongsMessage>좋아요를 누른 노래가 없습니다</S.NoSongsMessage>
+      ) : (
+        <S.SliderContainer>
+          <S.Arrow onClick={prevSlide} position="left">
+            <FontAwesomeIcon icon={faChevronLeft} />
+          </S.Arrow>
+          <AnimatePresence
+            initial={false}
             custom={direction}
-            variants={rowVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
+            onExitComplete={toggleLeaving}
           >
-            {songs.map((song, index) => (
-              <S.SliderItem key={index}>
-                <S.AlbumCover
-                // src={song.albumCover}
-                // alt={`${song.title} cover`}
-                />
-                <S.SongDetails>
-                  {/* <S.SongTitle>{song.title}</S.SongTitle>
+            <S.Row
+              key={page}
+              custom={direction}
+              variants={rowVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              {songs.map((song, index) => (
+                <S.SliderItem key={index}>
+                  <S.AlbumCover
+                  // src={song.albumCover}
+                  // alt={`${song.title} cover`}
+                  />
+                  <S.SongDetails>
+                    {/* <S.SongTitle>{song.title}</S.SongTitle>
                 <S.ArtistName>{song.artist}</S.ArtistName> */}
-                </S.SongDetails>
-              </S.SliderItem>
-            ))}
-            {/*
+                  </S.SongDetails>
+                </S.SliderItem>
+              ))}
+              {/*
             {songs.slice(currentIndex, currentIndex + 5).map((song, index) => (
               <S.SliderItem key={index}>
                 <S.AlbumCover
@@ -133,15 +136,16 @@ function SongList() {
                 <S.SongDetails>
                   {/* <S.SongTitle>{song.title}</S.SongTitle>
                   <S.ArtistName>{song.artist}</S.ArtistName> */}
-            {/* </S.SongDetails>
+              {/* </S.SongDetails>
               </S.SliderItem>
             ))} */}
-          </S.Row>
-        </AnimatePresence>
-        <S.Arrow onClick={nextSlide} position="right">
-          <FontAwesomeIcon icon={faChevronRight} />
-        </S.Arrow>
-      </S.SliderContainer>
+            </S.Row>
+          </AnimatePresence>
+          <S.Arrow onClick={nextSlide} position="right">
+            <FontAwesomeIcon icon={faChevronRight} />
+          </S.Arrow>
+        </S.SliderContainer>
+      )}
     </div>
   );
 }
