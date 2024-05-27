@@ -9,7 +9,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import api from "../../api.js";
+import api from "../../axiosInterceptor.js";
 import axios from "axios";
 
 ChartJS.register(

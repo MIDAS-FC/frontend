@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as S from "../Styles/SongList.style";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -6,49 +6,89 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import api from "../../../axiosInterceptor.js";
 
-const songs = [
-  {
-    albumCover: "path/to/cover1.jpg",
-    title: "Song 1",
-    artist: "Artist 1",
-  },
-  {
-    albumCover: "path/to/cover2.jpg",
-    title: "Song 2",
-    artist: "Artist 2",
-  },
-  {
-    albumCover: "path/to/cover3.jpg",
-    title: "Song 3",
-    artist: "Artist 3",
-  },
-  {
-    albumCover: "path/to/cover4.jpg",
-    title: "Song 4",
-    artist: "Artist 4",
-  },
-];
+// 임시
+interface Song {
+  albumCover: string;
+  title: string;
+  artist: string;
+}
 
 function SongList() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [songs, setSongs] = useState<Song[]>([]);
+  // const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [leaving, setLeaving] = useState(false);
+  const [page, setPage] = useState(1);
+  const [last, setLast] = useState(false);
+
+  // 토큰 관련
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+      console.log("Access token retrieved:", token);
+    } else {
+      console.log("token error");
+    }
+  }, []);
+
+  const fetchLikes = useCallback(async (pageToFetch: number) => {
+    try {
+      console.log(`Fetching likes for page: ${pageToFetch}`);
+      const response = await api.get("/music/likes", {
+        params: { page: pageToFetch, size: 5 },
+      });
+      const { data, last } = response.data;
+      setSongs((prevSongs) =>
+        pageToFetch === 1 ? data : [...prevSongs, ...data]
+      );
+      setLast(last);
+      console.log(`Fetched ${data.length} songs, last: ${last}`);
+    } catch (error) {
+      console.error("Error fetching liked songs: ", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchLikes(page);
+  }, [fetchLikes, page]);
 
   const toggleLeaving = () => setLeaving((prev) => !prev);
 
   const nextSlide = () => {
-    if (leaving) return;
+    if (leaving || last) {
+      console.log(
+        "Cannot go to the next slide, leaving:",
+        leaving,
+        "last:",
+        last
+      );
+      return;
+    }
+    console.log("Going to the next slide");
     toggleLeaving();
     setDirection(1);
-    setCurrentIndex((prev) => (prev === songs.length - 1 ? 0 : prev + 1));
+    setPage((prevPage) => prevPage + 1);
+    // setCurrentIndex(0);
   };
 
   const prevSlide = () => {
-    if (leaving) return;
+    if (leaving || page === 1) {
+      console.log(
+        "Cannot go to the previous slide, leaving:",
+        leaving,
+        "page:",
+        page
+      );
+      return;
+    }
+    console.log("Going to the previous slide");
     toggleLeaving();
     setDirection(-1);
-    setCurrentIndex((prev) => (prev === 0 ? songs.length - 1 : prev - 1));
+    setPage((prevPage) => prevPage - 1);
+    // setCurrentIndex(0);
   };
 
   return (
@@ -64,7 +104,7 @@ function SongList() {
           onExitComplete={toggleLeaving}
         >
           <S.Row
-            key={currentIndex}
+            key={page}
             custom={direction}
             variants={rowVariants}
             initial="hidden"
@@ -74,15 +114,28 @@ function SongList() {
             {songs.map((song, index) => (
               <S.SliderItem key={index}>
                 <S.AlbumCover
-                  src={song.albumCover}
-                  alt={`${song.title} cover`}
+                // src={song.albumCover}
+                // alt={`${song.title} cover`}
                 />
                 <S.SongDetails>
-                  <S.SongTitle>{song.title}</S.SongTitle>
-                  <S.ArtistName>{song.artist}</S.ArtistName>
+                  {/* <S.SongTitle>{song.title}</S.SongTitle>
+                <S.ArtistName>{song.artist}</S.ArtistName> */}
                 </S.SongDetails>
               </S.SliderItem>
             ))}
+            {/*
+            {songs.slice(currentIndex, currentIndex + 5).map((song, index) => (
+              <S.SliderItem key={index}>
+                <S.AlbumCover
+                // src={song.albumCover}
+                // alt={`${song.title} cover`}
+                />
+                <S.SongDetails>
+                  {/* <S.SongTitle>{song.title}</S.SongTitle>
+                  <S.ArtistName>{song.artist}</S.ArtistName> */}
+            {/* </S.SongDetails>
+              </S.SliderItem>
+            ))} */}
           </S.Row>
         </AnimatePresence>
         <S.Arrow onClick={nextSlide} position="right">

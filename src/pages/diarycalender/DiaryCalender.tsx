@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Calender from "./Calender";
 import * as S from "./Styles/DiaryCalender.style";
-import api from "../../api";
+import api from "../../axiosInterceptor";
 import axios from "axios";
 
 interface DiaryInfoResponse {
