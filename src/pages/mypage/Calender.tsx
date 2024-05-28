@@ -22,7 +22,7 @@ function Calender({ onDateSelect, currentDate }: CalenderProps) {
       );
       week.push({
         day: date.getDate(),
-        isToday: date.toDateString() === new Date().toDateString(), // Check if the date is today
+        isToday: date.toDateString() === new Date().toDateString(),
         month: date.getMonth(),
         year: date.getFullYear(),
       });

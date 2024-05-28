@@ -7,12 +7,14 @@ import api from "../../../axiosInterceptor";
 function EditPopup({ onClose }: any) {
   const [showNicknameInput, setShowNicknameInput] = useState(false);
   const [showPasswordInput, setShowPasswordInput] = useState(false);
-  const [nickname, setNickname] = useState("");
+  const [Chanegednickname, setChangedNickname] = useState("");
   const [password, setPassword] = useState("");
   const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(
     null
   );
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
+  const presentNickName = "Username";
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -24,7 +26,7 @@ function EditPopup({ onClose }: any) {
   }, []);
 
   const handleNicknameChange = (event: any) => {
-    setNickname(event.target.value);
+    setChangedNickname(event.target.value);
   };
 
   const handleProfileImageChange = (event: any) => {
@@ -43,33 +45,48 @@ function EditPopup({ onClose }: any) {
     setPassword(event.target.value);
   };
 
-  // 프로필 수정
-  const handleProfileUpdate = async () => {
-    if (!selectedImage && !nickname) {
-      alert("프로필 사진 또는 닉네임을 변경해야 합니다.");
+  // 프로필 사진 수정
+  const handleProfileImageUpdate = async () => {
+    if (!selectedImage) {
+      alert("프로필 사진을 변경해야 합니다.");
       return;
     }
     const formData = new FormData();
-    if (selectedImage) {
-      formData.append("images", selectedImage);
-      console.log("Added image to formData: ", selectedImage);
-    }
-    if (nickname) {
-      const nickNameRequest = JSON.stringify({ nickName: nickname });
-      const blob = new Blob([nickNameRequest], { type: "application/json" });
-      formData.append("nickName", blob);
-      console.log("Added nickname to formData: ", nickname);
-    }
+    formData.append(
+      "nickName",
+      new Blob([JSON.stringify({ nickName: presentNickName })], {
+        type: "application/json",
+      })
+    );
+    formData.append("images", selectedImage);
+    // if (selectedImage) {
+    //   formData.append("images", selectedImage);
+    //   console.log("Added image to formData: ", selectedImage);
+    // }
+    // if (presentNickName) {
+    //   const nickNameRequest = JSON.stringify({ nickName: presentNickName });
+    //   const blob = new Blob([nickNameRequest], { type: "application/json" });
+    //   formData.append("nickName", blob);
+    //   console.log("Added nickname to formData: ", presentNickName);
+    // }
 
     try {
       formData.forEach((value, key) => {
-        console.log("form data key:", key, "form data value:", value);
+        console.log(
+          "[form data key: ",
+          key,
+          "]",
+          "[form data value: ",
+          value,
+          "]"
+        );
       });
-      const response = await api.put("/reset/profile", formData, {
+      const response = await axios.put("/reset/profile", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      // const response = await api.put("/reset/profile", formData);
       console.log("Profile updated:", response.data);
       if (response.data.url) {
         setProfileImage(response.data.url);
@@ -82,9 +99,77 @@ function EditPopup({ onClose }: any) {
     }
   };
 
-  // 비밀번호 초기화
-  const handlePasswordConfirm = async () => {};
+  // 닉네임 수정
+  const handleNicknameUpdate = async () => {
+    if (!Chanegednickname) {
+      alert("닉네임을 입력해야 합니다.");
+      return;
+    }
 
+    const nickNameRequest = JSON.stringify({
+      presentNickName: presentNickName,
+      changeNickName: Chanegednickname,
+    });
+
+    // const nickNameRequest = {
+    //   presentNickName: presentNickName,
+    //   changeNickName: Chanegednickname,
+    // };
+
+    try {
+      const response = await api.put("/reset/nickname", nickNameRequest, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Nickname updated:", response);
+      if (response.status === 204) {
+        alert("닉네임이 성공적으로 업데이트되었습니다.");
+      } else {
+        throw new Error("Failed to update nickname");
+      }
+      alert("닉네임이 성공적으로 업데이트되었습니다.");
+    } catch (error) {
+      console.error("Error updating nickname:", error);
+      alert("닉네임 업데이트 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 비밀번호 초기화
+  const handlePasswordReset = async () => {
+    try {
+      const response = await api.post("/auth/register", {
+        password: password,
+      });
+      if (response && response.status === 204) {
+        alert("비밀번호가 초기화되었습니다.");
+        setShowPasswordInput(false);
+      } else {
+        throw new Error("Failed to reset password");
+      }
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      alert("비밀번호 초기화 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 비밀번호 변경
+  const handlePasswordConfirm = async () => {
+    try {
+      const response = await api.put("/auth/reset/password", {
+        password: password,
+      });
+      if (response && response.status === 204) {
+        alert("비밀번호가 변경되었습니다.");
+        setShowPasswordInput(false);
+      } else {
+        throw new Error("Failed to change password");
+      }
+    } catch (error) {
+      console.error("Error changing password:", error);
+      alert("비밀번호 변경 중 오류가 발생했습니다.");
+    }
+  };
   return (
     <S.Overlay>
       <motion.div
@@ -108,6 +193,9 @@ function EditPopup({ onClose }: any) {
                 <label htmlFor="image-upload">📷</label>
               </S.GrayCircle>
             </S.ProfileImageContainer>
+            <S.ProfileUpdateButton onClick={handleProfileImageUpdate}>
+              프로필 사진 변경
+            </S.ProfileUpdateButton>
             <S.UserInfo>
               <S.UserName>UserName</S.UserName>
               <S.NicknameButton
@@ -119,17 +207,20 @@ function EditPopup({ onClose }: any) {
                 <S.InputContainer>
                   <S.Input
                     type="text"
-                    value={nickname}
+                    value={Chanegednickname}
                     onChange={handleNicknameChange}
                     placeholder="새 닉네임"
                   />
+                  <S.ProfileUpdateButton onClick={handleNicknameUpdate}>
+                    닉네임 변경
+                  </S.ProfileUpdateButton>
                 </S.InputContainer>
               )}
-              <button onClick={handleProfileUpdate}>
-                프로필 변경(사진,닉네임)
-              </button>
               <S.ResetPasswordButton
-                onClick={() => setShowPasswordInput(!showPasswordInput)}
+                onClick={() => {
+                  handlePasswordReset();
+                  setShowPasswordInput(!showPasswordInput);
+                }}
               >
                 비밀번호 초기화
               </S.ResetPasswordButton>
@@ -142,7 +233,7 @@ function EditPopup({ onClose }: any) {
                     placeholder="새 비밀번호"
                   />
                   <S.ConfirmButton onClick={handlePasswordConfirm}>
-                    확인
+                    비밀번호 변경
                   </S.ConfirmButton>
                 </S.InputContainer>
               )}

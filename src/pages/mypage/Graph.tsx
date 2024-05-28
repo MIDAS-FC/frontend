@@ -95,7 +95,7 @@ function Chart({
         });
 
         const data = response.data;
-        console.log("response: ", response.data);
+        console.log("[Grpah response: ", response.data, "]");
         const labels = data.map((entry: any) => entry.date);
         const angryData = data.map((entry: any) => entry.angry);
         const sadData = data.map((entry: any) => entry.sad);
