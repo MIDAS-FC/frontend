@@ -43,7 +43,7 @@ function DiaryCalender() {
   // 일기 가져오기
   const fetchDiaryInfo = async (year: number, month: number) => {
     try {
-      const response = await axios.get("/diary/calendar", {
+      const response = await axios.get("/diary/calendar/day", {
         params: { year, month },
       });
       setDiaryInfo(response.data);

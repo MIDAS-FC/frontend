@@ -1,11 +1,7 @@
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
 import logo from "../../assets/icons/logo.jpg";
 import * as S from "../layouts/Styles/Header.style";
-
-axios.defaults.baseURL = "/auth";
-
 
 function Header() {
   const navigate = useNavigate();
@@ -30,6 +26,8 @@ function Header() {
     navigate("/"); // 홈페이지로 이동
   };
 
+  const decondeNickname = decodeURIComponent(nickname);
+
   return (
     <S.HeaderContainer>
       <S.Logo src={logo} alt="Logo" />
@@ -40,6 +38,7 @@ function Header() {
         </>
       ) : (
         <>
+          <p>{decondeNickname} 님 어서오세요.</p>
           <S.Button onClick={handleLogoutClick}>로그아웃</S.Button>
         </>
       )}
