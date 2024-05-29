@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import api from '../../axiosInterceptor'; // Ensure this path is correct
+import api from '../../axiosInterceptor';
 import * as S from "./Styles/WriteDiary.style";
 
 function WriteDiary() {

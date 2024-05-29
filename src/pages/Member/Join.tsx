@@ -15,7 +15,7 @@ const Join = () => {
   const [isSend, setIsSend] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
 
-  const navigate = useNavigate(); // Create a navigate object
+  const navigate = useNavigate();
 
   // 이메일 인증번호 보내기
   const sendEmail = async () => {
