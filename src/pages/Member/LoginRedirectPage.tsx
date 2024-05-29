@@ -50,9 +50,7 @@ const LoginRedirectPage = () => {
       setEmail(email);
       setNickname(nickName);
 
-      axios.defaults.headers.common[
-        "Authorization-Access"
-      ] = `Bearer ${accessToken}`;
+      axios.defaults.headers.common["Authorization-Access"] = `${accessToken}`;
 
       navigate("/");
     } else {

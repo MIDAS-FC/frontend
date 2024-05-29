@@ -5,6 +5,14 @@ import EditPopup from "./EditPopup";
 
 function EditProfile() {
   const [showPopup, setShowPopup] = useState(false);
+  const [presentNickName, setPresentNickName] = useState("");
+
+  useEffect(() => {
+    const storedNickname = localStorage.getItem("nickName");
+    if (storedNickname) {
+      setPresentNickName(storedNickname);
+    }
+  }, []);
 
   const handleClosePopup = () => {
     setShowPopup(false);
@@ -17,7 +25,7 @@ function EditProfile() {
         <S.ProfileImage src="path/to/profile-image.jpg" alt="Profile" />
       </S.ProfileImageContainer>
       <S.UserInfo>
-        <S.UserName>UserName</S.UserName>
+        <S.UserName>{presentNickName}</S.UserName>
         <S.EditSection>
           <S.EditText>프로필 수정을 원하시면</S.EditText>
           <S.EditButton onClick={() => setShowPopup(true)}>

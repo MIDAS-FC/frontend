@@ -4,6 +4,21 @@ const api = axios.create({
   baseURL: "http://localhost:8080",
 });
 
+api.interceptors.request.use(
+  (config) => {
+    const accessToken = localStorage.getItem("accessToken");
+
+    // Check if the request URL includes "/auth" and prevent adding auth header
+    if (accessToken && !config.url.startsWith("/auth")) {
+      config.headers["Authorization-Access"] = `${accessToken}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -17,7 +32,7 @@ api.interceptors.response.use(
         }
 
         const response = await api.post("/auth/token/reissue", null, {
-          headers: { "Refresh-Token": `Bearer ${refreshToken}` },
+          headers: { "Refresh-Token": `${refreshToken}` },
         });
 
         const newAccessToken = response.headers["access-token"];
@@ -27,13 +42,14 @@ api.interceptors.response.use(
           localStorage.setItem("accessToken", newAccessToken);
           localStorage.setItem("refreshToken", newRefreshToken);
 
+          // Update default headers for future requests
           api.defaults.headers.common[
             "Authorization-Access"
-          ] = `Bearer ${newAccessToken}`;
+          ] = `${newAccessToken}`;
 
-          originalRequest.headers[
-            "Authorization-Access"
-          ] = `Bearer ${newAccessToken}`;
+          // Update the original request's headers for the retry
+          originalRequest.headers["Authorization-Access"] = `${newAccessToken}`;
+
           return api(originalRequest);
         } else {
           throw new Error("Failed to refresh tokens");

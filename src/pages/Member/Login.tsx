@@ -8,6 +8,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [socialType, setSocialType] = useState("SoundOfFlower");
+  const [role, setRole] = useState("USER");
   const { setIsLoggedIn, setNickname, setEmail: setAuthEmail } = useAuth();
   const navigate = useNavigate();
 
@@ -18,6 +19,7 @@ const Login = () => {
       email,
       password,
       socialType,
+      role,
     };
 
     try {
@@ -37,7 +39,7 @@ const Login = () => {
       localStorage.setItem("isLoggedIn", "true"); // 로그인 상태 저장
 
       // axios 기본 헤더에 토큰 설정
-      axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+      axios.defaults.headers.common["Authorization-Access"] = `${accessToken}`;
 
       // 사용자 정보 업데이트
       setNickname(nickName); // 닉네임

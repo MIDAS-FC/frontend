@@ -35,7 +35,7 @@ function DiaryCalender() {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+      api.defaults.headers.common["Authorization-Access"] = `${token}`;
       console.log(token);
     } else {
     }
