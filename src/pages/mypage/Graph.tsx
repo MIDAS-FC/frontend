@@ -39,10 +39,13 @@ function Chart({
   endDay,
 }: GraphProps) {
   // 토큰 관련
+
+  // 토큰 관련
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      api.defaults.headers.common["Authorization-Access"] = `${token}`;
+      api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+      console.log("Access token retrieved:", token);
     } else {
       console.log("token error");
     }

@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
@@ -8,6 +9,8 @@ function Header() {
   const navigate = useNavigate();
   const { isLoggedIn, setIsLoggedIn, nickname, email } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const token = localStorage.getItem("accessToken");
 
   const handleLogoClick = () => {
     navigate("/");
@@ -21,19 +24,40 @@ function Header() {
     navigate("/Join");
   };
 
-  const handleLogoutClick = () => {
-    alert("로그아웃 성공.");
-    localStorage.removeItem("accessToken"); // 토큰 삭제
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("nickName");
-    localStorage.removeItem("email");
-    setIsLoggedIn(false); // 로그인 상태를 false로 변경
-    navigate("/"); // 홈페이지로 이동
+  const handleLogoutClick = async () => {
+    try {
+      await axios.post(
+        "http://localhost:8080/token/logout",
+        {},
+        {
+          headers: {
+            "authorization-access": `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("로그아웃 성공.");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("nickName");
+      localStorage.removeItem("email");
+      delete axios.defaults.headers.common["authorization-access"];
+      setIsLoggedIn(false);
+      navigate("/");
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
+      alert("로그아웃에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   const handleWriteDiaryClick = () => {
-    navigate("/WriteDiary");
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+
+    navigate(`/WriteDiary?year=${year}&month=${month}&day=${day}`);
   };
 
   const handleCalendarClick = () => {

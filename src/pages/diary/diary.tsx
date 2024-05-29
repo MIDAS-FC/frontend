@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../axiosInterceptor";
@@ -69,21 +70,20 @@ function WriteDiary() {
       });
       console.log(response);
       alert("일기가 저장되었습니다!");
-    } catch (error: any) {
+      navigate("/"); // Navigate to the diary listing or another relevant page
+    } catch (error: unknown) {
       console.error("Error saving diary:", error);
-      if (error.response) {
-        console.error("응답 데이터:", error.response.data);
-        console.error("응답 상태:", error.response.status);
-        console.error("응답 헤더:", error.response.headers);
-      } else if (error.request) {
-        console.error("요청 데이터:", error.request);
-      } else {
-        console.error("에러 메시지:", error.message);
-      }
 
-      if (error.response?.status === 401) {
-        alert("인증 오류입니다. 다시 로그인해주세요.");
-        navigate("/login");
+      if (axios.isAxiosError(error)) {
+        console.error("응답 데이터:", error.response?.data);
+        console.error("응답 상태:", error.response?.status);
+        console.error("응답 헤더:", error.response?.headers);
+        if (error.response?.status === 401) {
+          alert("인증 오류입니다. 다시 로그인해주세요.");
+          navigate("/login");
+        }
+      } else {
+        console.error("에러 메시지:", (error as Error).message);
       }
     }
   };

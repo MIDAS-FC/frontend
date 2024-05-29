@@ -7,8 +7,8 @@ import { useAuth } from "../../AuthProvider";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [socialType, setSocialType] = useState("SoundOfFlower");
   const [role, setRole] = useState("USER");
+  const [socialType, setSocialType] = useState("SoundOfFlower");
   const { setIsLoggedIn, setNickname, setEmail: setAuthEmail } = useAuth();
   const navigate = useNavigate();
 
@@ -30,7 +30,9 @@ const Login = () => {
       });
 
       // 응답 헤더에서 AccessToken 추출
-      const accessToken = response.headers["authorization-access"];
+      const accessToken =
+        response.headers["authorization-access"].split(" ")[1];
+
       const nickName = response.headers["nickname"];
 
       localStorage.setItem("accessToken", accessToken);
@@ -39,7 +41,9 @@ const Login = () => {
       localStorage.setItem("isLoggedIn", "true"); // 로그인 상태 저장
 
       // axios 기본 헤더에 토큰 설정
-      axios.defaults.headers.common["Authorization-Access"] = `${accessToken}`;
+      axios.defaults.headers.common[
+        "authorization-access"
+      ] = `Bearer ${accessToken}`;
 
       // 사용자 정보 업데이트
       setNickname(nickName); // 닉네임

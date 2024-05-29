@@ -25,7 +25,7 @@ function EditProfile() {
         <S.ProfileImage src="path/to/profile-image.jpg" alt="Profile" />
       </S.ProfileImageContainer>
       <S.UserInfo>
-        <S.UserName>{presentNickName}</S.UserName>
+        <S.UserName>{decodeURIComponent(presentNickName)}</S.UserName>
         <S.EditSection>
           <S.EditText>프로필 수정을 원하시면</S.EditText>
           <S.EditButton onClick={() => setShowPopup(true)}>

@@ -15,7 +15,7 @@ const Join = () => {
   const [isSend, setIsSend] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
 
-  const navigate = useNavigate(); // Create a navigate object
+  const navigate = useNavigate();
 
   // 이메일 인증번호 보내기
   const sendEmail = async () => {
@@ -91,22 +91,22 @@ const Join = () => {
     }
   };
 
-  // 회원가입
+  /// 회원가입
   const register = async () => {
     const formData = new FormData();
     formData.append("file", file || "");
 
-    const userRequestDto = {
+    const signup = {
       email,
       nickName,
       password,
     };
 
-    const userRequestDtoBlob = new Blob([JSON.stringify(userRequestDto)], {
+    const userRequestDtoBlob = new Blob([JSON.stringify(signup)], {
       type: "application/json",
     });
 
-    formData.append("userRequestDto", userRequestDtoBlob);
+    formData.append("signup", userRequestDtoBlob);
 
     try {
       const response = await axios.post("/register", formData);

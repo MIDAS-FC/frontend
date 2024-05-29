@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as S from "../Styles/EditPopup.style";
 import axios from "axios";
-import { motion } from "framer-motion";
+import { PresenceContext, motion } from "framer-motion";
 import api from "../../../axiosInterceptor";
 
 function EditPopup({ onClose }: any) {
@@ -25,7 +25,7 @@ function EditPopup({ onClose }: any) {
     const storedEmail = localStorage.getItem("email");
 
     if (storedNickname) {
-      setPresentNickName(storedNickname);
+      setPresentNickName(decodeURIComponent(storedNickname));
     }
 
     if (storedEmail) {
@@ -36,7 +36,7 @@ function EditPopup({ onClose }: any) {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      api.defaults.headers.common["Authorization-Access"] = `${token}`;
+      api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
     } else {
       console.log("token error");
     }
@@ -72,6 +72,7 @@ function EditPopup({ onClose }: any) {
       alert("프로필 사진을 변경해야 합니다.");
       return;
     }
+
     const formData = new FormData();
     const nickNameBlob = new Blob(
       [JSON.stringify({ nickName: presentNickName })],
@@ -140,7 +141,7 @@ function EditPopup({ onClose }: any) {
       console.log("Nickname updated:", response);
       if (response.status === 204) {
         alert("닉네임이 성공적으로 업데이트되었습니다.");
-        localStorage.setItem("nickName", Chanegednickname);
+        localStorage.setItem("nickName", encodeURIComponent(Chanegednickname));
         setPresentNickName(Chanegednickname);
       } else {
         throw new Error("Failed to update nickname");
@@ -149,32 +150,6 @@ function EditPopup({ onClose }: any) {
     } catch (error) {
       console.error("Error updating nickname:", error);
       alert("닉네임 업데이트 중 오류가 발생했습니다.");
-    }
-  };
-
-  // 비밀번호 초기화
-  const handlePasswordReset = async () => {
-    const resetPasswordRequest = {
-      email: email,
-      socialType: socialType,
-    };
-    console.log("email: ", email, "socialtype: ", socialType);
-    try {
-      const response = await api.post("/auth/register", resetPasswordRequest, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response && response.status === 204) {
-        alert("비밀번호가 초기화되었습니다.");
-        setShowPasswordInput(false);
-      } else {
-        throw new Error("Failed to reset password");
-      }
-    } catch (error) {
-      console.error("Error resetting password:", error);
-      alert("비밀번호 초기화 중 오류가 발생했습니다.");
     }
   };
 
@@ -272,11 +247,10 @@ function EditPopup({ onClose }: any) {
               )}
               <S.ResetPasswordButton
                 onClick={() => {
-                  handlePasswordReset();
                   setShowPasswordInput(!showPasswordInput);
                 }}
               >
-                비밀번호 초기화
+                비밀번호 변경
               </S.ResetPasswordButton>
               {showPasswordInput && (
                 <S.InputContainer>
