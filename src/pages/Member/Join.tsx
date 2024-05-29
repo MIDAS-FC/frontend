@@ -91,22 +91,22 @@ const Join = () => {
     }
   };
 
-  // 회원가입
+  /// 회원가입
   const register = async () => {
     const formData = new FormData();
     formData.append("file", file || "");
 
-    const userRequestDto = {
+    const signup = {
       email,
       nickName,
       password,
     };
 
-    const userRequestDtoBlob = new Blob([JSON.stringify(userRequestDto)], {
+    const userRequestDtoBlob = new Blob([JSON.stringify(signup)], {
       type: "application/json",
     });
 
-    formData.append("userRequestDto", userRequestDtoBlob);
+    formData.append("signup", userRequestDtoBlob);
 
     try {
       const response = await axios.post("/register", formData);
@@ -124,6 +124,7 @@ const Join = () => {
     console.log("NickName:", nickName);
     console.log("Password:", password);
   };
+
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -7,6 +7,7 @@ import { useAuth } from "../../AuthProvider";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
   const [socialType, setSocialType] = useState("SoundOfFlower");
   const { setIsLoggedIn, setNickname, setEmail: setAuthEmail } = useAuth();
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ const Login = () => {
       email,
       password,
       socialType,
+      role
     };
 
     try {

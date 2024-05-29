@@ -18,7 +18,7 @@ const GuestMain = () => {
   const { isLoggedIn } = useAuth();
 
   if(isLoggedIn){
-    navigate("/DiaryCalender");
+    navigate("/");
   }
 
   const handleStartClick = () => {
