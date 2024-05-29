@@ -100,7 +100,7 @@ function EditPopup({ onClose }: any) {
           "]"
         );
       });
-      const response = await axios.put("/reset/profile", formData, {
+      const response = await api.put("/reset/profile", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
