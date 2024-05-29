@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { useAuth } from "../AuthProvider";
 import Layout from "../components/layouts/Layout";
 import Join from "../pages/Member/Join";

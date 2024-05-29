@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../AuthProvider";
 import * as S from "./Styles/GuestMain.style";
 
 const Stars = () => {
@@ -13,6 +14,11 @@ const Stars = () => {
 
 const GuestMain = () => {
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
+
+  if (isLoggedIn) {
+    navigate("/");
+  }
 
   const handleStartClick = () => {
     navigate("/Login");

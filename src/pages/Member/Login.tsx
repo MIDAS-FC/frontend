@@ -7,7 +7,7 @@ import { useAuth } from "../../AuthProvider";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [socialType, setSocialType] = useState("SoundOfFlower"); // socialType을 SoundOfFlower로 설정
+  const [socialType, setSocialType] = useState("SoundOfFlower");
   const { setIsLoggedIn, setNickname, setEmail: setAuthEmail } = useAuth();
   const navigate = useNavigate();
 
@@ -36,15 +36,16 @@ const Login = () => {
       localStorage.setItem("email", email);
       localStorage.setItem("isLoggedIn", "true"); // 로그인 상태 저장
 
+      // axios 기본 헤더에 토큰 설정
+      axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+
       // 사용자 정보 업데이트
       setNickname(nickName); // 닉네임
       setAuthEmail(email); // 이메일
       setIsLoggedIn(true);
-
-      // axios 기본 헤더에 토큰 설정
-      axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
-
       // 홈페이지로 이동
+      console.log(nickName);
+      console.log(accessToken);
       navigate("/");
     } catch (error) {
       // Handle error here
@@ -58,6 +59,10 @@ const Login = () => {
 
   const handleKakaoLogin = async () => {
     window.location.href = "http://localhost:8080/oauth2/authorization/kakao";
+  };
+
+  const handleGoogleLogin = async () => {
+    window.location.href = "http://localhost:8080/oauth2/authorization/google";
   };
 
   return (
@@ -86,7 +91,7 @@ const Login = () => {
           <SNS>
             <Kakao onClick={handleKakaoLogin}></Kakao>
             <Naver onClick={handleNaverLogin}></Naver>
-            <Google></Google>
+            <Google onClick={handleGoogleLogin}></Google>
           </SNS>
         </LoginForm>
       </LoginPage>

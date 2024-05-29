@@ -1,10 +1,11 @@
+import axios from "axios";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../AuthProvider";
+import api from "../../axiosInterceptor";
 import Calender from "./Calender";
 import * as S from "./Styles/DiaryCalender.style";
-import api from "../../axiosInterceptor";
-import axios from "axios";
 
 interface DiaryInfoResponse {
   diaryId: number;
@@ -28,14 +29,15 @@ function DiaryCalender() {
   const [monthInfo, setMonthInfo] = useState<DiaryInfoResponse[] | null>(null);
   const [dayInfo, setDayInfo] = useState<DiaryInfoResponse[] | null>(null);
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
 
   // 토큰 관련
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
       api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+      console.log(token);
     } else {
-      console.log("token error");
     }
   }, []);
 

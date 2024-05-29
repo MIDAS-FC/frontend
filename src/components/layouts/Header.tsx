@@ -1,11 +1,8 @@
-import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
-import React, { useState, useEffect } from "react";
 import logo from "../../assets/icons/logo.webp";
 import * as S from "../layouts/Styles/Header.style";
-
-axios.defaults.baseURL = "/auth";
 
 function Header() {
   const navigate = useNavigate();
