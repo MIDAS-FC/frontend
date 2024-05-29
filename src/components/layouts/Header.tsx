@@ -33,10 +33,12 @@ function Header() {
       });
 
       alert("로그아웃 성공.");
+      localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("isLoggedIn");
       localStorage.removeItem("nickName");
       localStorage.removeItem("email");
+      delete axios.defaults.headers.common["authorization-access"];
       setIsLoggedIn(false);
       navigate("/");
     } catch (error) {
