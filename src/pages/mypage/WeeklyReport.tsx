@@ -33,6 +33,55 @@ function WeeklyReport() {
     setCurrentYear(nextWeekDate.getFullYear());
   };
 
+  // 시작 날짜(일요일)와 끝 날짜(토요일) 계산
+  const currentDay = currentDate.getDay();
+  const startDate = new Date(currentDate);
+  startDate.setDate(currentDate.getDate() - currentDay);
+
+  const endDate = new Date(startDate);
+  endDate.setDate(startDate.getDate() + 6);
+
+  const startYear = startDate.getFullYear();
+  const startMonth = startDate.getMonth() + 1;
+  const startDay = startDate.getDate();
+
+  const endYear = endDate.getFullYear();
+  const endMonth = endDate.getMonth() + 1;
+  const endDay = endDate.getDate();
+
+  // const startYear = currentDate.getFullYear();
+  // const startMonth = currentDate.getMonth() + 1;
+  // const startDay = currentDate.getDate();
+  // const endYear = new Date(
+  //   currentDate.getFullYear(),
+  //   currentDate.getMonth(),
+  //   currentDate.getDate() + 6
+  // ).getFullYear();
+  // const endMonth =
+  //   new Date(
+  //     currentDate.getFullYear(),
+  //     currentDate.getMonth(),
+  //     currentDate.getDate() + 6
+  //   ).getMonth() + 1;
+  // const endDay = new Date(
+  //   currentDate.getFullYear(),
+  //   currentDate.getMonth(),
+  //   currentDate.getDate() + 6
+  // ).getDate();
+
+  console.log(
+    "startYear:",
+    startYear,
+    "startMonth:",
+    startMonth,
+    "startDay:",
+    startDay,
+    "endMonth:",
+    endMonth,
+    "endDay:",
+    endDay
+  );
+
   return (
     <S.Container>
       <h1>주간 감정 요약을 통해 자신을 더 깊이 이해하세요</h1>
@@ -54,7 +103,14 @@ function WeeklyReport() {
         표현합니다.
       </p>
       <S.GraphContainer>
-        <Graph />
+        <Graph
+          startYear={startYear}
+          startMonth={startMonth}
+          startDay={startDay}
+          endYear={endYear}
+          endMonth={endMonth}
+          endDay={endDay}
+        />
       </S.GraphContainer>
       <S.ReportBox>
         <h3>이번 주 감정 분석 리포트</h3>

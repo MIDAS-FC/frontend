@@ -2,31 +2,46 @@ import axios from "axios";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from '../../AuthProvider';
+import api from "../../axiosInterceptor";
 import Calender from "./Calender";
 import * as S from "./Styles/DiaryCalender.style";
 
 interface DiaryInfoResponse {
+  diaryId: number;
   flower: string;
+  imgUrl: string[];
   angry: number;
   sad: number;
   delight: number;
   calm: number;
-  embarrassed: number;
+  embarrased: number;
   anxiety: number;
-  musicId: number;
-  title: string;
-  singer: string;
-  likes: number;
+  love: number;
+  spotify: string;
+  isLike: boolean;
 }
 
 function DiaryCalender() {
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
   const [currentMonth, setCurrentMonth] = useState<number | null>(null);
-  const [diaryInfo, setDiaryInfo] = useState<DiaryInfoResponse[] | null>(null);
+  const [monthInfo, setMonthInfo] = useState<DiaryInfoResponse[] | null>(null);
+  const [dayInfo, setDayInfo] = useState<DiaryInfoResponse[] | null>(null);
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
 
-  // 첫 렌더링 시 현재 날짜에 대한 일기 정보
+  // 토큰 관련
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+      console.log(token);
+    } else {
+    }
+  }, []);
+
+  // 현재 날짜 가져오기
   useEffect(() => {
     const today = new Date();
     setCurrentYear(today.getFullYear());
@@ -34,30 +49,71 @@ function DiaryCalender() {
     setSelectedDate(today.getDate());
   }, []);
 
+  // 달력 month 정보 가져오기
   useEffect(() => {
     if (currentYear && currentMonth) {
-      fetchDiaryInfo(currentYear, currentMonth);
+      fetchMonthCalendar(currentYear, currentMonth);
     }
   }, [currentYear, currentMonth]);
 
-  // 일기 가져오기
-  const fetchDiaryInfo = async (year: number, month: number) => {
+  // 달력 day 정보 가져오기
+  useEffect(() => {
+    if (currentYear && currentMonth && selectedDate) {
+      fetchDayCalendar(currentYear, currentMonth, selectedDate);
+    }
+  }, [selectedDate]);
+
+  // 달력 month 정보 가져오기
+  const fetchMonthCalendar = async (year: number, month: number) => {
     try {
-      const response = await axios.get("/diary/calendar/day", {
+      const response = await api.get("/diary/calendar/month", {
         params: { year, month },
       });
-      setDiaryInfo(response.data);
+
+      console.log("month response: ", response.data);
+      setMonthInfo(response.data);
     } catch (error) {
-      console.error("Error fetching diary info:", error);
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "일기 정보(month)를 가져오는 중 오류 발생: Network Error",
+          error.message
+        );
+        console.error("오류 세부 사항(month):", error.config);
+        if (error.response) {
+          console.error("오류 응답(month):", error.response.data);
+        }
+      } else {
+        console.error("Error(month): ", error);
+      }
     }
   };
-  console.log(diaryInfo);
 
-  useEffect(() => {
-    const today = new Date();
-    setCurrentYear(today.getFullYear());
-    setCurrentMonth(today.getMonth() + 1);
-  }, []);
+  // 달력 day 정보 가져오기
+  const fetchDayCalendar = async (year: number, month: number, day: number) => {
+    console.log("Fetching day info with:", { year, month, day });
+    try {
+      const response = await api.get("/diary/calendar/day", {
+        params: { year, month, day },
+      });
+
+      console.log("day response: ", response.data);
+
+      setDayInfo(response.data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "일기 정보(Day)를 가져오는 중 오류 발생: Network Error",
+          error.message
+        );
+        console.error("오류 세부 사항(Day):", error.config);
+        if (error.response) {
+          console.error("오류 응답(Day):", error.response.data);
+        }
+      } else {
+        console.error("Error(Day): ", error);
+      }
+    }
+  };
 
   const handleDateSelect = (day: number, month: number, year: number) => {
     setSelectedDate(day);
@@ -65,22 +121,17 @@ function DiaryCalender() {
     setCurrentYear(year);
   };
 
-
-  // 작성 버튼 클릭 시
   const handleCreateClick = () => {
     if (currentYear && currentMonth && selectedDate) {
       navigate(
-        // create-diary: 임시 url
         `/WriteDiary?year=${currentYear}&month=${currentMonth}&day=${selectedDate}`
       );
     }
   };
 
-  // 수정 버튼 클릭 시
   const handleEditClick = () => {
     if (currentYear && currentMonth && selectedDate) {
       navigate(
-        // create-diary: 임시 url
         `/WriteDiary?year=${currentYear}&month=${currentMonth}&day=${selectedDate}`
       );
     }
@@ -93,6 +144,7 @@ function DiaryCalender() {
       </h2>
       <Calender onDateSelect={handleDateSelect} />
       <AnimatePresence>
+        {/* {selectedDate && dayInfo && dayInfo.length > 0 && ( */}
         {selectedDate && (
           <S.BoxContainer>
             <S.Box
@@ -104,10 +156,8 @@ function DiaryCalender() {
               transition={{ duration: 0.3 }}
             >
               <S.ImageContainer>
-                <img src="/path/to/image.png" alt="Diary Entry" />
+                <img src="" alt="Diary Entry" />
               </S.ImageContainer>
-              {/* 날짜 {currentMonth}월 {selectedDate}일<div>제목</div>
-              <div>내용</div> */}
               <S.InfoContainer>
                 <S.InfoTitle>날짜</S.InfoTitle>
                 <S.InfoText>

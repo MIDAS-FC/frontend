@@ -5,7 +5,6 @@ import { createGlobalStyle } from "styled-components";
 import { AuthProvider } from "./AuthProvider";
 import Router from "./route/Router";
 
-
 const GlobalStyle = createGlobalStyle`
   * {
     margin: 0;
@@ -15,7 +14,7 @@ const GlobalStyle = createGlobalStyle`
   body, html {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow: auto;
   }
 `;
 
@@ -24,11 +23,11 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
+    <AuthProvider>
+      <BrowserRouter>
         <GlobalStyle />
         <Router />
-      </AuthProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthProvider>
   </React.StrictMode>
 );

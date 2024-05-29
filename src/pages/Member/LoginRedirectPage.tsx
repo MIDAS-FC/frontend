@@ -1,7 +1,7 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../AuthProvider';
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../AuthProvider";
 
 interface QueryParams {
   email: string;
@@ -18,11 +18,11 @@ const LoginRedirectPage = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const email = params.get('email') || '';
-    const nickName = decodeURIComponent(params.get('nickName') || '');
-    const socialId = params.get('socialId') || '';
-    const accessToken = params.get('accessToken') || '';
-    const refreshToken = params.get('refreshToken') || '';
+    const email = params.get("email") || "";
+    const nickName = decodeURIComponent(params.get("nickName") || "");
+    const socialId = params.get("socialId") || "";
+    const accessToken = params.get("accessToken") || "";
+    const refreshToken = params.get("refreshToken") || "";
 
     setQueryParams({ email, nickName, socialId, accessToken, refreshToken });
 
@@ -36,25 +36,26 @@ const LoginRedirectPage = () => {
   useEffect(() => {
     if (!queryParams) return;
 
-    const { email, nickName, socialId, accessToken, refreshToken } = queryParams;
+    const { email, nickName, socialId, accessToken, refreshToken } =
+      queryParams;
 
     if (accessToken && refreshToken && email && nickName && socialId) {
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-      localStorage.setItem('email', email);
-      localStorage.setItem('nickName', nickName);
-      localStorage.setItem('socialId', socialId);
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("email", email);
+      localStorage.setItem("nickName", nickName);
+      localStorage.setItem("socialId", socialId);
 
       setIsLoggedIn(true);
       setEmail(email);
       setNickname(nickName);
 
-      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
 
-      navigate('/');
+      navigate("/");
     } else {
       console.log("로그인에 필요한 정보가 부족합니다.");
-      navigate('/login');
+      navigate("/login");
     }
   }, [queryParams, navigate, setIsLoggedIn, setEmail, setNickname]);
 

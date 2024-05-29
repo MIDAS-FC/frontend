@@ -1,18 +1,17 @@
-import axios from 'axios';
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import api from '../../axiosInterceptor';
 import * as S from "./Styles/WriteDiary.style";
 
 function WriteDiary() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
   const [currentMonth, setCurrentMonth] = useState<number | null>(null);
   const [images, setImages] = useState<File[]>([]);
-  const token = localStorage.getItem('accessToken');
-  console.log("JWT Token:", token);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -42,7 +41,7 @@ function WriteDiary() {
   };
 
   const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent the default form submission behavior
+    e.preventDefault();
 
     if (!currentYear || !currentMonth || !selectedDate) {
       alert("날짜를 선택해주세요.");
@@ -60,16 +59,29 @@ function WriteDiary() {
     images.forEach((image) => formData.append('images', image));
 
     try {
-      const response = await axios.post('/diary/calendar', formData, {
+      const response = await api.post('/diary/calendar', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       console.log(response);
       alert("일기가 저장되었습니다!");
-      // You can add a redirect or reset form here if needed
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving diary:", error);
+      if (error.response) {
+        console.error("응답 데이터:", error.response.data);
+        console.error("응답 상태:", error.response.status);
+        console.error("응답 헤더:", error.response.headers);
+      } else if (error.request) {
+        console.error("요청 데이터:", error.request);
+      } else {
+        console.error("에러 메시지:", error.message);
+      }
+
+      if (error.response?.status === 401) {
+        alert("인증 오류입니다. 다시 로그인해주세요.");
+        navigate("/login");
+      }
     }
   };
 

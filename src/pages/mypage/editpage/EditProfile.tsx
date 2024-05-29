@@ -1,10 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as S from "../Styles/EditProfile.style";
 import { AnimatePresence, motion } from "framer-motion";
 import EditPopup from "./EditPopup";
+import api from "../../../axiosInterceptor";
 
 function EditProfile() {
   const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+    } else {
+      console.log("token error");
+    }
+  }, []);
 
   const handleClosePopup = () => {
     setShowPopup(false);

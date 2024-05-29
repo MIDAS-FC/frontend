@@ -1,13 +1,13 @@
-import axios from 'axios';
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import { useAuth } from '../../AuthProvider';
+import axios from "axios";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import { useAuth } from "../../AuthProvider";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [socialType, setSocialType] = useState('SoundOfFlower'); // socialType을 SoundOfFlower로 설정
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [socialType, setSocialType] = useState("SoundOfFlower");
   const { setIsLoggedIn, setNickname, setEmail: setAuthEmail } = useAuth();
   const navigate = useNavigate();
 
@@ -17,35 +17,38 @@ const Login = () => {
     const user = {
       email,
       password,
-      socialType
+      socialType,
     };
 
     try {
-      const response = await axios.post('/token/login', user, {
+      const response = await axios.post("/token/login", user, {
         headers: {
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       });
 
       // 응답 헤더에서 AccessToken 추출
-      const accessToken = response.headers['authorization-access'];
-      const nickName = response.headers['nickname'];
+      const accessToken = response.headers["authorization-access"];
+      const nickName = response.headers["nickname"];
 
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('nickName', nickName);
-      localStorage.setItem('email', email);
-      localStorage.setItem('isLoggedIn', 'true'); // 로그인 상태 저장
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("nickName", nickName);
+      localStorage.setItem("email", email);
+      localStorage.setItem("isLoggedIn", "true"); // 로그인 상태 저장
+
+      
+
+      // axios 기본 헤더에 토큰 설정
+      axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
 
       // 사용자 정보 업데이트
       setNickname(nickName); // 닉네임
       setAuthEmail(email); // 이메일
       setIsLoggedIn(true);
-
-      // axios 기본 헤더에 토큰 설정
-      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-
       // 홈페이지로 이동
-      navigate('/');
+      console.log(nickName);
+      console.log(accessToken);
+      navigate("/");
     } catch (error) {
       // Handle error here
       console.error(error);
@@ -53,27 +56,45 @@ const Login = () => {
   };
 
   const handleNaverLogin = async () => {
-    window.location.href = 'http://localhost:8080/oauth2/authorization/naver';
+    window.location.href = "http://localhost:8080/oauth2/authorization/naver";
   };
 
   const handleKakaoLogin = async () => {
-    window.location.href = 'http://localhost:8080/oauth2/authorization/kakao';
+    window.location.href = "http://localhost:8080/oauth2/authorization/kakao";
   };
+
+  const handleGoogleLogin = async () => {
+    window.location.href = "http://localhost:8080/oauth2/authorization/google";
+  };
+
 
   return (
     <Container>
       <LoginPage>
         <LoginForm>
           <LoginFuncion onSubmit={handleSubmit}>
-            <LoginInput value={email} onChange={(e) => setEmail(e.target.value)} placeholder="e-mail" type="email" />
-            <LoginInput value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" type="password" />
+            <LoginInput
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="e-mail"
+              type="email"
+            />
+            <LoginInput
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="password"
+              type="password"
+            />
             <LoginBtn type="submit">LOGIN</LoginBtn>
           </LoginFuncion>
-          <Gray>아직 회원이 아니신가요?</Gray><Link to="/Join"><Red>회원가입</Red></Link>
+          <Gray>아직 회원이 아니신가요?</Gray>
+          <Link to="/Join">
+            <Red>회원가입</Red>
+          </Link>
           <SNS>
             <Kakao onClick={handleKakaoLogin}></Kakao>
             <Naver onClick={handleNaverLogin}></Naver>
-            <Google></Google>
+            <Google onClick={handleGoogleLogin}></Google>
           </SNS>
         </LoginForm>
       </LoginPage>
@@ -92,12 +113,12 @@ const Container = styled.div`
 const LoginPage = styled.div`
   width: 100%;
   height: 100%;
-  background: #FFB8B3;
+  background: #ffb8b3;
   overflow: auto;
 `;
 
 const LoginForm = styled.div`
-  background: #FFFFFF;
+  background: #ffffff;
   width: 30%;
   margin: 100px auto 0 auto;
   padding: 45px;
@@ -123,12 +144,12 @@ const LoginInput = styled.input`
 const LoginBtn = styled.button`
   text-transform: uppercase;
   outline: 0;
-  background: #FF8379;
+  background: #ff8379;
   width: 100%;
   border: 0;
   padding: 15px;
   margin-bottom: 30px;
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 14px;
   transition: all 0.3s ease;
   cursor: pointer;
@@ -140,7 +161,7 @@ const Gray = styled.span`
 
 const Red = styled.span`
   margin: 0 5px;
-  color: #FF8379;
+  color: #ff8379;
   &:hover {
     text-decoration: underline;
   }
@@ -156,7 +177,7 @@ const SNS = styled.div`
 const Kakao = styled.button`
   width: 34.31px;
   height: 30.8px;
-  background: #FFC700;
+  background: #ffc700;
   border-radius: 50%;
   border: none;
   margin-right: 10px;
@@ -166,7 +187,7 @@ const Naver = styled.button`
   width: 34.31px;
   height: 30.8px;
   border: none;
-  background: #52D700;
+  background: #52d700;
   border-radius: 50%;
   margin-right: 10px;
   cursor: pointer;
@@ -176,6 +197,6 @@ const Google = styled.button`
   width: 34.31px;
   height: 30.8px;
   border: none;
-  background: #E0E0E0;
+  background: #e0e0e0;
   border-radius: 50%;
 `;
