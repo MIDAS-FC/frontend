@@ -31,7 +31,6 @@ const Login = () => {
 
       // 응답 헤더에서 AccessToken 추출
       const accessToken = response.headers["authorization-access"].split(" ")[1];
-      
       const nickName = response.headers["nickname"];
 
       localStorage.setItem("accessToken", accessToken);
@@ -39,7 +38,8 @@ const Login = () => {
       localStorage.setItem("email", email);
       localStorage.setItem("isLoggedIn", "true"); // 로그인 상태 저장
 
-      
+      const fileUrl = response.headers["file-url"] || "default-image-url";
+      localStorage.setItem("fileUrl", fileUrl);
 
       // axios 기본 헤더에 토큰 설정
       axios.defaults.headers.common["authorization-access"] = `Bearer ${accessToken}`;
@@ -48,15 +48,17 @@ const Login = () => {
       setNickname(nickName); // 닉네임
       setAuthEmail(email); // 이메일
       setIsLoggedIn(true);
+
+
+
       // 홈페이지로 이동
-      console.log(nickName);
-      console.log(accessToken);
       navigate("/");
     } catch (error) {
       // Handle error here
       console.error(error);
     }
   };
+
 
   const handleNaverLogin = async () => {
     window.location.href = "http://localhost:8080/oauth2/authorization/naver";
@@ -69,7 +71,6 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     window.location.href = "http://localhost:8080/oauth2/authorization/google";
   };
-
 
   return (
     <Container>

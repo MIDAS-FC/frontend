@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
-import * as S from "../Styles/EditProfile.style";
 import { AnimatePresence, motion } from "framer-motion";
-import EditPopup from "./EditPopup";
+import { useEffect, useState } from "react";
 import api from "../../../axiosInterceptor";
+import * as S from "../Styles/EditProfile.style";
+import EditPopup from "./EditPopup";
 
 function EditProfile() {
   const [showPopup, setShowPopup] = useState(false);
+  const [profileUrl, setProfileUrl] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -13,6 +14,15 @@ function EditProfile() {
       api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
     } else {
       console.log("token error");
+    }
+  }, []);
+
+  useEffect(() => {
+    const url = localStorage.getItem('fileUrl');
+    if(url){
+      setProfileUrl(url);
+    }else{
+      setProfileUrl("default-image-url");
     }
   }, []);
 
@@ -24,7 +34,12 @@ function EditProfile() {
     <S.Container>
       <S.Title>프로필 수정</S.Title>
       <S.ProfileImageContainer>
-        <S.ProfileImage src="path/to/profile-image.jpg" alt="Profile" />
+        {profileUrl ? (
+          <S.ProfileImage src={profileUrl} alt="Profile" />
+        ) : (
+          <S.ProfileImage src="" alt="Profile" />
+        )}
+        
       </S.ProfileImageContainer>
       <S.UserInfo>
         <S.UserName>UserName</S.UserName>

@@ -111,10 +111,12 @@ const Join = () => {
     try {
       const response = await axios.post("/register", formData);
 
-      console.log(response.data);
+      // 회원가입 후 서버에서 프로필 사진 URL을 응답 헤더로 전달 받음
+      const fileUrl = response.headers['file-url'] || 'default-image-url';
+      localStorage.setItem("fileUrl", fileUrl);
 
       alert("회원가입이 완료되었습니다.");
-      navigate("/Login"); //로그인 페이지로 유도
+      navigate("/Login"); // 로그인 페이지로 유도
     } catch (error) {
       console.error("Error during registration:", error);
     }
@@ -232,8 +234,7 @@ const JoinBtn = styled.button`
   margin-bottom: 30px;
   color: #ffffff;
   font-size: 14px;
-  -webkit-transition: all 0.3 ease;
-  transition: all 0.3 ease;
+  transition: all 0.3s ease;
   cursor: pointer;
 
   &:disabled {
@@ -241,5 +242,3 @@ const JoinBtn = styled.button`
     cursor: normal;
   }
 `;
-
-const nickNameBtn = styled.button``;
