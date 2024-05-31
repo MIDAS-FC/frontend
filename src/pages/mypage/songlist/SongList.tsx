@@ -1,20 +1,23 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as S from "../Styles/SongList.style";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
 import api from "../../../axiosInterceptor.js";
 
+// 임시 인터페이스
+interface Song {
+  title: string;
+  artist: string;
+  albumCoverUrl: string;
+}
+
 function SongList() {
-  const [songs, setSongs] = useState([]);
-  // const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState(0);
-  const [leaving, setLeaving] = useState(false);
+  const [songs, setSongs] = useState<Song[]>([]);
   const [page, setPage] = useState(1);
   const [last, setLast] = useState(false);
+  const loader = useRef<HTMLDivElement | null>(null);
+  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -26,13 +29,38 @@ function SongList() {
     }
   }, []);
 
+  // // api 연결하기
+  // const fetchLikes = useCallback(async (pageToFetch: number) => {
+  //   try {
+  //     // api 연결하기
+  //     const response = await api.get("/music/likes", {
+  //       params: { page: pageToFetch, size: 15 },
+  //     });
+  //     const { data, last } = response.data;
+
+  //     setSongs((prevSongs) =>
+  //       pageToFetch === 1 ? data : [...prevSongs, ...data]
+  //     );
+  //     setLast(last);
+  //     console.log(`Fetched ${data.length} songs, last: ${last}`);
+  //   } catch (error) {
+  //     console.error("Error fetching liked songs: ", error);
+  //   }
+  // }, []);
+
   const fetchLikes = useCallback(async (pageToFetch: number) => {
     try {
-      console.log(`Fetching likes for page: ${pageToFetch}`);
-      const response = await api.get("/music/likes", {
-        params: { page: pageToFetch, size: 5 },
-      });
-      const { data, last } = response.data;
+      // 더미 데이터 생성
+      const dummyResponse = {
+        data: Array.from({ length: 15 }, (_, i) => ({
+          title: `Song ${pageToFetch * 15 - 14 + i}`,
+          artist: `Artist ${pageToFetch * 15 - 14 + i}`,
+          albumCoverUrl: "path/to/image",
+        })),
+        last: pageToFetch >= 3, // 3페이지 이후는 없다고 가정
+      };
+
+      const { data, last } = dummyResponse;
       setSongs((prevSongs) =>
         pageToFetch === 1 ? data : [...prevSongs, ...data]
       );
@@ -47,40 +75,56 @@ function SongList() {
     fetchLikes(page);
   }, [fetchLikes, page]);
 
-  const toggleLeaving = () => setLeaving((prev) => !prev);
+  useEffect(() => {
+    const options = {
+      root: null,
+      rootMargin: "20px",
+      threshold: 1.0,
+    };
 
-  const nextSlide = () => {
-    if (leaving || last) {
-      console.log(
-        "Cannot go to the next slide, leaving:",
-        leaving,
-        "last:",
-        last
-      );
-      return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !last) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    }, options);
+
+    if (loader.current) {
+      observer.observe(loader.current);
     }
-    console.log("Going to the next slide");
-    toggleLeaving();
-    setDirection(1);
-    setPage((prevPage) => prevPage + 1);
-    // setCurrentIndex(0);
+
+    return () => {
+      if (loader.current) {
+        observer.unobserve(loader.current);
+      }
+    };
+  }, [last]);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isDragging.current = true;
+    startX.current = e.pageX - sliderRef.current!.offsetLeft;
+    scrollLeft.current = sliderRef.current!.scrollLeft;
+    sliderRef.current!.style.cursor = "grabbing";
+    sliderRef.current!.style.scrollBehavior = "auto"; // Disable smooth scrolling during drag
   };
 
-  const prevSlide = () => {
-    if (leaving || page === 1) {
-      console.log(
-        "Cannot go to the previous slide, leaving:",
-        leaving,
-        "page:",
-        page
-      );
-      return;
-    }
-    console.log("Going to the previous slide");
-    toggleLeaving();
-    setDirection(-1);
-    setPage((prevPage) => prevPage - 1);
-    // setCurrentIndex(0);
+  const handleMouseLeave = () => {
+    isDragging.current = false;
+    sliderRef.current!.style.cursor = "grab";
+    sliderRef.current!.style.scrollBehavior = "smooth"; // Enable smooth scrolling after drag
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+    sliderRef.current!.style.cursor = "grab";
+    sliderRef.current!.style.scrollBehavior = "smooth"; // Enable smooth scrolling after drag
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current) return;
+    e.preventDefault();
+    const x = e.pageX - sliderRef.current!.offsetLeft;
+    const walk = (x - startX.current) * 0.5; // Adjust the scroll speed
+    sliderRef.current!.scrollLeft = scrollLeft.current - walk;
   };
 
   return (
@@ -89,50 +133,23 @@ function SongList() {
       {songs.length === 0 ? (
         <S.NoSongsMessage>좋아요를 누른 노래가 없습니다</S.NoSongsMessage>
       ) : (
-        <S.SliderContainer>
-          <S.Arrow onClick={prevSlide} position="left">
-            <FontAwesomeIcon icon={faChevronLeft} />
-          </S.Arrow>
-          <AnimatePresence
-            initial={false}
-            custom={direction}
-            onExitComplete={toggleLeaving}
-          >
-            <S.Row
-              key={page}
-              custom={direction}
-              variants={rowVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              {songs.map((song, index) => (
-                <S.SliderItem key={index}>
-                  <S.AlbumCover src="path/to/image" alt="song album" />
-                  <S.SongDetails>
-                    <S.SongTitle>song title</S.SongTitle>
-                    <S.ArtistName>song artist</S.ArtistName>
-                  </S.SongDetails>
-                </S.SliderItem>
-              ))}
-              {/*
-            {songs.slice(currentIndex, currentIndex + 5).map((song, index) => (
-              <S.SliderItem key={index}>
-                <S.AlbumCover
-                // src="path/to/image"
-                // alt="song album"
-                />
-                <S.SongDetails>
-                  {/* <S.SongTitle>song title</S.SongTitle>
-                  <S.ArtistName>song artist</S.ArtistName> */}
-              {/* </S.SongDetails>
-              </S.SliderItem>
-            ))} */}
-            </S.Row>
-          </AnimatePresence>
-          <S.Arrow onClick={nextSlide} position="right">
-            <FontAwesomeIcon icon={faChevronRight} />
-          </S.Arrow>
+        <S.SliderContainer
+          ref={sliderRef}
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseLeave}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+        >
+          {songs.map((song, index) => (
+            <S.SliderItem key={index}>
+              <S.AlbumCover src={song.albumCoverUrl} alt="song album" />
+              <S.SongDetails>
+                <S.SongTitle>{song.title}</S.SongTitle>
+                <S.ArtistName>{song.artist}</S.ArtistName>
+              </S.SongDetails>
+            </S.SliderItem>
+          ))}
+          <div ref={loader} style={{ width: "100%", height: "1px" }} />
         </S.SliderContainer>
       )}
     </div>
@@ -140,26 +157,3 @@ function SongList() {
 }
 
 export default SongList;
-
-const rowVariants = {
-  hidden: (direction: number) => ({
-    x: direction > 0 ? 1000 : -1000,
-    opacity: 0,
-  }),
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      x: { type: "spring", stiffness: 300, damping: 30 },
-      opacity: { duration: 0.2 },
-    },
-  },
-  exit: (direction: number) => ({
-    x: direction < 0 ? 1000 : -1000,
-    opacity: 0,
-    transition: {
-      x: { type: "spring", stiffness: 300, damping: 30 },
-      opacity: { duration: 0.2 },
-    },
-  }),
-};
