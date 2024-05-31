@@ -103,11 +103,7 @@ function WriteDiary() {
           onChange={handleContentChange}
           placeholder="오늘의 이야기를 들려주세요..."
         />
-        <S.FileInput
-          type="file"
-          multiple
-          onChange={handleFileChange}
-        />
+        <S.FileInput type="file" multiple onChange={handleFileChange} />
         <S.ButtonGroup>
           <S.Button type="submit">일기 작성</S.Button>
         </S.ButtonGroup>

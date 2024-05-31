@@ -2,10 +2,11 @@ import axios from "axios";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from '../../AuthProvider';
+import { useAuth } from "../../AuthProvider";
 import api from "../../axiosInterceptor";
 import Calender from "./Calender";
 import * as S from "./Styles/DiaryCalender.style";
+import findDayHighestEmotion from "./components/findDayHighestEmotion";
 
 interface DiaryInfoResponse {
   diaryId: number;
@@ -27,20 +28,19 @@ function DiaryCalender() {
   const [currentYear, setCurrentYear] = useState<number | null>(null);
   const [currentMonth, setCurrentMonth] = useState<number | null>(null);
   const [monthInfo, setMonthInfo] = useState<DiaryInfoResponse[] | null>(null);
-  const [dayInfo, setDayInfo] = useState<DiaryInfoResponse[] | null>(null);
+  const [dayInfo, setDayInfo] = useState<DiaryInfoResponse | null>(null);
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
 
-  // 토큰 관련
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
       api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+      console.log(token);
     } else {
     }
   }, []);
 
-  // 현재 날짜 가져오기
   useEffect(() => {
     const today = new Date();
     setCurrentYear(today.getFullYear());
@@ -69,8 +69,22 @@ function DiaryCalender() {
         params: { year, month },
       });
 
-      console.log("month response: ", response.data);
+      console.log("Month response 가져오기:", {
+        year,
+        month,
+        response: [response.data],
+      });
+
+      // const response = { data: generateDummyData() };
+      // console.log("Month response 가져오기:", {
+      //   year,
+      //   month,
+      //   response: response.data,
+      // });
+
       setMonthInfo(response.data);
+      const highestEmotionsData = findDayHighestEmotion(response.data);
+      console.log("highestEmotion", highestEmotionsData);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(
@@ -89,14 +103,17 @@ function DiaryCalender() {
 
   // 달력 day 정보 가져오기
   const fetchDayCalendar = async (year: number, month: number, day: number) => {
-    console.log("Fetching day info with:", { year, month, day });
     try {
       const response = await api.get("/diary/calendar/day", {
         params: { year, month, day },
       });
 
-      console.log("day response: ", response.data);
-
+      console.log("Day response 가져오기:", {
+        year,
+        month,
+        day,
+        response: [response.data],
+      });
       setDayInfo(response.data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -143,6 +160,7 @@ function DiaryCalender() {
       </h2>
       <Calender onDateSelect={handleDateSelect} />
       <AnimatePresence>
+        {/* 해당 날짜에 일기가 없으면 팝업 창 안 보여줌 */}
         {/* {selectedDate && dayInfo && dayInfo.length > 0 && ( */}
         {selectedDate && (
           <S.BoxContainer>
@@ -154,9 +172,11 @@ function DiaryCalender() {
               exit="exit"
               transition={{ duration: 0.3 }}
             >
-              <S.ImageContainer>
-                <img src="" alt="Diary Entry" />
-              </S.ImageContainer>
+              {dayInfo && dayInfo.imgUrl.length > 0 && (
+                <S.ImageContainer>
+                  <img src={dayInfo.imgUrl[0]} alt="Diary Image" />
+                </S.ImageContainer>
+              )}
               <S.InfoContainer>
                 <S.InfoTitle>날짜</S.InfoTitle>
                 <S.InfoText>
@@ -165,11 +185,11 @@ function DiaryCalender() {
               </S.InfoContainer>
               <S.InfoContainer>
                 <S.InfoTitle>제목</S.InfoTitle>
-                <S.InfoText>제목 내용</S.InfoText>
+                <S.InfoText></S.InfoText>
               </S.InfoContainer>
               <S.InfoContainer>
                 <S.InfoTitle>내용</S.InfoTitle>
-                <S.InfoText>일기 내용</S.InfoText>
+                <S.InfoText></S.InfoText>
               </S.InfoContainer>
               <S.ButtonsContainer>
                 <S.Button onClick={handleCreateClick}>작성</S.Button>
@@ -190,3 +210,35 @@ const boxVariants = {
   visible: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: 30 },
 };
+
+// // Sample data creation function
+// const generateDummyData = (): DiaryInfoResponse[] => {
+//   const emotions = [
+//     "angry",
+//     "sad",
+//     "delight",
+//     "calm",
+//     "embarrased",
+//     "anxiety",
+//     "love",
+//   ];
+//   const data: DiaryInfoResponse[] = [];
+//   for (let i = 0; i < 30; i++) {
+//     const diary: DiaryInfoResponse = {
+//       diaryId: i + 1,
+//       flower: "rose",
+//       imgUrl: ["https://example.com/image.png"],
+//       angry: Math.random(),
+//       sad: Math.random(),
+//       delight: Math.random(),
+//       calm: Math.random(),
+//       embarrased: Math.random(),
+//       anxiety: Math.random(),
+//       love: Math.random(),
+//       spotify: `${Math.floor(Math.random() * 10)}`,
+//       isLike: Math.random() > 0.5,
+//     };
+//     data.push(diary);
+//   }
+//   return data;
+// };

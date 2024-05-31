@@ -1,18 +1,35 @@
 import React, { useEffect, useState } from "react";
 import * as S from "../Styles/EditPopup.style";
 import axios from "axios";
-import { motion } from "framer-motion";
+import { PresenceContext, motion } from "framer-motion";
 import api from "../../../axiosInterceptor";
 
-function EditPopup({ onClose }: any) {
+function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
   const [showNicknameInput, setShowNicknameInput] = useState(false);
   const [showPasswordInput, setShowPasswordInput] = useState(false);
-  const [nickname, setNickname] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [socialType, setSocialType] = useState("SoundOfFlower");
+  const [presentNickName, setPresentNickName] = useState("");
+  const [Chanegednickname, setChangedNickname] = useState("");
+  const [changedPassword, setChangedPassword] = useState("");
+  const [reChangedPassword, setReChangedPassword] = useState("");
   const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(
-    null
+    profileImageUrl
   );
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
+  useEffect(() => {
+    const storedNickname = localStorage.getItem("nickName");
+    const storedEmail = localStorage.getItem("email");
+
+    if (storedNickname) {
+      setPresentNickName(decodeURIComponent(storedNickname));
+    }
+    if (storedEmail) {
+      setEmail(storedEmail);
+    }
+    console.log("로컬스토리지 불러오기");
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -24,7 +41,7 @@ function EditPopup({ onClose }: any) {
   }, []);
 
   const handleNicknameChange = (event: any) => {
-    setNickname(event.target.value);
+    setChangedNickname(event.target.value);
   };
 
   const handleProfileImageChange = (event: any) => {
@@ -39,41 +56,43 @@ function EditPopup({ onClose }: any) {
     }
   };
 
-  const handlePasswordChange = (event: any) => {
-    setPassword(event.target.value);
+  const handleChangedPassword = (event: any) => {
+    setChangedPassword(event.target.value);
   };
 
-  // 프로필 수정
-  const handleProfileUpdate = async () => {
-    if (!selectedImage && !nickname) {
-      alert("프로필 사진 또는 닉네임을 변경해야 합니다.");
+  const handleReChangedPassword = (event: any) => {
+    setReChangedPassword(event.target.value);
+  };
+
+  // 프로필 사진 수정
+  const handleProfileImageUpdate = async () => {
+    if (!selectedImage) {
+      alert("프로필 사진을 변경해야 합니다.");
       return;
     }
+
     const formData = new FormData();
-    if (selectedImage) {
-      formData.append("images", selectedImage);
-      console.log("Added image to formData: ", selectedImage);
-    }
-    if (nickname) {
-      const nickNameRequest = JSON.stringify({ nickName: nickname });
-      const blob = new Blob([nickNameRequest], { type: "application/json" });
-      formData.append("nickName", blob);
-      console.log("Added nickname to formData: ", nickname);
-    }
+    const nickNameBlob = new Blob(
+      [JSON.stringify({ nickName: presentNickName })],
+      {
+        type: "application/json",
+      }
+    );
+    formData.append("nickName", nickNameBlob);
+    formData.append("images", selectedImage);
 
     try {
-      formData.forEach((value, key) => {
-        console.log("form data key:", key, "form data value:", value);
-      });
       const response = await api.put("/reset/profile", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+
       console.log("Profile updated:", response.data);
       if (response.data.url) {
+        // api 호출 필요
         setProfileImage(response.data.url);
-        console.log("new profileImage updated");
+        console.log("new profileImage updated", response.data.url);
       }
       alert("프로필이 성공적으로 업데이트되었습니다.");
     } catch (error) {
@@ -82,9 +101,86 @@ function EditPopup({ onClose }: any) {
     }
   };
 
-  // 비밀번호 초기화
-  const handlePasswordConfirm = async () => {};
+  // 닉네임 수정
+  const handleNicknameUpdate = async () => {
+    if (!Chanegednickname) {
+      alert("닉네임을 입력해야 합니다.");
+      return;
+    }
 
+    const nickNameRequest = {
+      presentNickName: presentNickName,
+      changeNickName: Chanegednickname,
+    };
+
+    try {
+      const response = await api.put("/reset/nickname", nickNameRequest, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 204) {
+        alert("닉네임이 성공적으로 업데이트되었습니다.");
+        localStorage.setItem("nickName", encodeURIComponent(Chanegednickname));
+        setPresentNickName(Chanegednickname);
+        onNicknameUpdate(Chanegednickname);
+      } else {
+        throw new Error("Failed to update nickname");
+      }
+      alert("닉네임이 성공적으로 업데이트되었습니다.");
+    } catch (error) {
+      console.error("Error updating nickname:", error);
+      alert("닉네임 업데이트 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 비밀번호 변경
+  const handlePasswordConfirm = async () => {
+    if (changedPassword !== reChangedPassword) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    const resetPasswordRequest = {
+      email: email,
+      socialType: socialType,
+      password: changedPassword,
+      rePassword: reChangedPassword,
+    };
+    console.log(
+      "email: ",
+      email,
+      "socialType: ",
+      socialType,
+      "password: ",
+      changedPassword,
+      "rePassword: ",
+      reChangedPassword
+    );
+
+    try {
+      const response = await api.put(
+        "/auth/reset/password",
+        resetPasswordRequest,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response && response.status === 204) {
+        alert("비밀번호가 변경되었습니다.");
+        setShowPasswordInput(false);
+      } else {
+        throw new Error("Failed to change password");
+      }
+    } catch (error) {
+      console.error("Error changing password:", error);
+      alert("비밀번호 변경 중 오류가 발생했습니다.");
+    }
+  };
   return (
     <S.Overlay>
       <motion.div
@@ -108,8 +204,11 @@ function EditPopup({ onClose }: any) {
                 <label htmlFor="image-upload">📷</label>
               </S.GrayCircle>
             </S.ProfileImageContainer>
+            <S.ProfileUpdateButton onClick={handleProfileImageUpdate}>
+              프로필 사진 변경
+            </S.ProfileUpdateButton>
             <S.UserInfo>
-              <S.UserName>UserName</S.UserName>
+              <S.UserName>{presentNickName}</S.UserName>
               <S.NicknameButton
                 onClick={() => setShowNicknameInput(!showNicknameInput)}
               >
@@ -119,30 +218,38 @@ function EditPopup({ onClose }: any) {
                 <S.InputContainer>
                   <S.Input
                     type="text"
-                    value={nickname}
+                    value={Chanegednickname}
                     onChange={handleNicknameChange}
                     placeholder="새 닉네임"
                   />
+                  <S.ProfileUpdateButton onClick={handleNicknameUpdate}>
+                    닉네임 변경
+                  </S.ProfileUpdateButton>
                 </S.InputContainer>
               )}
-              <button onClick={handleProfileUpdate}>
-                프로필 변경(사진,닉네임)
-              </button>
               <S.ResetPasswordButton
-                onClick={() => setShowPasswordInput(!showPasswordInput)}
+                onClick={() => {
+                  setShowPasswordInput(!showPasswordInput);
+                }}
               >
-                비밀번호 초기화
+                비밀번호 변경
               </S.ResetPasswordButton>
               {showPasswordInput && (
                 <S.InputContainer>
                   <S.Input
                     type="password"
-                    value={password}
-                    onChange={handlePasswordChange}
+                    value={changedPassword}
+                    onChange={handleChangedPassword}
                     placeholder="새 비밀번호"
                   />
+                  <S.Input
+                    type="password"
+                    value={reChangedPassword}
+                    onChange={handleReChangedPassword}
+                    placeholder="비밀번호 확인"
+                  />
                   <S.ConfirmButton onClick={handlePasswordConfirm}>
-                    확인
+                    비밀번호 변경
                   </S.ConfirmButton>
                 </S.InputContainer>
               )}

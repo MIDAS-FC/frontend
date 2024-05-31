@@ -37,13 +37,15 @@ function Header() {
         }
       });
 
+
       alert("로그아웃 성공.");
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("isLoggedIn");
       localStorage.removeItem("nickName");
       localStorage.removeItem("email");
-      localStorage.removeItem("role"); // role도 삭제
+      localStorage.removeItem("role");
+
       delete axios.defaults.headers.common["authorization-access"];
       setIsLoggedIn(false);
       navigate("/");
@@ -54,7 +56,12 @@ function Header() {
   };
 
   const handleWriteDiaryClick = () => {
-    navigate("/WriteDiary");
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+
+    navigate(`/WriteDiary?year=${year}&month=${month}&day=${day}`);
   };
 
   const handleCalendarClick = () => {

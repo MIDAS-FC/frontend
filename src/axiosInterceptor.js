@@ -1,8 +1,8 @@
-import axios from 'axios';
+import axios from "axios";
 
-const getToken = () => localStorage.getItem('token');
-const setToken = (token) => localStorage.setItem('token', token);
-const clearToken = () => localStorage.removeItem('token');
+const getToken = () => localStorage.getItem("token");
+const setToken = (token) => localStorage.setItem("token", token);
+const clearToken = () => localStorage.removeItem("token");
 
 const api = axios.create({
   baseURL: 'http://localhost:8080',

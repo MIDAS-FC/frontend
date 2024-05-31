@@ -6,38 +6,43 @@ import EditPopup from "./EditPopup";
 
 function EditProfile() {
   const [showPopup, setShowPopup] = useState(false);
-  const [profileUrl, setProfileUrl] = useState<string | undefined>(undefined);
+  const [presentNickName, setPresentNickName] = useState("");
+  const [profileImageUrl, setProfileImageUrl] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-    } else {
-      console.log("token error");
+    const storedNickname = localStorage.getItem("nickName");
+    if (storedNickname) {
+      setPresentNickName(storedNickname);
     }
-  }, []);
 
-  useEffect(() => {
-    const url = localStorage.getItem('fileUrl');
-    if (url) {
-      setProfileUrl(url);
-    } else {
-      setProfileUrl("default-image-url");
-    }
+    const fetchProfileImage = async () => {
+      try {
+        const response = await api.get("/profile");
+        setProfileImageUrl(response.data.imageUrl);
+      } catch (error) {
+        console.error("Failed to fetch profile image:", error);
+      }
+    };
+
+    fetchProfileImage();
   }, []);
 
   const handleClosePopup = () => {
     setShowPopup(false);
   };
 
+  const handleNicknameUpdate = (newNickname: string) => {
+    setPresentNickName(newNickname);
+  };
+
   return (
     <S.Container>
       <S.Title>프로필 수정</S.Title>
       <S.ProfileImageContainer>
-        <S.ProfileImage src={profileUrl} alt="Profile" />
+        <S.ProfileImage src={profileImageUrl} alt="Profile" />
       </S.ProfileImageContainer>
       <S.UserInfo>
-        <S.UserName>UserName</S.UserName>
+        <S.UserName>{decodeURIComponent(presentNickName)}</S.UserName>
         <S.EditSection>
           <S.EditText>프로필 수정을 원하시면</S.EditText>
           <S.EditButton onClick={() => setShowPopup(true)}>
@@ -53,7 +58,11 @@ function EditProfile() {
             exit={{ opacity: 0, y: -50 }}
             transition={{ duration: 0.3 }}
           >
-            <EditPopup onClose={handleClosePopup} />
+            <EditPopup
+              onClose={handleClosePopup}
+              onNicknameUpdate={handleNicknameUpdate}
+              profileImageUrl={profileImageUrl}
+            />
           </motion.div>
         )}
       </AnimatePresence>

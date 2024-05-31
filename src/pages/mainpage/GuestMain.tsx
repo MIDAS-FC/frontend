@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from '../../AuthProvider';
+import { useAuth } from "../../AuthProvider";
 import * as S from "./Styles/GuestMain.style";
 
 
@@ -17,7 +17,7 @@ const GuestMain = () => {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
 
-  if(isLoggedIn){
+  if (isLoggedIn) {
     navigate("/");
   }
 

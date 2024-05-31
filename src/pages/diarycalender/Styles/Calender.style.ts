@@ -68,3 +68,11 @@ export const Emoji = styled.div`
   right: 5px;
   font-size: 20px;
 `;
+
+export const Flower = styled.img`
+  width: 20px;
+  height: 20px;
+  position: relative;
+  top: -15px;
+  left: -15px;
+`;

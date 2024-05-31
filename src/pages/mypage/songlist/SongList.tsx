@@ -8,22 +8,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import api from "../../../axiosInterceptor.js";
 
-// 임시
-interface Song {
-  albumCover: string;
-  title: string;
-  artist: string;
-}
-
 function SongList() {
-  const [songs, setSongs] = useState<Song[]>([]);
+  const [songs, setSongs] = useState([]);
   // const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const [page, setPage] = useState(1);
   const [last, setLast] = useState(false);
 
-  // 토큰 관련
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
@@ -116,13 +108,10 @@ function SongList() {
             >
               {songs.map((song, index) => (
                 <S.SliderItem key={index}>
-                  <S.AlbumCover
-                  // src={song.albumCover}
-                  // alt={`${song.title} cover`}
-                  />
+                  <S.AlbumCover src="path/to/image" alt="song album" />
                   <S.SongDetails>
-                    {/* <S.SongTitle>{song.title}</S.SongTitle>
-                <S.ArtistName>{song.artist}</S.ArtistName> */}
+                    <S.SongTitle>song title</S.SongTitle>
+                    <S.ArtistName>song artist</S.ArtistName>
                   </S.SongDetails>
                 </S.SliderItem>
               ))}
@@ -130,12 +119,12 @@ function SongList() {
             {songs.slice(currentIndex, currentIndex + 5).map((song, index) => (
               <S.SliderItem key={index}>
                 <S.AlbumCover
-                // src={song.albumCover}
-                // alt={`${song.title} cover`}
+                // src="path/to/image"
+                // alt="song album"
                 />
                 <S.SongDetails>
-                  {/* <S.SongTitle>{song.title}</S.SongTitle>
-                  <S.ArtistName>{song.artist}</S.ArtistName> */}
+                  {/* <S.SongTitle>song title</S.SongTitle>
+                  <S.ArtistName>song artist</S.ArtistName> */}
               {/* </S.SongDetails>
               </S.SliderItem>
             ))} */}

@@ -44,13 +44,19 @@ const Login = () => {
       // axios 기본 헤더에 토큰 설정
       axios.defaults.headers.common["authorization-access"] = `Bearer ${accessToken}`;
 
+      // axios 기본 헤더에 토큰 설정
+      axios.defaults.headers.common[
+        "authorization-access"
+      ] = `Bearer ${accessToken}`;
+
       // 사용자 정보 업데이트
       setNickname(nickName); // 닉네임
       setAuthEmail(email); // 이메일
       setIsLoggedIn(true);
-      console.log("fileUrl: ", fileUrl);
 
       // 홈페이지로 이동
+      console.log(nickName);
+      console.log(accessToken);
       navigate("/");
     } catch (error) {
       // Handle error here
