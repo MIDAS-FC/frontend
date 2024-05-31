@@ -111,12 +111,8 @@ const Join = () => {
     try {
       const response = await axios.post("/register", formData);
 
-      // 회원가입 후 서버에서 프로필 사진 URL을 응답 헤더로 전달 받음
-      const fileUrl = response.headers['file-url'] || 'default-image-url';
-      localStorage.setItem("fileUrl", fileUrl);
-
       alert("회원가입이 완료되었습니다.");
-      navigate("/Login"); // 로그인 페이지로 유도
+      navigate("/Login"); //로그인 페이지로 유도
     } catch (error) {
       console.error("Error during registration:", error);
     }
@@ -126,7 +122,6 @@ const Join = () => {
     console.log("NickName:", nickName);
     console.log("Password:", password);
   };
-
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

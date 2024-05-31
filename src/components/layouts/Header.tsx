@@ -11,9 +11,14 @@ function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const token = localStorage.getItem('accessToken');
+  const role = localStorage.getItem('role'); // 로컬 스토리지에서 role 가져오기
 
   const handleLogoClick = () => {
     navigate("/");
+  };
+
+  const handleAdminClick = () => {
+    navigate("/AdminJoin");
   };
 
   const handleLoginClick = () => {
@@ -38,6 +43,7 @@ function Header() {
       localStorage.removeItem("isLoggedIn");
       localStorage.removeItem("nickName");
       localStorage.removeItem("email");
+      localStorage.removeItem("role"); // role도 삭제
       delete axios.defaults.headers.common["authorization-access"];
       setIsLoggedIn(false);
       navigate("/");
@@ -59,6 +65,9 @@ function Header() {
     navigate("/mypage");
   };
 
+  const handleAdminPageClick = () => {
+    navigate("/AdminPage"); // 관리자 페이지 경로
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -77,13 +86,18 @@ function Header() {
       {isLoggedIn && (
         <S.LeftButtonContainer>
           <S.LinkButton onClick={handleWriteDiaryClick}>일기작성</S.LinkButton>
-          <S.LinkButton onClick={handleCalendarClick}>캘린더</S.LinkButton>
+          {role === "ADMIN" ? (
+            <S.LinkButton onClick={handleAdminPageClick}>관리자페이지</S.LinkButton>
+          ) : (
+            <S.LinkButton onClick={handleCalendarClick}>캘린더</S.LinkButton>
+          )}
           <S.LinkButton onClick={handleMypageClick}>마이페이지</S.LinkButton>
         </S.LeftButtonContainer>
       )}
       <S.RightButtonContainer>
         {!isLoggedIn ? (
           <>
+            <S.Button onClick={handleAdminClick}>관리자 회원가입</S.Button>
             <S.Button onClick={handleLoginClick}>로그인</S.Button>
             <S.Button onClick={handleJoinClick}>회원가입</S.Button>
           </>

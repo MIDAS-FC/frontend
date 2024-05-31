@@ -19,9 +19,9 @@ function EditProfile() {
 
   useEffect(() => {
     const url = localStorage.getItem('fileUrl');
-    if(url){
+    if (url) {
       setProfileUrl(url);
-    }else{
+    } else {
       setProfileUrl("default-image-url");
     }
   }, []);
@@ -34,12 +34,7 @@ function EditProfile() {
     <S.Container>
       <S.Title>프로필 수정</S.Title>
       <S.ProfileImageContainer>
-        {profileUrl ? (
-          <S.ProfileImage src={profileUrl} alt="Profile" />
-        ) : (
-          <S.ProfileImage src="" alt="Profile" />
-        )}
-        
+        <S.ProfileImage src={profileUrl} alt="Profile" />
       </S.ProfileImageContainer>
       <S.UserInfo>
         <S.UserName>UserName</S.UserName>

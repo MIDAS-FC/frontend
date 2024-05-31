@@ -8,7 +8,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("USER");
-  const [socialType, setSocialType] = useState("SoundOfFlower");
+  const [socialType] = useState("SoundOfFlower");
   const { setIsLoggedIn, setNickname, setEmail: setAuthEmail } = useAuth();
   const navigate = useNavigate();
 
@@ -19,7 +19,7 @@ const Login = () => {
       email,
       password,
       socialType,
-      role
+      role,
     };
 
     try {
@@ -32,13 +32,13 @@ const Login = () => {
       // 응답 헤더에서 AccessToken 추출
       const accessToken = response.headers["authorization-access"].split(" ")[1];
       const nickName = response.headers["nickname"];
+      const fileUrl = response.headers["multipartFile"] || "default-image-url";
 
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("nickName", nickName);
       localStorage.setItem("email", email);
+      localStorage.setItem("role", role); // role 값을 로컬 스토리지에 저장
       localStorage.setItem("isLoggedIn", "true"); // 로그인 상태 저장
-
-      const fileUrl = response.headers["file-url"] || "default-image-url";
       localStorage.setItem("fileUrl", fileUrl);
 
       // axios 기본 헤더에 토큰 설정
@@ -48,17 +48,24 @@ const Login = () => {
       setNickname(nickName); // 닉네임
       setAuthEmail(email); // 이메일
       setIsLoggedIn(true);
-
-
+      console.log("fileUrl: ", fileUrl);
 
       // 홈페이지로 이동
       navigate("/");
     } catch (error) {
       // Handle error here
       console.error(error);
+      alert("Login failed. Please check your email and password.");
     }
   };
 
+  const handleUserLogin = () => {
+    setRole("USER");
+  };
+
+  const handleAdminLogin = () => {
+    setRole("ADMIN");
+  };
 
   const handleNaverLogin = async () => {
     window.location.href = "http://localhost:8080/oauth2/authorization/naver";
@@ -82,14 +89,21 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="e-mail"
               type="email"
+              required
             />
             <LoginInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="password"
               type="password"
+              required
             />
-            <LoginBtn type="submit">LOGIN</LoginBtn>
+            <LoginBtn type="submit" onClick={handleUserLogin}>
+              Login
+            </LoginBtn>
+            <LoginBtn type="submit" onClick={handleAdminLogin}>
+              Admin Login
+            </LoginBtn>
           </LoginFuncion>
           <Gray>아직 회원이 아니신가요?</Gray>
           <Link to="/Join">
@@ -152,7 +166,7 @@ const LoginBtn = styled.button`
   width: 100%;
   border: 0;
   padding: 15px;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   color: #ffffff;
   font-size: 14px;
   transition: all 0.3s ease;
@@ -185,6 +199,7 @@ const Kakao = styled.button`
   border-radius: 50%;
   border: none;
   margin-right: 10px;
+  cursor: pointer;
 `;
 
 const Naver = styled.button`
@@ -203,4 +218,5 @@ const Google = styled.button`
   border: none;
   background: #e0e0e0;
   border-radius: 50%;
+  cursor: pointer;
 `;
