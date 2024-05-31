@@ -4,7 +4,7 @@ import axios from "axios";
 import { PresenceContext, motion } from "framer-motion";
 import api from "../../../axiosInterceptor";
 
-function EditPopup({ onClose }: any) {
+function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
   const [showNicknameInput, setShowNicknameInput] = useState(false);
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [email, setEmail] = useState("");
@@ -13,13 +13,11 @@ function EditPopup({ onClose }: any) {
   const [Chanegednickname, setChangedNickname] = useState("");
   const [changedPassword, setChangedPassword] = useState("");
   const [reChangedPassword, setReChangedPassword] = useState("");
-  // 받아와야함
   const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(
-    null
+    profileImageUrl
   );
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
-  // 특정 경우만 렌더링 되도록 수정하기
   useEffect(() => {
     const storedNickname = localStorage.getItem("nickName");
     const storedEmail = localStorage.getItem("email");
@@ -27,10 +25,10 @@ function EditPopup({ onClose }: any) {
     if (storedNickname) {
       setPresentNickName(decodeURIComponent(storedNickname));
     }
-
     if (storedEmail) {
       setEmail(storedEmail);
     }
+    console.log("로컬스토리지 불러오기");
   }, []);
 
   useEffect(() => {
@@ -81,25 +79,9 @@ function EditPopup({ onClose }: any) {
       }
     );
     formData.append("nickName", nickNameBlob);
-    // formData.append(
-    //   "nickName",
-    //   new Blob([JSON.stringify({ nickName: presentNickName })], {
-    //     type: "application/json",
-    //   })
-    // );
     formData.append("images", selectedImage);
 
     try {
-      formData.forEach((value, key) => {
-        console.log(
-          "[form data key: ",
-          key,
-          "]",
-          "[form data value: ",
-          value,
-          "]"
-        );
-      });
       const response = await api.put("/reset/profile", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -108,8 +90,9 @@ function EditPopup({ onClose }: any) {
 
       console.log("Profile updated:", response.data);
       if (response.data.url) {
+        // api 호출 필요
         setProfileImage(response.data.url);
-        console.log("new profileImage updated");
+        console.log("new profileImage updated", response.data.url);
       }
       alert("프로필이 성공적으로 업데이트되었습니다.");
     } catch (error) {
@@ -130,19 +113,18 @@ function EditPopup({ onClose }: any) {
       changeNickName: Chanegednickname,
     };
 
-    console.log("Nickname Request:", nickNameRequest);
-
     try {
       const response = await api.put("/reset/nickname", nickNameRequest, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log("Nickname updated:", response);
+
       if (response.status === 204) {
         alert("닉네임이 성공적으로 업데이트되었습니다.");
         localStorage.setItem("nickName", encodeURIComponent(Chanegednickname));
         setPresentNickName(Chanegednickname);
+        onNicknameUpdate(Chanegednickname);
       } else {
         throw new Error("Failed to update nickname");
       }

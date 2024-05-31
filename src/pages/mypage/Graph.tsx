@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Bar } from "react-chartjs-2";
+import { Pie } from "react-chartjs-2";
+import * as S from "./Styles/Graph.style";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -8,17 +9,22 @@ import {
   Title,
   Tooltip,
   Legend,
+  ArcElement,
 } from "chart.js";
-import api from "../../axiosInterceptor.js";
+import api from "../../axiosInterceptor";
 import axios from "axios";
-
+import {
+  findWeeklyHighestEmotion,
+  HighestEmotionData,
+} from "./components/findWeeklyHighestEmotion";
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ArcElement
 );
 
 interface GraphProps {
@@ -30,6 +36,26 @@ interface GraphProps {
   endDay: number;
 }
 
+interface EmotionData {
+  date: string;
+  angry: number;
+  sad: number;
+  delight: number;
+  calm: number;
+  embarrased: number;
+  anxiety: number;
+  love: number;
+}
+
+interface ChartData {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    backgroundColor: string[];
+  }[];
+}
+
 function Chart({
   startYear,
   startMonth,
@@ -38,9 +64,18 @@ function Chart({
   endMonth,
   endDay,
 }: GraphProps) {
-  // 토큰 관련
+  const [isEmpty, setIsEmpty] = useState<boolean>(true);
+  const [chartData, setChartData] = useState<ChartData>({
+    labels: [],
+    datasets: [
+      {
+        label: "Emotion Distribution",
+        data: [],
+        backgroundColor: [],
+      },
+    ],
+  });
 
-  // 토큰 관련
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
@@ -51,31 +86,6 @@ function Chart({
     }
   }, []);
 
-  const [chartData, setChartData] = useState({
-    labels: [],
-    datasets: [
-      { label: "angry", data: [], backgroundColor: "rgba(255, 102, 102, 0.5)" },
-      { label: "sad", data: [], backgroundColor: "rgba(135, 206, 235, 0.5)" },
-      {
-        label: "delight",
-        data: [],
-        backgroundColor: "rgba(255, 255, 153, 0.5)",
-      },
-      { label: "calm", data: [], backgroundColor: "rgba(186, 85, 211, 0.5)" },
-      {
-        label: "embarrased",
-        data: [],
-        backgroundColor: "rgba(211, 211, 211, 0.5)",
-      },
-      {
-        label: "anxiety",
-        data: [],
-        backgroundColor: "rgba(100, 202, 100, 0.5)",
-      },
-    ],
-  });
-
-  // 감정 통계 데이터 가져오기
   useEffect(() => {
     const fetchEmotionStatistics = async (
       startYear: number,
@@ -98,47 +108,88 @@ function Chart({
         });
 
         const data = response.data;
-        console.log("[Grpah response: ", response.data, "]");
-        const labels = data.map((entry: any) => entry.date);
-        const angryData = data.map((entry: any) => entry.angry);
-        const sadData = data.map((entry: any) => entry.sad);
-        const delightData = data.map((entry: any) => entry.delight);
-        const calmData = data.map((entry: any) => entry.calm);
-        const embarrasedData = data.map((entry: any) => entry.embarrased);
-        const anxietyData = data.map((entry: any) => entry.anxiety);
+        console.log("[Graph response: ", data, "]");
+
+        const emotionCounts = {
+          angry: 0,
+          sad: 0,
+          delight: 0,
+          calm: 0,
+          embarrased: 0,
+          anxiety: 0,
+          love: 0,
+        };
+
+        const highestEmotions: HighestEmotionData[] =
+          findWeeklyHighestEmotion(data);
+        console.log("[Highest Emotions: ", highestEmotions, "]");
+
+        highestEmotions.forEach((entry: HighestEmotionData) => {
+          switch (entry.highestEmotion) {
+            case "angry":
+              emotionCounts.angry += 1;
+              break;
+            case "sad":
+              emotionCounts.sad += 1;
+              break;
+            case "delight":
+              emotionCounts.delight += 1;
+              break;
+            case "calm":
+              emotionCounts.calm += 1;
+              break;
+            case "embarrased":
+              emotionCounts.embarrased += 1;
+              break;
+            case "anxiety":
+              emotionCounts.anxiety += 1;
+              break;
+            case "love":
+              emotionCounts.love += 1;
+              break;
+            default:
+              break;
+          }
+        });
+
+        const totalEmotionCount = Object.values(emotionCounts).reduce(
+          (acc, count) => acc + count,
+          0
+        );
+
+        setIsEmpty(totalEmotionCount === 0);
 
         setChartData({
-          labels,
+          labels: [
+            "Angry",
+            "Sad",
+            "Delight",
+            "Calm",
+            "Embarrassed",
+            "Anxiety",
+            "Love",
+          ],
           datasets: [
             {
-              label: "angry",
-              data: angryData,
-              backgroundColor: "rgba(255, 102, 102, 0.5)",
-            },
-            {
-              label: "sad",
-              data: sadData,
-              backgroundColor: "rgba(135, 206, 235, 0.5)",
-            },
-            {
-              label: "delight",
-              data: delightData,
-              backgroundColor: "rgba(255, 255, 153, 0.5)",
-            },
-            {
-              label: "calm",
-              data: calmData,
-              backgroundColor: "rgba(186, 85, 211, 0.5)",
-            },
-            {
-              label: "embarrased",
-              data: embarrasedData,
-              backgroundColor: "rgba(211, 211, 211, 0.5)",
-            },
-            {
-              label: "anxiety",
-              data: anxietyData,
-              backgroundColor: "rgba(100, 202, 100, 0.5)",
+              label: "Emotion Distribution",
+              data: [
+                emotionCounts.angry,
+                emotionCounts.sad,
+                emotionCounts.delight,
+                emotionCounts.calm,
+                emotionCounts.embarrased,
+                emotionCounts.anxiety,
+                emotionCounts.love,
+              ],
+              backgroundColor: [
+                "#FF6384", // Angry
+                "#36A2EB", // Sad
+                "#FFCE56", // Delight
+                "#4BC0C0", // Calm
+                "#9966FF", // Embarrassed
+                "#FF9F40", // Anxiety
+                "#FFCD56", // Love
+              ],
             },
           ],
         });
@@ -162,28 +213,16 @@ function Chart({
       endMonth,
       endDay
     );
-  }, []);
-
-  const options = {
-    scales: {
-      y: {
-        beginAtZero: true,
-        grid: {
-          display: false,
-        },
-      },
-      x: {
-        grid: {
-          display: false,
-        },
-      },
-    },
-    maintainAspectRatio: false,
-  };
+  }, [startYear, startMonth, startDay, endYear, endMonth, endDay]);
 
   return (
-    <div style={{ height: "500px", width: "600px" }}>
-      <Bar data={chartData} options={options} />
+    <div>
+      <h2>Weekly Emotion Distribution</h2>
+      {isEmpty ? (
+        <S.Emptymessage>이번 주 일기를 작성해주세요</S.Emptymessage>
+      ) : (
+        <Pie data={chartData} />
+      )}
     </div>
   );
 }

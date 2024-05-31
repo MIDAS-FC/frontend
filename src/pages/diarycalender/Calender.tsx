@@ -1,5 +1,12 @@
 import { useState } from "react";
 import * as S from "./Styles/Calender.style";
+import angry from "../../assets/icons/flowers/angry.png";
+import anxiety from "../../assets/icons/flowers/anxiety.png";
+import calm from "../../assets/icons/flowers/calm_transparent.png";
+import delight from "../../assets/icons/flowers/delight.png";
+import embarrased from "../../assets/icons/flowers/embarrased.png";
+import love from "../../assets/icons/flowers/love.png";
+import sad from "../../assets/icons/flowers/sad.png";
 
 interface CalenderProps {
   onDateSelect: (day: number, month: number, year: number) => void;
@@ -71,7 +78,10 @@ function Calender({ onDateSelect }: CalenderProps) {
                 >
                   {cell ? (
                     cell.isToday ? (
-                      <S.Today>{cell.day}</S.Today>
+                      <S.Today>
+                        <S.Flower src={angry} alt="flower Icon" />
+                        {cell.day}
+                      </S.Today>
                     ) : (
                       cell.day
                     )
