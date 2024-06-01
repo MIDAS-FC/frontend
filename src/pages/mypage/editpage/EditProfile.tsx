@@ -39,7 +39,11 @@ function EditProfile() {
     <S.Container>
       <S.Title>프로필 수정</S.Title>
       <S.ProfileImageContainer>
-        <S.ProfileImage src={profileImageUrl} alt="Profile" />
+        {profileImageUrl ? (
+          <S.ProfileImage src={profileImageUrl} alt="Profile" />
+        ) : (
+          <span>loading</span>
+        )}
       </S.ProfileImageContainer>
       <S.UserInfo>
         <S.UserName>{decodeURIComponent(presentNickName)}</S.UserName>

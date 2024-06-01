@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import * as S from "../Styles/SongList.style";
+import * as S from "../Styles/LikedSongs.style";
 import api from "../../../axiosInterceptor.js";
+import { useAnimation } from "framer-motion";
 
 // 임시 인터페이스
 interface Song {
@@ -9,7 +10,7 @@ interface Song {
   albumCoverUrl: string;
 }
 
-function SongList() {
+function LikedSongs() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [page, setPage] = useState(1);
   const [last, setLast] = useState(false);
@@ -18,12 +19,16 @@ function SongList() {
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
+  const controls = useAnimation();
+
+  //임시 상태관리
+  const [likedSongs, setLikedSongs] = useState<number[]>([]);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
       api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-      console.log("Access token retrieved:", token);
+      // console.log("Access token retrieved:", token);
     } else {
       console.log("token error");
     }
@@ -104,31 +109,43 @@ function SongList() {
     startX.current = e.pageX - sliderRef.current!.offsetLeft;
     scrollLeft.current = sliderRef.current!.scrollLeft;
     sliderRef.current!.style.cursor = "grabbing";
-    sliderRef.current!.style.scrollBehavior = "auto"; // Disable smooth scrolling during drag
+    sliderRef.current!.style.scrollBehavior = "auto";
   };
 
   const handleMouseLeave = () => {
     isDragging.current = false;
     sliderRef.current!.style.cursor = "grab";
-    sliderRef.current!.style.scrollBehavior = "smooth"; // Enable smooth scrolling after drag
+    sliderRef.current!.style.scrollBehavior = "smooth";
   };
 
   const handleMouseUp = () => {
     isDragging.current = false;
     sliderRef.current!.style.cursor = "grab";
-    sliderRef.current!.style.scrollBehavior = "smooth"; // Enable smooth scrolling after drag
+    sliderRef.current!.style.scrollBehavior = "smooth";
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging.current) return;
     e.preventDefault();
     const x = e.pageX - sliderRef.current!.offsetLeft;
-    const walk = (x - startX.current) * 0.5; // Adjust the scroll speed
+    const walk = (x - startX.current) * 1.5;
     sliderRef.current!.scrollLeft = scrollLeft.current - walk;
+    controls.start({
+      x: -walk,
+      transition: { type: "spring", stiffness: 300 },
+    });
   };
 
+  // 임시 toggle
+  const toggleLike = (index: number) => {
+    setLikedSongs((prevLikedSongs) =>
+      prevLikedSongs.includes(index)
+        ? prevLikedSongs.filter((i) => i !== index)
+        : [...prevLikedSongs, index]
+    );
+  };
   return (
-    <div>
+    <S.Container>
       <h2>마음에 든 노래</h2>
       {songs.length === 0 ? (
         <S.NoSongsMessage>좋아요를 누른 노래가 없습니다</S.NoSongsMessage>
@@ -147,13 +164,16 @@ function SongList() {
                 <S.SongTitle>{song.title}</S.SongTitle>
                 <S.ArtistName>{song.artist}</S.ArtistName>
               </S.SongDetails>
+              <S.HeartButton onClick={() => toggleLike(index)}>
+                {likedSongs.includes(index) ? "❤️" : "🤍"}
+              </S.HeartButton>
             </S.SliderItem>
           ))}
           <div ref={loader} style={{ width: "100%", height: "1px" }} />
         </S.SliderContainer>
       )}
-    </div>
+    </S.Container>
   );
 }
 
-export default SongList;
+export default LikedSongs;

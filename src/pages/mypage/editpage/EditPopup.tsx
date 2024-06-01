@@ -28,7 +28,6 @@ function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
     if (storedEmail) {
       setEmail(storedEmail);
     }
-    console.log("로컬스토리지 불러오기");
   }, []);
 
   useEffect(() => {

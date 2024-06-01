@@ -33,29 +33,34 @@ export const Box = styled(motion.div)`
   height: auto;
   position: relative;
   border-radius: 20px;
-  background-color: rgba(255, 255, 255, 0.8); /* 투명도 추가 */
+  background-color: rgba(255, 255, 255, 0.8);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   overflow: hidden;
   transition: background-color 0.3s ease, transform 0.3s ease,
     box-shadow 0.3s ease;
   &:hover {
-    background-color: rgba(245, 245, 245, 0.8); /* hover 시 투명도 추가 */
+    background-color: rgba(245, 245, 245, 0.8);
     transform: scale(1.02);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
   }
-  border: 2px solid #87ceeb; /* 추가된 테두리 색상 */
+  border: 2px solid #87ceeb;
 `;
 
 export const ImageContainer = styled.div`
   width: 100%;
   height: 200px;
-  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  margin: 55px 20px 0px 0px;
   border-radius: 12px;
   overflow: hidden;
   img {
-    width: 100%;
-    height: 100%;
+    width: 180px;
+    height: 180px;
+    border-radius: 10px;
+    margin: 0px 10px 10px 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     object-fit: cover;
     transition: transform 0.3s ease;
     &:hover {
@@ -73,11 +78,16 @@ export const InfoTitle = styled.div`
   font-weight: bold;
   color: #333;
   margin-bottom: 5px;
+  margin: 15px;
 `;
 
 export const InfoText = styled.div`
   font-size: 16px;
-  color: #666;
+  color: #333;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  margin: 15px;
 `;
 
 export const ButtonsContainer = styled.div`

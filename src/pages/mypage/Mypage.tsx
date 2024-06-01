@@ -1,8 +1,9 @@
 import React from "react";
 import EditProfile from "./editpage/EditProfile";
-import SongList from "./songlist/SongList";
 import WeeklyReport from "./WeeklyReport";
 import * as S from "./Styles/Mypage.style";
+import LikedSongs from "./songlist/LikedSongs";
+import TopSongs from "./songlist/TopSongs";
 
 function Mypage() {
   return (
@@ -14,7 +15,10 @@ function Mypage() {
         <WeeklyReport />
       </S.Section>
       <S.Section>
-        <SongList />
+        <LikedSongs />
+      </S.Section>
+      <S.Section>
+        <TopSongs />
       </S.Section>
     </S.PageContainer>
   );

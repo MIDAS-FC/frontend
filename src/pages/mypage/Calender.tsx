@@ -2,11 +2,10 @@ import React, { useState } from "react";
 import * as S from "./Styles/Calender.style";
 
 interface CalenderProps {
-  onDateSelect: (day: number, month: number) => void;
   currentDate: Date;
 }
 
-function Calender({ onDateSelect, currentDate }: CalenderProps) {
+function Calender({ currentDate }: CalenderProps) {
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const getWeekDates = () => {
@@ -45,10 +44,7 @@ function Calender({ onDateSelect, currentDate }: CalenderProps) {
         <tbody>
           <tr>
             {week.map((cell, idx) => (
-              <S.Td
-                key={idx}
-                onClick={() => onDateSelect(cell.day, cell.month + 1)}
-              >
+              <S.Td key={idx}>
                 {cell.isToday ? <S.Today>{cell.day}</S.Today> : cell.day}
               </S.Td>
             ))}

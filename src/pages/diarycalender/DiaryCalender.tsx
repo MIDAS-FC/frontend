@@ -7,9 +7,12 @@ import api from "../../axiosInterceptor";
 import Calender from "./Calender";
 import * as S from "./Styles/DiaryCalender.style";
 import findDayHighestEmotion from "./components/findDayHighestEmotion";
+import EmptyDiary from "../../assets/images/EmptyDiary.webp";
 
 interface DiaryInfoResponse {
   diaryId: number;
+  title: string;
+  comment: string;
   flower: string;
   imgUrl: string[];
   angry: number;
@@ -74,13 +77,6 @@ function DiaryCalender() {
         month,
         response: [response.data],
       });
-
-      // const response = { data: generateDummyData() };
-      // console.log("Month response 가져오기:", {
-      //   year,
-      //   month,
-      //   response: response.data,
-      // });
 
       setMonthInfo(response.data);
       const highestEmotionsData = findDayHighestEmotion(response.data);
@@ -172,11 +168,21 @@ function DiaryCalender() {
               exit="exit"
               transition={{ duration: 0.3 }}
             >
-              {dayInfo && dayInfo.imgUrl.length > 0 && (
-                <S.ImageContainer>
-                  <img src={dayInfo.imgUrl[0]} alt="Diary Image" />
-                </S.ImageContainer>
-              )}
+              <S.ImageContainer>
+                {dayInfo?.imgUrl && dayInfo.imgUrl.length > 0 ? (
+                  dayInfo.imgUrl
+                    .slice(0, 3)
+                    .map((url, index) => (
+                      <img
+                        key={index}
+                        src={url}
+                        alt={`Diary Image ${index + 1}`}
+                      />
+                    ))
+                ) : (
+                  <img src={EmptyDiary} alt="Empty Diary" />
+                )}
+              </S.ImageContainer>
               <S.InfoContainer>
                 <S.InfoTitle>날짜</S.InfoTitle>
                 <S.InfoText>
@@ -185,11 +191,11 @@ function DiaryCalender() {
               </S.InfoContainer>
               <S.InfoContainer>
                 <S.InfoTitle>제목</S.InfoTitle>
-                <S.InfoText></S.InfoText>
+                <S.InfoText>{dayInfo?.title}</S.InfoText>
               </S.InfoContainer>
               <S.InfoContainer>
                 <S.InfoTitle>내용</S.InfoTitle>
-                <S.InfoText></S.InfoText>
+                <S.InfoText>{dayInfo?.comment}</S.InfoText>
               </S.InfoContainer>
               <S.ButtonsContainer>
                 <S.Button onClick={handleCreateClick}>작성</S.Button>
@@ -210,35 +216,3 @@ const boxVariants = {
   visible: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: 30 },
 };
-
-// // Sample data creation function
-// const generateDummyData = (): DiaryInfoResponse[] => {
-//   const emotions = [
-//     "angry",
-//     "sad",
-//     "delight",
-//     "calm",
-//     "embarrased",
-//     "anxiety",
-//     "love",
-//   ];
-//   const data: DiaryInfoResponse[] = [];
-//   for (let i = 0; i < 30; i++) {
-//     const diary: DiaryInfoResponse = {
-//       diaryId: i + 1,
-//       flower: "rose",
-//       imgUrl: ["https://example.com/image.png"],
-//       angry: Math.random(),
-//       sad: Math.random(),
-//       delight: Math.random(),
-//       calm: Math.random(),
-//       embarrased: Math.random(),
-//       anxiety: Math.random(),
-//       love: Math.random(),
-//       spotify: `${Math.floor(Math.random() * 10)}`,
-//       isLike: Math.random() > 0.5,
-//     };
-//     data.push(diary);
-//   }
-//   return data;
-// };
