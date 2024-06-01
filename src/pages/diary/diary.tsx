@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from '../../axiosInterceptor';
+import EmotionModal from "./EmotionModal"; // 추가된 모달 컴포넌트
 import * as S from "./Styles/WriteDiary.style";
 
 function WriteDiary() {
@@ -13,6 +14,9 @@ function WriteDiary() {
   const [currentYear, setCurrentYear] = useState<number | null>(null);
   const [currentMonth, setCurrentMonth] = useState<number | null>(null);
   const [images, setImages] = useState<File[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEmotion, setSelectedEmotion] = useState<string | null>(null);
+  const [maintainEmotion, setMaintainEmotion] = useState<boolean>(false);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -41,11 +45,15 @@ function WriteDiary() {
     }
   };
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSave = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (!currentYear || !currentMonth || !selectedDate) {
       alert("날짜를 선택해주세요.");
+      return;
+    }
+
+    if (!selectedEmotion) {
+      setIsModalOpen(true); // 모달 열기
       return;
     }
 
@@ -54,7 +62,12 @@ function WriteDiary() {
     formData.append('month', currentMonth.toString());
     formData.append('day', selectedDate.toString());
 
-    const diaryData = JSON.stringify({ title, comment: content });
+    const diaryData = JSON.stringify({
+      title,
+      comment: content,
+      emotion: selectedEmotion,
+      maintain: maintainEmotion.toString()
+    });
     formData.append('diary', new Blob([diaryData], { type: "application/json" }));
 
     images.forEach((image) => formData.append('images', image));
@@ -67,7 +80,7 @@ function WriteDiary() {
       });
       console.log(response);
       alert("일기가 저장되었습니다!");
-      navigate('/'); // Navigate to the diary listing or another relevant page
+      navigate('/');
     } catch (error: unknown) {
       console.error("Error saving diary:", error);
 
@@ -83,6 +96,13 @@ function WriteDiary() {
         console.error("에러 메시지:", (error as Error).message);
       }
     }
+  };
+
+  const handleEmotionSelect = (emotion: string, maintain: boolean) => {
+    setSelectedEmotion(emotion);
+    setMaintainEmotion(maintain);
+    setIsModalOpen(false);
+    handleSave();
   };
 
   return (
@@ -108,6 +128,7 @@ function WriteDiary() {
           <S.Button type="submit">일기 작성</S.Button>
         </S.ButtonGroup>
       </S.Form>
+      {isModalOpen && <EmotionModal onClose={() => setIsModalOpen(false)} onSelect={handleEmotionSelect} />}
     </S.Container>
   );
 }
