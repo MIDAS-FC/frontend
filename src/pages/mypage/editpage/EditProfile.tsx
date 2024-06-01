@@ -27,7 +27,6 @@ function EditProfile() {
   const fetchProfileImage = async () => {
     try {
       const response = await api.get("/profile");
-      console.log("API Response:", response);
       setProfileImageUrl(response.data.imageUrl);
     } catch (error) {
       console.error("Failed to fetch profile image:", error);
