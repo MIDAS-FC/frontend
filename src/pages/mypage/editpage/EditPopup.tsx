@@ -35,14 +35,14 @@ function EditPopup({
     }
   }, []);
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-    } else {
-      console.log("token error");
-    }
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("accessToken");
+  //   if (token) {
+  //     api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+  //   } else {
+  //     console.log("token error");
+  //   }
+  // }, []);
 
   const handleNicknameChange = (event: any) => {
     setChangedNickname(event.target.value);
@@ -133,9 +133,17 @@ function EditPopup({
         throw new Error("Failed to update nickname");
       }
       alert("닉네임이 성공적으로 업데이트되었습니다.");
-    } catch (error) {
-      console.error("Error updating nickname:", error);
-      alert("닉네임 업데이트 중 오류가 발생했습니다.");
+    } catch (error: any) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.code === "SAU2"
+      ) {
+        alert("해당 닉네임이 이미 존재합니다.");
+      } else {
+        console.error("Error updating nickname:", error);
+        alert("닉네임 업데이트 중 오류가 발생했습니다.");
+      }
     }
   };
 

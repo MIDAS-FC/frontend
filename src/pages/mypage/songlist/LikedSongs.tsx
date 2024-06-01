@@ -24,15 +24,15 @@ function LikedSongs() {
   //임시 상태관리
   const [likedSongs, setLikedSongs] = useState<number[]>([]);
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-      // console.log("Access token retrieved:", token);
-    } else {
-      console.log("token error");
-    }
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("accessToken");
+  //   if (token) {
+  //     api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+  //     // console.log("Access token retrieved:", token);
+  //   } else {
+  //     console.log("token error");
+  //   }
+  // }, []);
 
   // // api 연결하기
   // const fetchLikes = useCallback(async (pageToFetch: number) => {

@@ -127,15 +127,15 @@ function Chart({
     ],
   });
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-      // console.log("Access token retrieved:", token);
-    } else {
-      console.log("token error");
-    }
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("accessToken");
+  //   if (token) {
+  //     api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+  //     // console.log("Access token retrieved:", token);
+  //   } else {
+  //     console.log("token error");
+  //   }
+  // }, []);
 
   // 현재주
   useEffect(() => {

@@ -20,15 +20,15 @@ function TopSongs() {
   //임시 상태관리
   const [likedSongs, setLikedSongs] = useState<number[]>([]);
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-      //   console.log("Access token retrieved:", token);
-    } else {
-      console.log("token error");
-    }
-  }, []);
+  //   useEffect(() => {
+  //     const token = localStorage.getItem("accessToken");
+  //     if (token) {
+  //       api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+  //       //   console.log("Access token retrieved:", token);
+  //     } else {
+  //       console.log("token error");
+  //     }
+  //   }, []);
 
   useEffect(() => {
     const fetchTopLikedSongs = async () => {
@@ -74,10 +74,6 @@ function TopSongs() {
     const x = e.pageX - sliderRef.current!.offsetLeft;
     const walk = (x - startX.current) * 1.5;
     sliderRef.current!.scrollLeft = scrollLeft.current - walk;
-    // controls.start({
-    //   x: -walk,
-    //   transition: { type: "spring", stiffness: 300 },
-    // });
   };
 
   // 임시 toggle
