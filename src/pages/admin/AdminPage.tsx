@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 const AdminPage: React.FC = () => {
     const [playlist, setPlaylist] = useState<string>('');
 
+    const getToken = () => localStorage.getItem('token');  // 토큰을 로컬 스토리지에서 가져오는 함수
+
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPlaylist(event.target.value);
     };
@@ -12,8 +14,13 @@ const AdminPage: React.FC = () => {
         event.preventDefault();
         
         try {
-            const response = await axios.post('http://localhost:8000/admin/music', {
+            const token = getToken();
+            const response = await axios.post('http://localhost:8080/admin/music', {
                 playlist: playlist
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
             if (response.status === 204) {
                 alert('Playlist가 성공적으로 업데이트 되었습니다.');

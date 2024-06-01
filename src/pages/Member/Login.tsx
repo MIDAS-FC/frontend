@@ -31,10 +31,12 @@ const Login = () => {
 
       // 응답 헤더에서 AccessToken 추출
       const accessToken = response.headers["authorization-access"].split(" ")[1];
+      const refreshToken = response.headers["authorization-refresh"].split(" ")[1];
       const nickName = response.headers["nickname"];
       const fileUrl = response.headers["multipartFile"] || "default-image-url";
 
       localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
       localStorage.setItem("nickName", nickName);
       localStorage.setItem("email", email);
       localStorage.setItem("role", role); // role 값을 로컬 스토리지에 저장
@@ -43,11 +45,8 @@ const Login = () => {
 
       // axios 기본 헤더에 토큰 설정
       axios.defaults.headers.common["authorization-access"] = `Bearer ${accessToken}`;
+      axios.defaults.headers.common["authorization-refresh"] = `Bearer ${refreshToken}`;
 
-      // axios 기본 헤더에 토큰 설정
-      axios.defaults.headers.common[
-        "authorization-access"
-      ] = `Bearer ${accessToken}`;
 
       // 사용자 정보 업데이트
       setNickname(nickName); // 닉네임
@@ -57,6 +56,7 @@ const Login = () => {
       // 홈페이지로 이동
       console.log(nickName);
       console.log(accessToken);
+      console.log(refreshToken);
       navigate("/");
     } catch (error) {
       // Handle error here

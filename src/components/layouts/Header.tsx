@@ -11,7 +11,8 @@ function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const token = localStorage.getItem("accessToken");
-  const role = localStorage.getItem("role"); // 로컬 스토리지에서 role 가져오기
+  const refreshToken = localStorage.getItem("refreshToken");
+  const role = localStorage.getItem("role");
 
   const handleLogoClick = () => {
     navigate("/");
@@ -36,7 +37,8 @@ function Header() {
         {},
         {
           headers: {
-            "authorization-access": `Bearer ${token}`,
+            "Authorization-Access": `Bearer ${token}`,
+            "Authorization-Refresh": `Bearer ${refreshToken}`,
           },
         }
       );
@@ -49,7 +51,8 @@ function Header() {
       localStorage.removeItem("email");
       localStorage.removeItem("role");
 
-      delete axios.defaults.headers.common["authorization-access"];
+      delete axios.defaults.headers.common["Authorization-Access"];
+      delete axios.defaults.headers.common["Authorization-Refresh"];
       setIsLoggedIn(false);
       navigate("/");
     } catch (error) {
