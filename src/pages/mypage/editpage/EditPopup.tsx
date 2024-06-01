@@ -4,7 +4,12 @@ import axios from "axios";
 import { PresenceContext, motion } from "framer-motion";
 import api from "../../../axiosInterceptor";
 
-function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
+function EditPopup({
+  onClose,
+  onNicknameUpdate,
+  profileImageUrl,
+  onProfileImageUpdate,
+}: any) {
   const [showNicknameInput, setShowNicknameInput] = useState(false);
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [email, setEmail] = useState("");
@@ -90,8 +95,10 @@ function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
       if (response.data.url) {
         // api 호출 필요
         setProfileImage(response.data.url);
+        // 프로필 이미지 업데이트 후 상태 리프레시 호출
+        onProfileImageUpdate();
+        alert("프로필이 성공적으로 업데이트되었습니다.");
       }
-      alert("프로필이 성공적으로 업데이트되었습니다.");
     } catch (error) {
       console.error("Error updating profile:", error);
       alert("프로필 업데이트 중 오류가 발생했습니다.");
@@ -168,6 +175,7 @@ function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
       alert("비밀번호 변경 중 오류가 발생했습니다.");
     }
   };
+
   return (
     <S.Overlay>
       <motion.div
@@ -191,16 +199,20 @@ function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
                 <label htmlFor="image-upload">📷</label>
               </S.GrayCircle>
             </S.ProfileImageContainer>
-            <S.ProfileUpdateButton onClick={handleProfileImageUpdate}>
-              프로필 사진 변경
-            </S.ProfileUpdateButton>
             <S.UserInfo>
+              <S.ProfileUpdateButton onClick={handleProfileImageUpdate}>
+                프로필 사진 변경
+              </S.ProfileUpdateButton>
               <S.UserName>{presentNickName}</S.UserName>
-              <S.NicknameButton
-                onClick={() => setShowNicknameInput(!showNicknameInput)}
-              >
-                닉네임 변경
-              </S.NicknameButton>
+              {!showNicknameInput && (
+                <S.NicknameButton
+                  onClick={() => {
+                    setShowNicknameInput(true);
+                  }}
+                >
+                  닉네임 변경
+                </S.NicknameButton>
+              )}
               {showNicknameInput && (
                 <S.InputContainer>
                   <S.Input
@@ -214,13 +226,15 @@ function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
                   </S.ProfileUpdateButton>
                 </S.InputContainer>
               )}
-              <S.ResetPasswordButton
-                onClick={() => {
-                  setShowPasswordInput(!showPasswordInput);
-                }}
-              >
-                비밀번호 변경
-              </S.ResetPasswordButton>
+              {!showPasswordInput && (
+                <S.ResetPasswordButton
+                  onClick={() => {
+                    setShowPasswordInput(true);
+                  }}
+                >
+                  비밀번호 변경
+                </S.ResetPasswordButton>
+              )}
               {showPasswordInput && (
                 <S.InputContainer>
                   <S.Input

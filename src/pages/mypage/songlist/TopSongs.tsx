@@ -10,32 +10,12 @@ interface Song {
   albumCoverUrl: string;
 }
 
-// 더미 데이터
-const dummySongs: Song[] = [
-  { title: "Song 1", artist: "Artist 1", albumCoverUrl: "path/to/image1.jpg" },
-  { title: "Song 2", artist: "Artist 2", albumCoverUrl: "path/to/image2.jpg" },
-  { title: "Song 3", artist: "Artist 3", albumCoverUrl: "path/to/image3.jpg" },
-  { title: "Song 4", artist: "Artist 4", albumCoverUrl: "path/to/image4.jpg" },
-  { title: "Song 5", artist: "Artist 5", albumCoverUrl: "path/to/image5.jpg" },
-  { title: "Song 6", artist: "Artist 6", albumCoverUrl: "path/to/image6.jpg" },
-  { title: "Song 7", artist: "Artist 7", albumCoverUrl: "path/to/image7.jpg" },
-  { title: "Song 8", artist: "Artist 8", albumCoverUrl: "path/to/image8.jpg" },
-  { title: "Song 9", artist: "Artist 9", albumCoverUrl: "path/to/image9.jpg" },
-  {
-    title: "Song 10",
-    artist: "Artist 10",
-    albumCoverUrl: "path/to/image10.jpg",
-  },
-];
-
 function TopSongs() {
-  //   const [songs, setSongs] = useState<Song[]>([]);
-  const [songs, setSongs] = useState<Song[]>(dummySongs);
+  const [songs, setSongs] = useState<Song[]>([]);
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
-  const controls = useAnimation();
 
   //임시 상태관리
   const [likedSongs, setLikedSongs] = useState<number[]>([]);
@@ -50,7 +30,6 @@ function TopSongs() {
     }
   }, []);
 
-  // api 연결하기
   useEffect(() => {
     const fetchTopLikedSongs = async () => {
       try {
@@ -95,10 +74,10 @@ function TopSongs() {
     const x = e.pageX - sliderRef.current!.offsetLeft;
     const walk = (x - startX.current) * 1.5;
     sliderRef.current!.scrollLeft = scrollLeft.current - walk;
-    controls.start({
-      x: -walk,
-      transition: { type: "spring", stiffness: 300 },
-    });
+    // controls.start({
+    //   x: -walk,
+    //   transition: { type: "spring", stiffness: 300 },
+    // });
   };
 
   // 임시 toggle

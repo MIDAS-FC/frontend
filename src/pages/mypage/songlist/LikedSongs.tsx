@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as S from "../Styles/LikedSongs.style";
 import api from "../../../axiosInterceptor.js";
-import { useAnimation } from "framer-motion";
+import { MotionConfig, motion, useAnimation } from "framer-motion";
 
 // 임시 인터페이스
 interface Song {
@@ -130,10 +130,10 @@ function LikedSongs() {
     const x = e.pageX - sliderRef.current!.offsetLeft;
     const walk = (x - startX.current) * 1.5;
     sliderRef.current!.scrollLeft = scrollLeft.current - walk;
-    controls.start({
-      x: -walk,
-      transition: { type: "spring", stiffness: 300 },
-    });
+    // controls.start({
+    //   x: walk,
+    //   transition: { type: "spring", stiffness: 200 },
+    // });
   };
 
   // 임시 toggle

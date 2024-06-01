@@ -10,22 +10,29 @@ function EditProfile() {
   const [profileImageUrl, setProfileImageUrl] = useState("");
 
   useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+    } else {
+      console.log("token error");
+    }
     const storedNickname = localStorage.getItem("nickName");
     if (storedNickname) {
       setPresentNickName(storedNickname);
     }
 
-    const fetchProfileImage = async () => {
-      try {
-        const response = await api.get("/profile");
-        setProfileImageUrl(response.data.imageUrl);
-      } catch (error) {
-        console.error("Failed to fetch profile image:", error);
-      }
-    };
-
     fetchProfileImage();
   }, []);
+
+  const fetchProfileImage = async () => {
+    try {
+      const response = await api.get("/profile");
+      console.log("API Response:", response);
+      setProfileImageUrl(response.data.imageUrl);
+    } catch (error) {
+      console.error("Failed to fetch profile image:", error);
+    }
+  };
 
   const handleClosePopup = () => {
     setShowPopup(false);
@@ -33,6 +40,11 @@ function EditProfile() {
 
   const handleNicknameUpdate = (newNickname: string) => {
     setPresentNickName(newNickname);
+  };
+
+  // 프로필 사진 상태 리프레시
+  const handleProfileImageUpdate = () => {
+    fetchProfileImage();
   };
 
   return (
@@ -57,15 +69,16 @@ function EditProfile() {
       <AnimatePresence>
         {showPopup && (
           <motion.div
-            initial={{ opacity: 0, y: -50 }}
+            initial={{ opacity: 0, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }}
+            exit={{ opacity: 0, y: 0 }}
             transition={{ duration: 0.3 }}
           >
             <EditPopup
               onClose={handleClosePopup}
               onNicknameUpdate={handleNicknameUpdate}
               profileImageUrl={profileImageUrl}
+              onProfileImageUpdate={handleProfileImageUpdate}
             />
           </motion.div>
         )}
