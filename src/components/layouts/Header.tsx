@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
@@ -10,8 +10,8 @@ function Header() {
   const { isLoggedIn, setIsLoggedIn, nickname, email } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
 
-  const token = localStorage.getItem('accessToken');
-  const role = localStorage.getItem('role'); // 로컬 스토리지에서 role 가져오기
+  const token = localStorage.getItem("accessToken");
+  const role = localStorage.getItem("role"); // 로컬 스토리지에서 role 가져오기
 
   const handleLogoClick = () => {
     navigate("/");
@@ -31,12 +31,15 @@ function Header() {
 
   const handleLogoutClick = async () => {
     try {
-      await axios.post('http://localhost:8080/token/logout', {}, {
-        headers: {
-          'authorization-access': `Bearer ${token}`
+      await axios.post(
+        "http://localhost:8080/token/logout",
+        {},
+        {
+          headers: {
+            "authorization-access": `Bearer ${token}`,
+          },
         }
-      });
-
+      );
 
       alert("로그아웃 성공.");
       localStorage.removeItem("accessToken");
@@ -94,7 +97,9 @@ function Header() {
         <S.LeftButtonContainer>
           <S.LinkButton onClick={handleWriteDiaryClick}>일기작성</S.LinkButton>
           {role === "ADMIN" ? (
-            <S.LinkButton onClick={handleAdminPageClick}>관리자페이지</S.LinkButton>
+            <S.LinkButton onClick={handleAdminPageClick}>
+              관리자페이지
+            </S.LinkButton>
           ) : (
             <S.LinkButton onClick={handleCalendarClick}>캘린더</S.LinkButton>
           )}

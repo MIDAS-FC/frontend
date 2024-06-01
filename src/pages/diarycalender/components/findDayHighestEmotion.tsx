@@ -6,7 +6,7 @@ interface DiaryInfoResponse {
   sad: number;
   delight: number;
   calm: number;
-  embarrased: number;
+  depressed: number;
   anxiety: number;
   love: number;
   spotify: string;
@@ -27,7 +27,7 @@ export const findDayHighestEmotion = (
       sad: diary.sad,
       delight: diary.delight,
       calm: diary.calm,
-      embarrased: diary.embarrased,
+      depressed: diary.depressed,
       anxiety: diary.anxiety,
       love: diary.love,
     };

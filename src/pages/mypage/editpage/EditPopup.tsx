@@ -87,11 +87,9 @@ function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
         },
       });
 
-      console.log("Profile updated:", response.data);
       if (response.data.url) {
         // api 호출 필요
         setProfileImage(response.data.url);
-        console.log("new profileImage updated", response.data.url);
       }
       alert("프로필이 성공적으로 업데이트되었습니다.");
     } catch (error) {
@@ -147,16 +145,6 @@ function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
       password: changedPassword,
       rePassword: reChangedPassword,
     };
-    console.log(
-      "email: ",
-      email,
-      "socialType: ",
-      socialType,
-      "password: ",
-      changedPassword,
-      "rePassword: ",
-      reChangedPassword
-    );
 
     try {
       const response = await api.put(

@@ -19,7 +19,7 @@ interface DiaryInfoResponse {
   sad: number;
   delight: number;
   calm: number;
-  embarrased: number;
+  depressed: number;
   anxiety: number;
   love: number;
   spotify: string;
@@ -39,7 +39,7 @@ function DiaryCalender() {
     const token = localStorage.getItem("accessToken");
     if (token) {
       api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-      console.log(token);
+      // console.log(token);
     } else {
     }
   }, []);
@@ -72,15 +72,15 @@ function DiaryCalender() {
         params: { year, month },
       });
 
-      console.log("Month response 가져오기:", {
-        year,
-        month,
-        response: [response.data],
-      });
+      // console.log("Month response 가져오기:", {
+      //   year,
+      //   month,
+      //   response: [response.data],
+      // });
 
       setMonthInfo(response.data);
       const highestEmotionsData = findDayHighestEmotion(response.data);
-      console.log("highestEmotion", highestEmotionsData);
+      // console.log("highestEmotion", highestEmotionsData);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(
@@ -104,12 +104,12 @@ function DiaryCalender() {
         params: { year, month, day },
       });
 
-      console.log("Day response 가져오기:", {
-        year,
-        month,
-        day,
-        response: [response.data],
-      });
+      // console.log("Day response 가져오기:", {
+      //   year,
+      //   month,
+      //   day,
+      //   response: [response.data],
+      // });
       setDayInfo(response.data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
