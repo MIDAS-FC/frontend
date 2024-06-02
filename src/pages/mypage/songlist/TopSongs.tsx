@@ -4,14 +4,18 @@ import api from "../../../axiosInterceptor.js";
 import { useAnimation } from "framer-motion";
 
 // 임시 인터페이스
-interface Song {
+interface SongInfo {
+  id: string;
   title: string;
   artist: string;
   albumCoverUrl: string;
+  durationMs: number;
+  popularity: number;
+  releaseDate: string;
 }
 
 function TopSongs() {
-  const [songs, setSongs] = useState<Song[]>([]);
+  const [songs, setSongs] = useState<SongInfo[]>([]);
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
@@ -40,8 +44,13 @@ function TopSongs() {
             ? [...prevSongs, ...response.data]
             : prevSongs;
         });
-      } catch (error) {
-        console.error("Error fetching top liked songs: ", error);
+      } catch (error: any) {
+        if (error.response.data.code === "SAG1") {
+          alert("외부 API와 통신이 불가능합니다.");
+        } else {
+          alert("노래 리스트를 가져오는 데 실패했습니다.");
+          console.error("Error fetching top liked songs: ", error);
+        }
       }
     };
 

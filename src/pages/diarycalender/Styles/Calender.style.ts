@@ -63,10 +63,17 @@ export const Today = styled.div`
   position: relative;
 `;
 
+export const FlowerContainer = styled.div`
+  position: relative;
+  display: inline-block;
+  padding-top: 5px;
+  float: right;
+`;
+
 export const Flower = styled.img`
-  width: 25px;
+  width: 30px;
   height: 30px;
   position: absolute;
   top: -15px;
-  left: -25px;
+  right: 0;
 `;

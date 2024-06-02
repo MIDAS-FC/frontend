@@ -114,3 +114,25 @@ export const Button = styled.button`
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   }
 `;
+
+export const FlowerImageContainer = styled.div`
+  position: absolute;
+  top: -14px;
+  left: -14px;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+`;
+
+export const Flower = styled.img`
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  &:hover {
+    transform: scale(1.1);
+  }
+`;

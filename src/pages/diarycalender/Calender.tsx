@@ -1,50 +1,69 @@
 import { useState } from "react";
 import * as S from "./Styles/Calender.style";
-import angryFlower from "../../assets/icons/flowers/angry.png";
-import anxietyFlower from "../../assets/icons/flowers/anxiety.png";
-import calmFlower from "../../assets/icons/flowers/calm.png";
-import delightFlower from "../../assets/icons/flowers/delight.png";
-import depressedFlower from "../../assets/icons/flowers/depressed.png";
-import loveFlower from "../../assets/icons/flowers/love.png";
-import sadFlower from "../../assets/icons/flowers/sad.png";
-import { HighestEmotionData } from "./components/findDayHighestEmotion";
+import Rose from "../../assets/icons/flowers/Rose.webp";
+import Sunflower from "../../assets/icons/flowers/Sunflower.webp";
+import Tulip from "../../assets/icons/flowers/Tulip.webp";
+import Lilac from "../../assets/icons/flowers/Lilac.webp";
+import BlueDaisy from "../../assets/icons/flowers/BlueDaisy.webp";
+import Chamomile from "../../assets/icons/flowers/Chamomile.webp";
+import Dahlia from "../../assets/icons/flowers/Dahlia.webp";
+import { DiaryInfoResponse } from "./DiaryCalender";
+import { motion } from "framer-motion";
 
 interface CalenderProps {
   onDateSelect: (day: number, month: number, year: number) => void;
-  highestEmotion: HighestEmotionData[] | null;
+  monthInfo: DiaryInfoResponse[] | null;
 }
 
-const emotionToFlowerMap: { [key: string]: string } = {
-  angry: angryFlower,
-  anxiety: anxietyFlower,
-  calm: calmFlower,
-  delight: delightFlower,
-  depressed: depressedFlower,
-  love: loveFlower,
-  sad: sadFlower,
+const flowerImageMap: { [key: string]: string } = {
+  장미: Rose,
+  해바라기: Sunflower,
+  튤립: Tulip,
+  라일락: Lilac,
+  "블루 데이지": BlueDaisy,
+  캐모마일: Chamomile,
+  달리아: Dahlia,
 };
 
-function Calender({ onDateSelect, highestEmotion }: CalenderProps) {
+// const flowerDescriptionMap: { [key: string]: string } = {
+//   장미: "Rose description",
+//   해바라기: "Sunflower description",
+//   튤립: "Tulip description",
+//   라일락: "Lilac description",
+//   "블루 데이지": "Blue Daisy description",
+//   캐모마일: "Chamomile description",
+//   달리아: "Dahlia description",
+// };
+
+const getFlowerForDay = (
+  year: number,
+  month: number,
+  day: number,
+  monthInfo: DiaryInfoResponse[] | null
+): string | undefined => {
+  const diaryEntry = monthInfo?.find((entry) => {
+    const entryDate = new Date(entry.date);
+    return (
+      entryDate.getFullYear() === year &&
+      entryDate.getMonth() + 1 === month &&
+      entryDate.getDate() === day
+    );
+  });
+  return diaryEntry ? flowerImageMap[diaryEntry.flower] : undefined;
+};
+
+function Calender({ onDateSelect, monthInfo }: CalenderProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const today = new Date();
 
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-  // console.log("높은수", highestEmotion);
-
-  // 꽃과 감정 매칭
-  const getFlowerForDay = (day: number) => {
-    if (!highestEmotion) return null;
-    const emotionData = highestEmotion.find((entry) => entry.diaryId === day);
-    return emotionData ? emotionToFlowerMap[emotionData.highestEmotion] : null;
-  };
-
   const generateMatrix = () => {
     const year = currentMonth.getFullYear();
-    const month = currentMonth.getMonth();
+    const month = currentMonth.getMonth() + 1;
 
-    const firstDay = new Date(year, month, 1).getDay();
-    const totalDays = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month - 1, 1).getDay();
+    const totalDays = new Date(year, month, 0).getDate();
 
     const matrix = [];
     let week = [];
@@ -54,12 +73,15 @@ function Calender({ onDateSelect, highestEmotion }: CalenderProps) {
     }
 
     for (let day = 1; day <= totalDays; day++) {
+      const flower = getFlowerForDay(year, month, day, monthInfo);
+
       week.push({
         day,
         isToday:
           day === today.getDate() &&
-          month === today.getMonth() &&
+          month === today.getMonth() + 1 &&
           year === today.getFullYear(),
+        flower,
       });
       if ((firstDay + day) % 7 === 0 || day === totalDays) {
         matrix.push(week);
@@ -97,27 +119,16 @@ function Calender({ onDateSelect, highestEmotion }: CalenderProps) {
                     )
                   }
                 >
-                  {cell && (
-                    <S.Td
-                      key={idx}
-                      onClick={() =>
-                        cell &&
-                        onDateSelect(
-                          cell.day,
-                          currentMonth.getMonth() + 1,
-                          currentMonth.getFullYear()
-                        )
-                      }
-                    >
-                      {getFlowerForDay(cell.day) && (
-                        <S.Flower
-                          src={getFlowerForDay(cell.day) || ""}
-                          alt="flower Icon"
-                        />
-                      )}
+                  {cell ? (
+                    <>
                       {cell.isToday ? <S.Today>{cell.day}</S.Today> : cell.day}
-                    </S.Td>
-                  )}
+                      {cell.flower && (
+                        <S.FlowerContainer>
+                          <S.Flower src={cell.flower} alt="flower" />
+                        </S.FlowerContainer>
+                      )}
+                    </>
+                  ) : null}
                 </S.Td>
               ))}
             </tr>

@@ -28,8 +28,13 @@ function EditProfile() {
     try {
       const response = await api.get("/profile");
       setProfileImageUrl(response.data.imageUrl);
-    } catch (error) {
-      console.error("Failed to fetch profile image:", error);
+    } catch (error: any) {
+      if (error.response?.data?.code === "SAG1") {
+        alert("외부 api와 통신이 불가능합니다.");
+      } else {
+        alert("프로필 사진을 가져오는 데 실패했습니다.");
+        console.error("Failed to fetch profile image:", error);
+      }
     }
   };
 

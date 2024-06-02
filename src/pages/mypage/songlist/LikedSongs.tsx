@@ -34,6 +34,8 @@ function LikedSongs() {
   //   }
   // }, []);
 
+  /////////////////////////////////////////////////////
+
   // // api 연결하기
   // const fetchLikes = useCallback(async (pageToFetch: number) => {
   //   try {
@@ -48,11 +50,15 @@ function LikedSongs() {
   //     );
   //     setLast(last);
   //     console.log(`Fetched ${data.length} songs, last: ${last}`);
-  //   } catch (error) {
-  //     console.error("Error fetching liked songs: ", error);
+  //   } catch (error: any) {
+  //     if (error.response.data.code === "SAG1") {
+  //       alert("외부 API와 통신이 불가능합니다.");
+  //     } else {
+  //       alert("노래 리스트를 가져오는 데 실패했습니다.");
+  //       console.error("Error fetching liked songs: ", error);
+  //     }
   //   }
   // }, []);
-
   const fetchLikes = useCallback(async (pageToFetch: number) => {
     try {
       // 더미 데이터 생성

@@ -93,15 +93,17 @@ function EditPopup({
       });
 
       if (response.data.url) {
-        // api 호출 필요
         setProfileImage(response.data.url);
-        // 프로필 이미지 업데이트 후 상태 리프레시 호출
         onProfileImageUpdate();
         alert("프로필이 성공적으로 업데이트되었습니다.");
       }
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("프로필 업데이트 중 오류가 발생했습니다.");
+    } catch (error: any) {
+      if (error.response?.data?.code === "SAG1") {
+        alert("외부 api와 통신이 불가능합니다.");
+      } else {
+        alert("프로필 업데이트 중 오류가 발생했습니다.");
+        console.error("Error updating profile:", error);
+      }
     }
   };
 
@@ -130,16 +132,14 @@ function EditPopup({
         setPresentNickName(Chanegednickname);
         onNicknameUpdate(Chanegednickname);
       } else {
-        throw new Error("Failed to update nickname");
+        throw new Error("Error: Not 204");
       }
       alert("닉네임이 성공적으로 업데이트되었습니다.");
     } catch (error: any) {
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.code === "SAU2"
-      ) {
+      if (error.response?.data?.code === "SAU2") {
         alert("해당 닉네임이 이미 존재합니다.");
+      } else if (error.response?.data?.code === "SAG1") {
+        alert("외부 api와 통신이 불가능합니다.");
       } else {
         console.error("Error updating nickname:", error);
         alert("닉네임 업데이트 중 오류가 발생했습니다.");
@@ -176,9 +176,12 @@ function EditPopup({
         alert("비밀번호가 변경되었습니다.");
         setShowPasswordInput(false);
       } else {
-        throw new Error("Failed to change password");
+        throw new Error("Error: Not 204");
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response?.data?.code === "SAG1") {
+        alert("외부 api와 통신이 불가능합니다.");
+      }
       console.error("Error changing password:", error);
       alert("비밀번호 변경 중 오류가 발생했습니다.");
     }

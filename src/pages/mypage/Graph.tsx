@@ -247,14 +247,12 @@ function Chart({
 
         const current_percentages = CalculatePercentage(data);
         setCurrentPercentages(current_percentages);
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error("Emotion statistics fetch error: ", error.message);
-          if (error.response) {
-            console.error("Error response data: ", error.response.data);
-          }
+      } catch (error: any) {
+        if (error.response.data.code === "SAG1") {
+          alert("외부 API와 통신이 불가능합니다.");
         } else {
-          console.error("Error: ", error);
+          alert("주간감정통계를 가져오는 데 실패했습니다.");
+          console.error("Error Fetching statistics: ", error);
         }
       }
     };
