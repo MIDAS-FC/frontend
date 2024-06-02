@@ -1,5 +1,5 @@
-import axios from 'axios';
 import React, { useState } from 'react';
+import api from '../../axiosInterceptor';
 
 const AdminPage: React.FC = () => {
     const [playlist, setPlaylist] = useState<string>('');
@@ -15,7 +15,7 @@ const AdminPage: React.FC = () => {
         
         try {
             const token = getToken();
-            const response = await axios.post('http://localhost:8080/admin/music', {
+            const response = await api.post('/admin/music', {
                 playlist: playlist
             }, {
                 headers: {

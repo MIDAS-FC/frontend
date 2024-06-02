@@ -10,8 +10,7 @@ export const Container = styled.div`
 `;
 
 export const Header = styled.h1`
-
-  font-family: "Malgun Gothic", sans-serif; /* 맑은 고딕 폰트 */
+  font-family: "Malgun Gothic", sans-serif;
   font-size: 36px;
   color: #d38b8b;
   margin-bottom: 20px;
@@ -24,7 +23,7 @@ export const Form = styled.form`
 `;
 
 export const Input = styled.input`
-  font-family: "Malgun Gothic", sans-serif; /* 맑은 고딕 폰트 */
+  font-family: "Malgun Gothic", sans-serif;
   font-size: 24px;
   padding: 10px;
   margin-bottom: 10px;
@@ -34,7 +33,7 @@ export const Input = styled.input`
 `;
 
 export const TextArea = styled.textarea`
-  font-family: "Malgun Gothic", sans-serif; /* 맑은 고딕 폰트 */
+  font-family: "Malgun Gothic", sans-serif;
   font-size: 18px;
   padding: 10px;
   margin-bottom: 10px;
@@ -60,7 +59,7 @@ export const BackgroundImage = styled.img`
 `;
 
 export const Button = styled.button`
-  font-family: "Malgun Gothic", sans-serif; /* 맑은 고딕 폰트 */
+  font-family: "Malgun Gothic", sans-serif;
   font-size: 24px;
   padding: 10px 20px;
   background-color: #d38b8b;
@@ -80,4 +79,64 @@ export const ButtonGroup = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 20px;
+`;
+
+export const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+`;
+
+export const ModalContainer = styled.div`
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  text-align: center;
+  position: relative;
+`;
+
+export const ModalContent = styled.div`
+  max-height: 80vh;
+  overflow-y: auto;
+`;
+
+export const ModalButton = styled.button`
+  margin: 10px;
+  padding: 10px 20px;
+  background: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background: #0056b3;
+  }
+`;
+
+export const LikeButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  svg {
+    width: 24px;
+    height: 24px;
+    transition: fill 0.3s;
+
+    &:hover {
+      fill: red;
+    }
+  }
 `;

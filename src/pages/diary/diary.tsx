@@ -2,7 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from '../../axiosInterceptor';
-import EmotionModal from "./EmotionModal"; // 추가된 모달 컴포넌트
+import EmotionModal from "./EmotionModal";
+import MusicModal from "./MusicModal";
 import * as S from "./Styles/WriteDiary.style";
 
 function WriteDiary() {
@@ -17,6 +18,8 @@ function WriteDiary() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEmotion, setSelectedEmotion] = useState<string | null>(null);
   const [maintainEmotion, setMaintainEmotion] = useState<boolean>(false);
+  const [isSongModalOpen, setIsSongModalOpen] = useState(false);
+  const [trackId, setTrackId] = useState<string | null>(null);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -79,16 +82,19 @@ function WriteDiary() {
         },
       });
       console.log(response);
-      alert("일기가 저장되었습니다!");
-      navigate('/');
-    } catch (error: unknown) {
+      // 응답에서 trackId를 받아서 설정
+      setTrackId(response.data.spotify);
+      setIsSongModalOpen(true); // 노래 모달 열기
+      // alert("일기가 저장되었습니다!");
+      // navigate('/');
+    } catch (error) {
       console.error("Error saving diary:", error);
 
       if (axios.isAxiosError(error)) {
-        console.error("응답 데이터:", error.response?.data);
-        console.error("응답 상태:", error.response?.status);
-        console.error("응답 헤더:", error.response?.headers);
-        if (error.response?.status === 401) {
+        console.error("응답 데이터:", (error as any).response?.data);
+        console.error("응답 상태:", (error as any).response?.status);
+        console.error("응답 헤더:", (error as any).response?.headers);
+        if ((error as any).response?.status === 401) {
           alert("인증 오류입니다. 다시 로그인해주세요.");
           navigate("/login");
         }
@@ -129,6 +135,7 @@ function WriteDiary() {
         </S.ButtonGroup>
       </S.Form>
       {isModalOpen && <EmotionModal onClose={() => setIsModalOpen(false)} onSelect={handleEmotionSelect} />}
+      {isSongModalOpen && trackId && <MusicModal trackId={trackId} onClose={() => setIsSongModalOpen(false)} />}
     </S.Container>
   );
 }

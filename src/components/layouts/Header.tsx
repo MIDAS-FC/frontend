@@ -9,7 +9,7 @@ function Header() {
   const navigate = useNavigate();
   const { isLoggedIn, setIsLoggedIn, nickname, email } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
-
+  
   const token = localStorage.getItem('accessToken');
   const refreshToken = localStorage.getItem('refreshToken');
   const role = localStorage.getItem('role');
@@ -47,8 +47,10 @@ function Header() {
       localStorage.removeItem("email");
       localStorage.removeItem("role");
 
+
       delete axios.defaults.headers.common["Authorization-Access"];
       delete axios.defaults.headers.common["Authorization-Refresh"];
+
       setIsLoggedIn(false);
       navigate("/");
     } catch (error) {

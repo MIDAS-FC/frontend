@@ -1,19 +1,16 @@
-import axios from 'axios';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-
-axios.defaults.baseURL = "/auth";
+import api from "../../axiosInterceptor";
 
 const AdminJoin = () => {
   const [formData, setFormData] = useState({
-    username: '관리자',
     password: '',
     email: '',
     adminCode: '',
   });
 
-  const { username, password, email, adminCode } = formData;
+  const { password, email, adminCode } = formData;
   const navigate = useNavigate();
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -23,7 +20,7 @@ const AdminJoin = () => {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/admin/register', formData);
+      const response = await api.post('/auth/admin/register', formData);
       if (response.status === 204) {
         alert('회원가입 성공!');
         navigate("/");
@@ -48,7 +45,7 @@ const AdminJoin = () => {
           </div>
           <div>
             <label>Admin Code</label>
-            <JoinInput type="text" name="adminCode" value={adminCode} onChange={onChange} required />
+            <JoinInput type="password" name="adminCode" value={adminCode} onChange={onChange} required />
           </div>
           <JoinBtn type="submit">Register</JoinBtn>
         </JoinForm>
