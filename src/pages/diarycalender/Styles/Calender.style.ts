@@ -60,19 +60,13 @@ export const Today = styled.div`
   font-weight: bold;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
-`;
-
-export const Emoji = styled.div`
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  font-size: 20px;
+  position: relative;
 `;
 
 export const Flower = styled.img`
-  width: 20px;
-  height: 20px;
-  position: relative;
+  width: 25px;
+  height: 30px;
+  position: absolute;
   top: -15px;
-  left: -15px;
+  left: -25px;
 `;

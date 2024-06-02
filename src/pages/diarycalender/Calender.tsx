@@ -1,22 +1,43 @@
 import { useState } from "react";
 import * as S from "./Styles/Calender.style";
-import angry from "../../assets/icons/flowers/angry.png";
-import anxiety from "../../assets/icons/flowers/anxiety.png";
-import calm from "../../assets/icons/flowers/calm_transparent.png";
-import delight from "../../assets/icons/flowers/delight.png";
-import embarrased from "../../assets/icons/flowers/embarrased.png";
-import love from "../../assets/icons/flowers/love.png";
-import sad from "../../assets/icons/flowers/sad.png";
+import angryFlower from "../../assets/icons/flowers/angry.png";
+import anxietyFlower from "../../assets/icons/flowers/anxiety.png";
+import calmFlower from "../../assets/icons/flowers/calm.png";
+import delightFlower from "../../assets/icons/flowers/delight.png";
+import depressedFlower from "../../assets/icons/flowers/depressed.png";
+import loveFlower from "../../assets/icons/flowers/love.png";
+import sadFlower from "../../assets/icons/flowers/sad.png";
+import { HighestEmotionData } from "./components/findDayHighestEmotion";
 
 interface CalenderProps {
   onDateSelect: (day: number, month: number, year: number) => void;
+  highestEmotion: HighestEmotionData[] | null;
 }
 
-function Calender({ onDateSelect }: CalenderProps) {
+const emotionToFlowerMap: { [key: string]: string } = {
+  angry: angryFlower,
+  anxiety: anxietyFlower,
+  calm: calmFlower,
+  delight: delightFlower,
+  depressed: depressedFlower,
+  love: loveFlower,
+  sad: sadFlower,
+};
+
+function Calender({ onDateSelect, highestEmotion }: CalenderProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const today = new Date();
 
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  // console.log("높은수", highestEmotion);
+
+  // 꽃과 감정 매칭
+  const getFlowerForDay = (day: number) => {
+    if (!highestEmotion) return null;
+    const emotionData = highestEmotion.find((entry) => entry.diaryId === day);
+    return emotionData ? emotionToFlowerMap[emotionData.highestEmotion] : null;
+  };
 
   const generateMatrix = () => {
     const year = currentMonth.getFullYear();
@@ -76,16 +97,27 @@ function Calender({ onDateSelect }: CalenderProps) {
                     )
                   }
                 >
-                  {cell ? (
-                    cell.isToday ? (
-                      <S.Today>
-                        <S.Flower src={angry} alt="flower Icon" />
-                        {cell.day}
-                      </S.Today>
-                    ) : (
-                      cell.day
-                    )
-                  ) : null}
+                  {cell && (
+                    <S.Td
+                      key={idx}
+                      onClick={() =>
+                        cell &&
+                        onDateSelect(
+                          cell.day,
+                          currentMonth.getMonth() + 1,
+                          currentMonth.getFullYear()
+                        )
+                      }
+                    >
+                      {getFlowerForDay(cell.day) && (
+                        <S.Flower
+                          src={getFlowerForDay(cell.day) || ""}
+                          alt="flower Icon"
+                        />
+                      )}
+                      {cell.isToday ? <S.Today>{cell.day}</S.Today> : cell.day}
+                    </S.Td>
+                  )}
                 </S.Td>
               ))}
             </tr>
