@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import api from '../../axiosInterceptor';
+import api from "../../axiosInterceptor";
 import EmotionModal from "./EmotionModal"; // 추가된 모달 컴포넌트
 import * as S from "./Styles/WriteDiary.style";
 
@@ -58,29 +58,32 @@ function WriteDiary() {
     }
 
     const formData = new FormData();
-    formData.append('year', currentYear.toString());
-    formData.append('month', currentMonth.toString());
-    formData.append('day', selectedDate.toString());
+    formData.append("year", currentYear.toString());
+    formData.append("month", currentMonth.toString());
+    formData.append("day", selectedDate.toString());
 
     const diaryData = JSON.stringify({
       title,
       comment: content,
       emotion: selectedEmotion,
-      maintain: maintainEmotion.toString()
+      maintain: maintainEmotion.toString(),
     });
-    formData.append('diary', new Blob([diaryData], { type: "application/json" }));
+    formData.append(
+      "diary",
+      new Blob([diaryData], { type: "application/json" })
+    );
 
-    images.forEach((image) => formData.append('images', image));
+    images.forEach((image) => formData.append("images", image));
 
     try {
-      const response = await api.post('/diary/calendar', formData, {
+      const response = await api.post("/diary/calendar", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       console.log(response);
       alert("일기가 저장되었습니다!");
-      navigate('/');
+      navigate("/");
     } catch (error: unknown) {
       console.error("Error saving diary:", error);
 
@@ -128,7 +131,12 @@ function WriteDiary() {
           <S.Button type="submit">일기 작성</S.Button>
         </S.ButtonGroup>
       </S.Form>
-      {isModalOpen && <EmotionModal onClose={() => setIsModalOpen(false)} onSelect={handleEmotionSelect} />}
+      {isModalOpen && (
+        <EmotionModal
+          onClose={() => setIsModalOpen(false)}
+          onSelect={handleEmotionSelect}
+        />
+      )}
     </S.Container>
   );
 }

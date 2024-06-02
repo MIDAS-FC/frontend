@@ -5,18 +5,21 @@ export const CalendarWrapper = styled.div`
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(135deg, #f0f9ff, #cfeefb);
+  background: linear-gradient(
+    135deg,
+    rgba(135, 206, 250, 0.3),
+    rgba(135, 206, 250, 0.3)
+  );
 `;
 
 export const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
-  background-color: #ffffff;
   border-radius: 10px;
 `;
 
 export const Thead = styled.thead`
-  background-color: rgb(135, 206, 250, 0.4);
+  background-color: rgba(255, 255, 255, 0.6);
 `;
 
 export const Th = styled.th`
@@ -30,7 +33,7 @@ export const Td = styled.td<{ isToday?: boolean }>`
   width: calc(100% / 7);
   padding: 20px;
   text-align: center;
-  border: 1px solid #e0e0e0;
+  border: 1px solid white;
   transition: background-color 0.3s ease-in-out;
 
   &:hover {

@@ -98,11 +98,14 @@ function EditPopup({
         alert("프로필이 성공적으로 업데이트되었습니다.");
       }
     } catch (error: any) {
-      if (error.response?.data?.code === "SAG1") {
-        alert("외부 api와 통신이 불가능합니다.");
+      if (error.response && error.response.data) {
+        if (error.response?.data?.code === "SAG1") {
+          console.log("외부 api와 통신이 불가능합니다.");
+        } else {
+          console.log("프로필 업데이트 중 오류가 발생했습니다.");
+        }
       } else {
-        alert("프로필 업데이트 중 오류가 발생했습니다.");
-        console.error("Error updating profile:", error);
+        console.log("알 수 없는 오류가 발생했습니다.");
       }
     }
   };
@@ -136,13 +139,16 @@ function EditPopup({
       }
       alert("닉네임이 성공적으로 업데이트되었습니다.");
     } catch (error: any) {
-      if (error.response?.data?.code === "SAU2") {
-        alert("해당 닉네임이 이미 존재합니다.");
-      } else if (error.response?.data?.code === "SAG1") {
-        alert("외부 api와 통신이 불가능합니다.");
+      if (error.response && error.response.data) {
+        if (error.response.data.code === "SAU2") {
+          alert("해당 닉네임이 이미 존재합니다.");
+        } else if (error.response.data.code === "SAG1") {
+          console.log("외부 api와 통신이 불가능합니다.");
+        } else {
+          console.log("닉네임 업데이트 중 오류가 발생했습니다.");
+        }
       } else {
-        console.error("Error updating nickname:", error);
-        alert("닉네임 업데이트 중 오류가 발생했습니다.");
+        console.log("알 수 없는 오류가 발생했습니다.");
       }
     }
   };
@@ -179,11 +185,13 @@ function EditPopup({
         throw new Error("Error: Not 204");
       }
     } catch (error: any) {
-      if (error.response?.data?.code === "SAG1") {
-        alert("외부 api와 통신이 불가능합니다.");
+      if (error.response && error.response.data) {
+        if (error.response.data.code === "SAG1") {
+          console.log("외부 api와 통신이 불가능합니다.");
+        } else {
+          console.error("비밀번호 변경 중 오류가 발생했습니다.", error);
+        }
       }
-      console.error("Error changing password:", error);
-      alert("비밀번호 변경 중 오류가 발생했습니다.");
     }
   };
 

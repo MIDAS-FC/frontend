@@ -1,7 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as S from "../Styles/LikedSongs.style";
 import api from "../../../axiosInterceptor.js";
-import { MotionConfig, motion, useAnimation } from "framer-motion";
+import {
+  AnimatePresence,
+  MotionConfig,
+  motion,
+  useAnimation,
+} from "framer-motion";
 
 // 임시 인터페이스
 interface Song {
@@ -51,14 +56,18 @@ function LikedSongs() {
   //     setLast(last);
   //     console.log(`Fetched ${data.length} songs, last: ${last}`);
   //   } catch (error: any) {
-  //     if (error.response.data.code === "SAG1") {
-  //       alert("외부 API와 통신이 불가능합니다.");
+  //     if (error.response && error.response.data) {
+  //       if (error.response.data.code === "SAG1") {
+  //         console.log("외부 API와 통신이 불가능합니다.");
+  //       } else {
+  //         console.error("Error fetching liked songs: ", error);
+  //       }
   //     } else {
-  //       alert("노래 리스트를 가져오는 데 실패했습니다.");
-  //       console.error("Error fetching liked songs: ", error);
+  //       console.log("알 수 없는 오류가 발생했습니다.");
   //     }
   //   }
   // }, []);
+
   const fetchLikes = useCallback(async (pageToFetch: number) => {
     try {
       // 더미 데이터 생성
@@ -150,6 +159,16 @@ function LikedSongs() {
         : [...prevLikedSongs, index]
     );
   };
+
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
+
+  const handleSongClick = (song: Song) => {
+    setSelectedSong(song);
+  };
+
+  const handleClosePopup = () => {
+    setSelectedSong(null);
+  };
   return (
     <S.Container>
       <h2>마음에 든 노래</h2>
@@ -178,6 +197,50 @@ function LikedSongs() {
           <div ref={loader} style={{ width: "100%", height: "1px" }} />
         </S.SliderContainer>
       )}
+      <AnimatePresence>
+        {selectedSong && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+              style={{
+                background: "#fff",
+                padding: "20px",
+                borderRadius: "10px",
+                width: "300px",
+                textAlign: "center",
+              }}
+            >
+              <h3>{selectedSong.title}</h3>
+              <p>{selectedSong.artist}</p>
+              <img
+                src={selectedSong.albumCoverUrl}
+                alt="album cover"
+                style={{ width: "100%", borderRadius: "10px" }}
+              />
+              <button onClick={handleClosePopup} style={{ marginTop: "10px" }}>
+                닫기
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </S.Container>
   );
 }

@@ -29,11 +29,14 @@ function EditProfile() {
       const response = await api.get("/profile");
       setProfileImageUrl(response.data.imageUrl);
     } catch (error: any) {
-      if (error.response?.data?.code === "SAG1") {
-        alert("외부 api와 통신이 불가능합니다.");
+      if (error.response && error.response.data) {
+        if (error.response.data.code === "SAG1") {
+          console.log("외부 api와 통신이 불가능합니다.");
+        } else {
+          console.log("프로필 사진을 가져오는 데 실패했습니다.");
+        }
       } else {
-        alert("프로필 사진을 가져오는 데 실패했습니다.");
-        console.error("Failed to fetch profile image:", error);
+        console.log("알 수 없는 오류가 발생했습니다.");
       }
     }
   };

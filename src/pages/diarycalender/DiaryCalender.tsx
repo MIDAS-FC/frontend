@@ -90,11 +90,14 @@ function DiaryCalender() {
       });
       setMonthInfo(response.data);
     } catch (error: any) {
-      if (error.response.data.code === "SAG1") {
-        alert("외부 API와 통신이 불가능합니다.");
+      if (error.response && error.response.data) {
+        if (error.response.data.code === "SAG1") {
+          console.log("외부 API와 통신이 불가능합니다.");
+        } else {
+          console.log("일기 정보를 가져오는 데 실패했습니다.");
+        }
       } else {
-        console.log("Failure Fetching month Calender", error);
-        alert("일기 정보를 가져오는 데 실패했습니다.");
+        console.log("알 수 없는 오류가 발생했습니다.");
       }
     }
   };
@@ -105,16 +108,18 @@ function DiaryCalender() {
       const response = await api.get("/diary/calendar/day", {
         params: { year, month, day },
       });
-      const data = response.data;
-      setDayInfo(data);
+      setDayInfo(response.data);
     } catch (error: any) {
-      if (error.response.data.code === "SAG1") {
-        alert("외부 API와 통신이 불가능합니다.");
-      } else if (error.response?.data?.code === "SAD1") {
-        alert("일기를 찾을 수 없습니다.");
+      if (error.response && error.response.data) {
+        if (error.response.data.code === "SAG1") {
+          console.log("외부 API와 통신이 불가능합니다.");
+        } else if (error.response.data.code === "SAD1") {
+          console.log("일기를 찾을 수 없습니다.");
+        } else {
+          console.log("일기 정보를 가져오는 데 실패했습니다.");
+        }
       } else {
-        console.log("Failure Fetching day Calender", error);
-        alert("일기 정보를 가져오는 데 실패했습니다.");
+        console.log("알 수 없는 오류가 발생했습니다.");
       }
     }
   };
@@ -148,8 +153,7 @@ function DiaryCalender() {
       </h2>
       <Calender onDateSelect={handleDateSelect} monthInfo={monthInfo} />
       <AnimatePresence>
-        {/* 해당 날짜에 일기가 없으면 팝업 창 안 보여줌 - dayInfo 수정*/}
-        {selectedDate && dayInfo && (
+        {selectedDate && (
           <S.BoxContainer>
             <S.Box
               key={selectedDate}
@@ -197,8 +201,11 @@ function DiaryCalender() {
                 <S.InfoText>{dayInfo?.comment}</S.InfoText>
               </S.InfoContainer>
               <S.ButtonsContainer>
-                <S.Button onClick={handleCreateClick}>작성</S.Button>
-                <S.Button onClick={handleEditClick}>수정</S.Button>
+                {dayInfo ? (
+                  <S.Button onClick={handleEditClick}>수정</S.Button>
+                ) : (
+                  <S.Button onClick={handleCreateClick}>작성</S.Button>
+                )}
               </S.ButtonsContainer>
             </S.Box>
           </S.BoxContainer>
