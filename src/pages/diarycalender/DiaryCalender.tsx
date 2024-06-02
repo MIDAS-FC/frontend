@@ -85,12 +85,10 @@ function DiaryCalender() {
   // 달력 month 정보 가져오기
   const fetchMonthCalendar = async (year: number, month: number) => {
     try {
-      // const response = await api.get("/diary/calendar/month", {
-      //   params: { year, month },
-      // });
-      // setMonthInfo(response.data);
-
-      setMonthInfo(dummy);
+      const response = await api.get("/diary/calendar/month", {
+        params: { year, month },
+      });
+      setMonthInfo(response.data);
     } catch (error: any) {
       if (error.response.data.code === "SAG1") {
         alert("외부 API와 통신이 불가능합니다.");
@@ -150,9 +148,8 @@ function DiaryCalender() {
       </h2>
       <Calender onDateSelect={handleDateSelect} monthInfo={monthInfo} />
       <AnimatePresence>
-        {/* 해당 날짜에 일기가 없으면 팝업 창 안 보여줌 */}
-        {/* {selectedDate && dayInfo && dayInfo.length > 0 && ( */}
-        {selectedDate && (
+        {/* 해당 날짜에 일기가 없으면 팝업 창 안 보여줌 - dayInfo 수정*/}
+        {selectedDate && dayInfo && (
           <S.BoxContainer>
             <S.Box
               key={selectedDate}
@@ -218,146 +215,3 @@ const boxVariants = {
   visible: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: 30 },
 };
-
-const dummy = [
-  {
-    diaryId: 5,
-    date: "2024-06-01",
-    flower: "캐모마일",
-    title: "안녕하세요",
-    comment:
-      "안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요",
-    imgUrl: [
-      "https://midas-chatly.s3.ap-northeast-2.amazonaws.com/encoded_image_url",
-    ],
-    spotify: "2",
-    isLike: false,
-    angry: 0.2,
-    sad: 0.2,
-    delight: 0.2,
-    calm: 0.2,
-    depressed: 0.0,
-    anxiety: 0.2,
-    love: 0.2,
-  },
-  {
-    diaryId: 7,
-    date: "2024-06-05",
-    flower: "라일락",
-    title: "안녕하세요",
-    comment:
-      "안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요",
-    imgUrl: [
-      "https://midas-chatly.s3.ap-northeast-2.amazonaws.com/encoded_image_url",
-    ],
-    spotify: "1",
-    isLike: false,
-    angry: 0.2,
-    sad: 0.2,
-    delight: 0.2,
-    calm: 0.2,
-    depressed: 0.0,
-    anxiety: 0.2,
-    love: 0.2,
-  },
-  {
-    diaryId: 9,
-    date: "2024-06-08",
-    flower: "블루 데이지",
-    title: "안녕하세요",
-    comment:
-      "안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요",
-    imgUrl: [
-      "https://midas-chatly.s3.ap-northeast-2.amazonaws.com/encoded_image_url",
-    ],
-    spotify: "1",
-    isLike: false,
-    angry: 0.2,
-    sad: 0.2,
-    delight: 0.2,
-    calm: 0.2,
-    depressed: 0.0,
-    anxiety: 0.2,
-    love: 0.2,
-  },
-  {
-    diaryId: 17,
-    date: "2024-06-15",
-    flower: "달리아",
-    title: "안녕하세요",
-    comment:
-      "안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요",
-    imgUrl: [
-      "https://midas-chatly.s3.ap-northeast-2.amazonaws.com/encoded_image_url",
-    ],
-    spotify: "2",
-    isLike: true,
-    angry: 0.2,
-    sad: 0.2,
-    delight: 0.2,
-    calm: 0.2,
-    depressed: 0.0,
-    anxiety: 0.2,
-    love: 0.9,
-  },
-  {
-    diaryId: 21,
-    date: "2024-06-16",
-    flower: "튤립",
-    title: "안녕하세요",
-    comment:
-      "안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요",
-    imgUrl: [
-      "https://midas-chatly.s3.ap-northeast-2.amazonaws.com/encoded_image_url",
-    ],
-    spotify: "7",
-    isLike: true,
-    angry: 0.1,
-    sad: 0.1,
-    delight: 0.1,
-    calm: 0.1,
-    depressed: 0.0,
-    anxiety: 0.1,
-    love: 0.9,
-  },
-  {
-    diaryId: 26,
-    date: "2024-06-20",
-    flower: "장미",
-    title: "안녕하세요",
-    comment:
-      "안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요",
-    imgUrl: [
-      "https://midas-chatly.s3.ap-northeast-2.amazonaws.com/encoded_image_url",
-    ],
-    spotify: "2",
-    isLike: false,
-    angry: 0.5,
-    sad: 0.5,
-    delight: 0.5,
-    calm: 0.5,
-    depressed: 0.0,
-    anxiety: 0.5,
-    love: 0.5,
-  },
-  {
-    diaryId: 30,
-    date: "2024-06-30",
-    flower: "해바라기",
-    title: "안녕하세요",
-    comment:
-      "안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요",
-    imgUrl: [
-      "https://midas-chatly.s3.ap-northeast-2.amazonaws.com/encoded_image_url",
-    ],
-    spotify: "9",
-    isLike: false,
-    angry: 0.1,
-    sad: 0.2,
-    delight: 0.95,
-    calm: 0.5,
-    depressed: 0.0,
-    anxiety: 0.1,
-    love: 0.4,
-  },
-];
