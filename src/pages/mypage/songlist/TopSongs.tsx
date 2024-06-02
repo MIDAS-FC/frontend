@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as S from "../Styles/TopSongs.style";
 import api from "../../../axiosInterceptor.js";
-import { useAnimation } from "framer-motion";
+import { AnimatePresence, useAnimation } from "framer-motion";
 
 // 임시 인터페이스
 interface SongInfo {
@@ -23,6 +23,7 @@ function TopSongs() {
 
   //임시 상태관리
   const [likedSongs, setLikedSongs] = useState<number[]>([]);
+  const [selectedSong, setSelectedSong] = useState<SongInfo | null>(null);
 
   //   useEffect(() => {
   //     const token = localStorage.getItem("accessToken");
@@ -97,6 +98,14 @@ function TopSongs() {
     );
   };
 
+  const handleSongClick = (song: SongInfo) => {
+    setSelectedSong(song);
+  };
+
+  const handleClosePopup = () => {
+    setSelectedSong(null);
+  };
+
   return (
     <S.Container>
       <S.HeaderText>인기곡 Top 10</S.HeaderText>
@@ -124,6 +133,40 @@ function TopSongs() {
           ))}
         </S.SliderContainer>
       )}
+      <AnimatePresence>
+        {selectedSong && (
+          <S.Overlay
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <S.Popup
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+            >
+              <S.PopupAlbumCover
+                src={selectedSong.albumCoverUrl}
+                alt="album cover"
+              />
+              <S.PopupSongTitle>{selectedSong.title}</S.PopupSongTitle>
+              <S.PopupArtistName>{selectedSong.artist}</S.PopupArtistName>
+              <S.PopupSongInfo>
+                <S.PopupSongDetail>
+                  <strong>Duration:</strong>
+                </S.PopupSongDetail>
+                <S.PopupSongDetail>
+                  <strong>Popularity:</strong> {selectedSong.popularity}
+                </S.PopupSongDetail>
+                <S.PopupSongDetail>
+                  <strong>Release Date:</strong> {selectedSong.releaseDate}
+                </S.PopupSongDetail>
+              </S.PopupSongInfo>
+              <S.CloseButton onClick={handleClosePopup}>닫기</S.CloseButton>
+            </S.Popup>
+          </S.Overlay>
+        )}
+      </AnimatePresence>
     </S.Container>
   );
 }

@@ -28,6 +28,7 @@ function LikedSongs() {
 
   //임시 상태관리
   const [likedSongs, setLikedSongs] = useState<number[]>([]);
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
 
   // useEffect(() => {
   //   const token = localStorage.getItem("accessToken");
@@ -160,8 +161,6 @@ function LikedSongs() {
     );
   };
 
-  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
-
   const handleSongClick = (song: Song) => {
     setSelectedSong(song);
   };
@@ -183,7 +182,7 @@ function LikedSongs() {
           onMouseMove={handleMouseMove}
         >
           {songs.map((song, index) => (
-            <S.SliderItem key={index}>
+            <S.SliderItem key={index} onClick={() => handleSongClick(song)}>
               <S.AlbumCover src={song.albumCoverUrl} alt="song album" />
               <S.SongDetails>
                 <S.SongTitle>{song.title}</S.SongTitle>
@@ -199,46 +198,36 @@ function LikedSongs() {
       )}
       <AnimatePresence>
         {selectedSong && (
-          <motion.div
+          <S.Overlay
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
           >
-            <motion.div
+            <S.Popup
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}
-              style={{
-                background: "#fff",
-                padding: "20px",
-                borderRadius: "10px",
-                width: "300px",
-                textAlign: "center",
-              }}
             >
-              <h3>{selectedSong.title}</h3>
-              <p>{selectedSong.artist}</p>
-              <img
+              <S.PopupAlbumCover
                 src={selectedSong.albumCoverUrl}
                 alt="album cover"
-                style={{ width: "100%", borderRadius: "10px" }}
               />
-              <button onClick={handleClosePopup} style={{ marginTop: "10px" }}>
-                닫기
-              </button>
-            </motion.div>
-          </motion.div>
+              <S.PopupSongTitle>{selectedSong.title}</S.PopupSongTitle>
+              <S.PopupArtistName>{selectedSong.artist}</S.PopupArtistName>
+              <S.PopupSongInfo>
+                <S.PopupSongDetail>
+                  <strong>Duration:</strong>{" "}
+                </S.PopupSongDetail>
+                <S.PopupSongDetail>
+                  <strong>Popularity:</strong>
+                </S.PopupSongDetail>
+                <S.PopupSongDetail>
+                  <strong>Release Date:</strong>
+                </S.PopupSongDetail>
+              </S.PopupSongInfo>
+              <S.CloseButton onClick={handleClosePopup}>닫기</S.CloseButton>
+            </S.Popup>
+          </S.Overlay>
         )}
       </AnimatePresence>
     </S.Container>
