@@ -4,7 +4,6 @@ import backgroundImage from "src/assets/images/background.webp";
 
 export const Container = styled.div`
   width: 100%;
-  max-width: 1200px;
   margin: auto;
   padding: 20px;
   background-color: #fafafa;
