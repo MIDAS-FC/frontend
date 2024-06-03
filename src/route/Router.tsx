@@ -20,7 +20,7 @@ function Router() {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      axios.defaults.headers.common["authorization-access"] = `${token}`;
+      axios.defaults.headers.common["authorization-access"] = `Bearer ${token}`;
     }
     setLoading(false);
   }, []);

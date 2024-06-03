@@ -4,7 +4,7 @@ export interface EmotionData {
   sad: number;
   delight: number;
   calm: number;
-  embarrased: number;
+  depressed: number;
   anxiety: number;
   love: number;
 }
@@ -23,7 +23,7 @@ export const findWeeklyHighestEmotion = (
       sad: entry.sad,
       delight: entry.delight,
       calm: entry.calm,
-      embarrased: entry.embarrased,
+      depressed: entry.depressed,
       anxiety: entry.anxiety,
       love: entry.love,
     };

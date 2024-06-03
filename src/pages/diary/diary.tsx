@@ -64,32 +64,33 @@ function WriteDiary() {
     }
 
     const formData = new FormData();
-    formData.append('year', currentYear.toString());
-    formData.append('month', currentMonth.toString());
-    formData.append('day', selectedDate.toString());
+    formData.append("year", currentYear.toString());
+    formData.append("month", currentMonth.toString());
+    formData.append("day", selectedDate.toString());
 
     const diaryData = JSON.stringify({
       title,
       comment: content,
       emotion: selectedEmotion,
-      maintain: maintainEmotion.toString()
+      maintain: maintainEmotion.toString(),
     });
-    formData.append('diary', new Blob([diaryData], { type: "application/json" }));
+    formData.append(
+      "diary",
+      new Blob([diaryData], { type: "application/json" })
+    );
 
-    images.forEach((image) => formData.append('images', image));
+    images.forEach((image) => formData.append("images", image));
 
     try {
-      const response = await api.post('/diary/calendar', formData, {
+      const response = await api.post("/diary/calendar", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       console.log(response);
       // 응답에서 trackId를 받아서 설정
       setTrackId(response.data.spotify);
       setIsSongModalOpen(true); // 노래 모달 열기
-      // alert("일기가 저장되었습니다!");
-      // navigate('/');
     } catch (error) {
       console.error("Error saving diary:", error);
 
@@ -140,8 +141,8 @@ function WriteDiary() {
       </S.Form>
       {isModalOpen && <EmotionModal onClose={() => setIsModalOpen(false)} onSelect={handleEmotionSelect} />}
       {isSongModalOpen && trackId && (
-        <MusicModal 
-          trackId={trackId} 
+        <MusicModal
+          trackId={trackId}
           onClose={() => setIsSongModalOpen(false)}
         />
       )}

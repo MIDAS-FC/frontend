@@ -4,7 +4,12 @@ import axios from "axios";
 import { PresenceContext, motion } from "framer-motion";
 import api from "../../../axiosInterceptor";
 
-function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
+function EditPopup({
+  onClose,
+  onNicknameUpdate,
+  profileImageUrl,
+  onProfileImageUpdate,
+}: any) {
   const [showNicknameInput, setShowNicknameInput] = useState(false);
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [email, setEmail] = useState("");
@@ -28,17 +33,16 @@ function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
     if (storedEmail) {
       setEmail(storedEmail);
     }
-    console.log("로컬스토리지 불러오기");
   }, []);
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-    } else {
-      console.log("token error");
-    }
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("accessToken");
+  //   if (token) {
+  //     api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+  //   } else {
+  //     console.log("token error");
+  //   }
+  // }, []);
 
   const handleNicknameChange = (event: any) => {
     setChangedNickname(event.target.value);
@@ -88,16 +92,21 @@ function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
         },
       });
 
-      console.log("Profile updated:", response.data);
       if (response.data.url) {
-        // api 호출 필요
         setProfileImage(response.data.url);
-        console.log("new profileImage updated", response.data.url);
+        onProfileImageUpdate();
+        alert("프로필이 성공적으로 업데이트되었습니다.");
       }
-      alert("프로필이 성공적으로 업데이트되었습니다.");
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("프로필 업데이트 중 오류가 발생했습니다.");
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        if (error.response?.data?.code === "SAG1") {
+          console.log("외부 api와 통신이 불가능합니다.");
+        } else {
+          console.log("프로필 업데이트 중 오류가 발생했습니다.");
+        }
+      } else {
+        console.log("알 수 없는 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -126,12 +135,21 @@ function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
         setPresentNickName(Chanegednickname);
         onNicknameUpdate(Chanegednickname);
       } else {
-        throw new Error("Failed to update nickname");
+        throw new Error("Error: Not 204");
       }
       alert("닉네임이 성공적으로 업데이트되었습니다.");
-    } catch (error) {
-      console.error("Error updating nickname:", error);
-      alert("닉네임 업데이트 중 오류가 발생했습니다.");
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        if (error.response.data.code === "SAU2") {
+          alert("해당 닉네임이 이미 존재합니다.");
+        } else if (error.response.data.code === "SAG1") {
+          console.log("외부 api와 통신이 불가능합니다.");
+        } else {
+          console.log("닉네임 업데이트 중 오류가 발생했습니다.");
+        }
+      } else {
+        console.log("알 수 없는 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -148,16 +166,6 @@ function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
       password: changedPassword,
       rePassword: reChangedPassword,
     };
-    console.log(
-      "email: ",
-      email,
-      "socialType: ",
-      socialType,
-      "password: ",
-      changedPassword,
-      "rePassword: ",
-      reChangedPassword
-    );
 
     try {
       const response = await api.put(
@@ -174,13 +182,19 @@ function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
         alert("비밀번호가 변경되었습니다.");
         setShowPasswordInput(false);
       } else {
-        throw new Error("Failed to change password");
+        throw new Error("Error: Not 204");
       }
-    } catch (error) {
-      console.error("Error changing password:", error);
-      alert("비밀번호 변경 중 오류가 발생했습니다.");
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        if (error.response.data.code === "SAG1") {
+          console.log("외부 api와 통신이 불가능합니다.");
+        } else {
+          console.error("비밀번호 변경 중 오류가 발생했습니다.", error);
+        }
+      }
     }
   };
+
   return (
     <S.Overlay>
       <motion.div
@@ -204,16 +218,20 @@ function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
                 <label htmlFor="image-upload">📷</label>
               </S.GrayCircle>
             </S.ProfileImageContainer>
-            <S.ProfileUpdateButton onClick={handleProfileImageUpdate}>
-              프로필 사진 변경
-            </S.ProfileUpdateButton>
             <S.UserInfo>
+              <S.ProfileUpdateButton onClick={handleProfileImageUpdate}>
+                프로필 사진 변경
+              </S.ProfileUpdateButton>
               <S.UserName>{presentNickName}</S.UserName>
-              <S.NicknameButton
-                onClick={() => setShowNicknameInput(!showNicknameInput)}
-              >
-                닉네임 변경
-              </S.NicknameButton>
+              {!showNicknameInput && (
+                <S.NicknameButton
+                  onClick={() => {
+                    setShowNicknameInput(true);
+                  }}
+                >
+                  닉네임 변경
+                </S.NicknameButton>
+              )}
               {showNicknameInput && (
                 <S.InputContainer>
                   <S.Input
@@ -227,13 +245,15 @@ function EditPopup({ onClose, onNicknameUpdate, profileImageUrl }: any) {
                   </S.ProfileUpdateButton>
                 </S.InputContainer>
               )}
-              <S.ResetPasswordButton
-                onClick={() => {
-                  setShowPasswordInput(!showPasswordInput);
-                }}
-              >
-                비밀번호 변경
-              </S.ResetPasswordButton>
+              {!showPasswordInput && (
+                <S.ResetPasswordButton
+                  onClick={() => {
+                    setShowPasswordInput(true);
+                  }}
+                >
+                  비밀번호 변경
+                </S.ResetPasswordButton>
+              )}
               {showPasswordInput && (
                 <S.InputContainer>
                   <S.Input

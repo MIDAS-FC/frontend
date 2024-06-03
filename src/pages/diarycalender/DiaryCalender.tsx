@@ -1,27 +1,46 @@
-import axios from "axios";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
+import BlueDaisy from "../../assets/icons/flowers/BlueDaisy.webp";
+import Chamomile from "../../assets/icons/flowers/Chamomile.webp";
+import Dahlia from "../../assets/icons/flowers/Dahlia.webp";
+import Lilac from "../../assets/icons/flowers/Lilac.webp";
+import Rose from "../../assets/icons/flowers/Rose.webp";
+import Sunflower from "../../assets/icons/flowers/Sunflower.webp";
+import Tulip from "../../assets/icons/flowers/Tulip.webp";
+import EmptyDiary from "../../assets/images/EmptyDiary.webp";
 import api from "../../axiosInterceptor";
 import Calender from "./Calender";
 import * as S from "./Styles/DiaryCalender.style";
-import findDayHighestEmotion from "./components/findDayHighestEmotion";
 
-interface DiaryInfoResponse {
+export interface DiaryInfoResponse {
   diaryId: number;
+  date: string;
+  title: string;
+  comment: string;
   flower: string;
   imgUrl: string[];
   angry: number;
   sad: number;
   delight: number;
   calm: number;
-  embarrased: number;
+  depressed: number;
   anxiety: number;
   love: number;
   spotify: string;
   isLike: boolean;
 }
+
+const flowerImageMap: { [key: string]: string } = {
+  장미: Rose,
+  해바라기: Sunflower,
+  튤립: Tulip,
+  라일락: Lilac,
+  "블루 데이지": BlueDaisy,
+  캐모마일: Chamomile,
+  달리아: Dahlia,
+};
 
 function DiaryCalender() {
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
@@ -32,14 +51,14 @@ function DiaryCalender() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-      console.log(token);
-    } else {
-    }
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("accessToken");
+  //   if (token) {
+  //     api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+  //     // console.log(token);
+  //   } else {
+  //   }
+  // }, []);
 
   useEffect(() => {
     const today = new Date();
@@ -68,35 +87,16 @@ function DiaryCalender() {
       const response = await api.get("/diary/calendar/month", {
         params: { year, month },
       });
-
-      console.log("Month response 가져오기:", {
-        year,
-        month,
-        response: [response.data],
-      });
-
-      // const response = { data: generateDummyData() };
-      // console.log("Month response 가져오기:", {
-      //   year,
-      //   month,
-      //   response: response.data,
-      // });
-
       setMonthInfo(response.data);
-      const highestEmotionsData = findDayHighestEmotion(response.data);
-      console.log("highestEmotion", highestEmotionsData);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(
-          "일기 정보(month)를 가져오는 중 오류 발생: Network Error",
-          error.message
-        );
-        console.error("오류 세부 사항(month):", error.config);
-        if (error.response) {
-          console.error("오류 응답(month):", error.response.data);
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        if (error.response.data.code === "SAG1") {
+          console.log("외부 API와 통신이 불가능합니다.");
+        } else {
+          console.log("일기 정보를 가져오는 데 실패했습니다.");
         }
       } else {
-        console.error("Error(month): ", error);
+        console.log("알 수 없는 오류가 발생했습니다.");
       }
     }
   };
@@ -107,26 +107,18 @@ function DiaryCalender() {
       const response = await api.get("/diary/calendar/day", {
         params: { year, month, day },
       });
-
-      console.log("Day response 가져오기:", {
-        year,
-        month,
-        day,
-        response: [response.data],
-      });
       setDayInfo(response.data);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(
-          "일기 정보(Day)를 가져오는 중 오류 발생: Network Error",
-          error.message
-        );
-        console.error("오류 세부 사항(Day):", error.config);
-        if (error.response) {
-          console.error("오류 응답(Day):", error.response.data);
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        if (error.response.data.code === "SAG1") {
+          console.log("외부 API와 통신이 불가능합니다.");
+        } else if (error.response.data.code === "SAD1") {
+          console.log("일기를 찾을 수 없습니다.");
+        } else {
+          console.log("일기 정보를 가져오는 데 실패했습니다.");
         }
       } else {
-        console.error("Error(Day): ", error);
+        console.log("알 수 없는 오류가 발생했습니다.");
       }
     }
   };
@@ -158,10 +150,8 @@ function DiaryCalender() {
       <h2>
         {currentYear}년 {currentMonth}월
       </h2>
-      <Calender onDateSelect={handleDateSelect} />
+      <Calender onDateSelect={handleDateSelect} monthInfo={monthInfo} />
       <AnimatePresence>
-        {/* 해당 날짜에 일기가 없으면 팝업 창 안 보여줌 */}
-        {/* {selectedDate && dayInfo && dayInfo.length > 0 && ( */}
         {selectedDate && (
           <S.BoxContainer>
             <S.Box
@@ -172,11 +162,29 @@ function DiaryCalender() {
               exit="exit"
               transition={{ duration: 0.3 }}
             >
-              {dayInfo && dayInfo.imgUrl.length > 0 && (
-                <S.ImageContainer>
-                  <img src={dayInfo.imgUrl[0]} alt="Diary Image" />
-                </S.ImageContainer>
+              {dayInfo && flowerImageMap[dayInfo.flower] && (
+                <S.FlowerImageContainer>
+                  <S.Flower
+                    src={flowerImageMap[dayInfo.flower]}
+                    alt={dayInfo.flower}
+                  />
+                </S.FlowerImageContainer>
               )}
+              <S.ImageContainer>
+                {dayInfo?.imgUrl && dayInfo.imgUrl.length > 0 ? (
+                  dayInfo.imgUrl
+                    .slice(0, 3)
+                    .map((url, index) => (
+                      <img
+                        key={index}
+                        src={url}
+                        alt={`Diary Image ${index + 1}`}
+                      />
+                    ))
+                ) : (
+                  <img src={EmptyDiary} alt="Empty Diary" />
+                )}
+              </S.ImageContainer>
               <S.InfoContainer>
                 <S.InfoTitle>날짜</S.InfoTitle>
                 <S.InfoText>
@@ -185,15 +193,18 @@ function DiaryCalender() {
               </S.InfoContainer>
               <S.InfoContainer>
                 <S.InfoTitle>제목</S.InfoTitle>
-                <S.InfoText></S.InfoText>
+                <S.InfoText>{dayInfo?.title}</S.InfoText>
               </S.InfoContainer>
               <S.InfoContainer>
                 <S.InfoTitle>내용</S.InfoTitle>
-                <S.InfoText></S.InfoText>
+                <S.InfoText>{dayInfo?.comment}</S.InfoText>
               </S.InfoContainer>
               <S.ButtonsContainer>
-                <S.Button onClick={handleCreateClick}>작성</S.Button>
-                <S.Button onClick={handleEditClick}>수정</S.Button>
+                {dayInfo ? (
+                  <S.Button onClick={handleEditClick}>수정</S.Button>
+                ) : (
+                  <S.Button onClick={handleCreateClick}>작성</S.Button>
+                )}
               </S.ButtonsContainer>
             </S.Box>
           </S.BoxContainer>
@@ -210,35 +221,3 @@ const boxVariants = {
   visible: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: 30 },
 };
-
-// // Sample data creation function
-// const generateDummyData = (): DiaryInfoResponse[] => {
-//   const emotions = [
-//     "angry",
-//     "sad",
-//     "delight",
-//     "calm",
-//     "embarrased",
-//     "anxiety",
-//     "love",
-//   ];
-//   const data: DiaryInfoResponse[] = [];
-//   for (let i = 0; i < 30; i++) {
-//     const diary: DiaryInfoResponse = {
-//       diaryId: i + 1,
-//       flower: "rose",
-//       imgUrl: ["https://example.com/image.png"],
-//       angry: Math.random(),
-//       sad: Math.random(),
-//       delight: Math.random(),
-//       calm: Math.random(),
-//       embarrased: Math.random(),
-//       anxiety: Math.random(),
-//       love: Math.random(),
-//       spotify: `${Math.floor(Math.random() * 10)}`,
-//       isLike: Math.random() > 0.5,
-//     };
-//     data.push(diary);
-//   }
-//   return data;
-// };

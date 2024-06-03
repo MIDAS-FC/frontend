@@ -17,6 +17,7 @@ import {
   HighestEmotionData,
   findWeeklyHighestEmotion,
 } from "./components/findWeeklyHighestEmotion";
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -34,15 +35,23 @@ interface GraphProps {
   endYear: number;
   endMonth: number;
   endDay: number;
+  Previous_startYear: number;
+  Previous_startMonth: number;
+  Previous_startDay: number;
+  Previous_endYear: number;
+  Previous_endMonth: number;
+  Previous_endDay: number;
+  setCurrentPercentages: (percentages: any) => void;
+  setPreviousPercentages: (percentages: any) => void;
 }
 
-interface EmotionData {
+export interface EmotionData {
   date: string;
   angry: number;
   sad: number;
   delight: number;
   calm: number;
-  embarrased: number;
+  depressed: number;
   anxiety: number;
   love: number;
 }
@@ -56,6 +65,40 @@ interface ChartData {
   }[];
 }
 
+export const CalculatePercentage = (emotionData: EmotionData[]) => {
+  const totals = {
+    angry: 0,
+    sad: 0,
+    delight: 0,
+    calm: 0,
+    depressed: 0,
+    anxiety: 0,
+    love: 0,
+  };
+
+  emotionData.forEach((emotion: EmotionData) => {
+    totals.angry += emotion.angry;
+    totals.sad += emotion.sad;
+    totals.delight += emotion.delight;
+    totals.calm += emotion.calm;
+    totals.depressed += emotion.depressed;
+    totals.anxiety += emotion.anxiety;
+    totals.love += emotion.love;
+  });
+
+  const count = emotionData.length;
+
+  return {
+    angry: totals.angry / count,
+    sad: totals.sad / count,
+    delight: totals.delight / count,
+    calm: totals.calm / count,
+    depressed: totals.depressed / count,
+    anxiety: totals.anxiety / count,
+    love: totals.love / count,
+  };
+};
+
 function Chart({
   startYear,
   startMonth,
@@ -63,6 +106,14 @@ function Chart({
   endYear,
   endMonth,
   endDay,
+  Previous_startYear,
+  Previous_startMonth,
+  Previous_startDay,
+  Previous_endYear,
+  Previous_endMonth,
+  Previous_endDay,
+  setCurrentPercentages,
+  setPreviousPercentages,
 }: GraphProps) {
   const [isEmpty, setIsEmpty] = useState<boolean>(true);
   const [chartData, setChartData] = useState<ChartData>({
@@ -76,16 +127,17 @@ function Chart({
     ],
   });
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-      console.log("Access token retrieved:", token);
-    } else {
-      console.log("token error");
-    }
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("accessToken");
+  //   if (token) {
+  //     api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+  //     // console.log("Access token retrieved:", token);
+  //   } else {
+  //     console.log("token error");
+  //   }
+  // }, []);
 
+  // 현재주
   useEffect(() => {
     const fetchEmotionStatistics = async (
       startYear: number,
@@ -106,23 +158,23 @@ function Chart({
             endDay,
           },
         });
-
         const data = response.data;
-        console.log("[Graph response: ", data, "]");
+
+        // console.log("[Graph response: ", data, "]");
 
         const emotionCounts = {
           angry: 0,
           sad: 0,
           delight: 0,
           calm: 0,
-          embarrased: 0,
+          depressed: 0,
           anxiety: 0,
           love: 0,
         };
 
         const highestEmotions: HighestEmotionData[] =
           findWeeklyHighestEmotion(data);
-        console.log("[Highest Emotions: ", highestEmotions, "]");
+        // console.log("[Highest Emotions: ", highestEmotions, "]");
 
         highestEmotions.forEach((entry: HighestEmotionData) => {
           switch (entry.highestEmotion) {
@@ -138,8 +190,8 @@ function Chart({
             case "calm":
               emotionCounts.calm += 1;
               break;
-            case "embarrased":
-              emotionCounts.embarrased += 1;
+            case "depressed":
+              emotionCounts.depressed += 1;
               break;
             case "anxiety":
               emotionCounts.anxiety += 1;
@@ -156,7 +208,6 @@ function Chart({
           (acc, count) => acc + count,
           0
         );
-
         setIsEmpty(totalEmotionCount === 0);
 
         setChartData({
@@ -165,7 +216,7 @@ function Chart({
             "Sad",
             "Delight",
             "Calm",
-            "Embarrassed",
+            "depressed",
             "Anxiety",
             "Love",
           ],
@@ -177,7 +228,7 @@ function Chart({
                 emotionCounts.sad,
                 emotionCounts.delight,
                 emotionCounts.calm,
-                emotionCounts.embarrased,
+                emotionCounts.depressed,
                 emotionCounts.anxiety,
                 emotionCounts.love,
               ],
@@ -186,21 +237,25 @@ function Chart({
                 "#36A2EB", // Sad
                 "#FFCE56", // Delight
                 "#4BC0C0", // Calm
-                "#9966FF", // Embarrassed
+                "#9966FF", // depressed
                 "#FF9F40", // Anxiety
                 "#FFCD56", // Love
               ],
             },
           ],
         });
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error("Emotion statistics fetch error: ", error.message);
-          if (error.response) {
-            console.error("Error response data: ", error.response.data);
+
+        const current_percentages = CalculatePercentage(data);
+        setCurrentPercentages(current_percentages);
+      } catch (error: any) {
+        if (error.response && error.response.data) {
+          if (error.response.data.code === "SAG1") {
+            console.log("외부 API와 통신이 불가능합니다.");
+          } else {
+            console.log("주간감정통계를 가져오는 데 실패했습니다.");
           }
         } else {
-          console.error("Error: ", error);
+          console.log("알 수 없는 오류가 발생했습니다.");
         }
       }
     };
@@ -213,7 +268,65 @@ function Chart({
       endMonth,
       endDay
     );
-  }, [startYear, startMonth, startDay, endYear, endMonth, endDay]);
+  }, []);
+  // }, [startYear, startMonth, startDay, endYear, endMonth, endDay]);
+
+  // 이전 주
+  useEffect(() => {
+    const fetchEmotionStatistics2 = async (
+      Previous_startYear: number,
+      Previous_startMonth: number,
+      Previous_startDay: number,
+      Previous_endYear: number,
+      Previous_endMonth: number,
+      Previous_endDay: number
+    ) => {
+      try {
+        const response = await api.get("/statistic/emotion", {
+          params: {
+            startYear: Previous_startYear,
+            startMonth: Previous_startMonth,
+            startDay: Previous_startDay,
+            endYear: Previous_endYear,
+            endMonth: Previous_endMonth,
+            endDay: Previous_endDay,
+          },
+        });
+        const data = response.data;
+
+        // console.log("[Graph response: ", data, "]");
+
+        const previous_percentages = CalculatePercentage(data);
+        setPreviousPercentages(previous_percentages);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error("Emotion statistics fetch error: ", error.message);
+          if (error.response) {
+            console.error("Error response data: ", error.response.data);
+          }
+        } else {
+          console.error("Error: ", error);
+        }
+      }
+    };
+
+    fetchEmotionStatistics2(
+      Previous_startYear,
+      Previous_startMonth,
+      Previous_startDay,
+      Previous_endYear,
+      Previous_endMonth,
+      Previous_endDay
+    );
+  }, []);
+  // }, [
+  //   Previous_startYear,
+  //   Previous_startMonth,
+  //   Previous_startDay,
+  //   Previous_endYear,
+  //   Previous_endMonth,
+  //   Previous_endDay,
+  // ]);
 
   return (
     <div>
@@ -221,7 +334,9 @@ function Chart({
       {isEmpty ? (
         <S.Emptymessage>이번 주 일기를 작성해주세요</S.Emptymessage>
       ) : (
-        <Pie data={chartData} />
+        <>
+          <Pie data={chartData} />
+        </>
       )}
     </div>
   );

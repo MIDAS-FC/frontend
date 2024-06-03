@@ -24,17 +24,6 @@ export const PopupContainer = styled.div`
   overflow-y: auto;
 `;
 
-export const CloseButton = styled.button`
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: #333;
-`;
-
 export const ProfileContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -53,13 +42,13 @@ export const ProfileImage = styled.img`
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  border: 2px solid #ccc;
+  border: 1px solid #ccc;
 `;
 
 export const GrayCircle = styled.div`
   width: 40px;
   height: 40px;
-  background-color: #888;
+  background-color: rgba(128, 128, 128, 0.5);
   border-radius: 50%;
   position: absolute;
   bottom: 0;
@@ -69,6 +58,7 @@ export const GrayCircle = styled.div`
   align-items: center;
   cursor: pointer;
   border: 2px solid white;
+  transition: background-color 0.3s;
 
   input[type="file"] {
     display: none;
@@ -78,6 +68,14 @@ export const GrayCircle = styled.div`
     cursor: pointer;
     font-size: 18px;
     color: white;
+  }
+
+  &:hover {
+    background-color: white;
+
+    label {
+      color: black;
+    }
   }
 `;
 
@@ -166,5 +164,31 @@ export const ConfirmButton = styled(ActionButton)`
 
   &:hover {
     background-color: #218838;
+  }
+`;
+
+export const CloseButton = styled.button`
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #87cefa;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 20px;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #ff1c1c;
+  }
+
+  &:focus {
+    outline: none;
   }
 `;

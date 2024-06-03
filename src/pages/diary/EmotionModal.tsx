@@ -51,7 +51,9 @@ const EmotionModal: React.FC<EmotionModalProps> = ({ onClose, onSelect }) => {
         ) : (
           <>
             <h4>부정 감정 유지 여부</h4>
-            <Button onClick={() => onSelect("negative", false)}>유지 안 함</Button>
+            <Button onClick={() => onSelect("negative", false)}>
+              유지 안 함
+            </Button>
             <Button onClick={() => onSelect("negative", true)}>유지</Button>
             <Button onClick={() => setShowMaintainOptions(false)}>뒤로</Button>
           </>

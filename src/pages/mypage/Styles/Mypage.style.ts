@@ -9,7 +9,7 @@ export const PageContainer = styled.div`
 
 export const Section = styled.div`
   width: 100%;
-  max-width: 800px;
+  max-width: 1200px;
   margin-bottom: 170px;
 
   &:last-child {
