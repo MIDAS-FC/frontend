@@ -58,21 +58,18 @@ function DiaryCalender() {
     setSelectedDate(today.getDate());
   }, []);
 
-  // 달력 month 정보 가져오기
   useEffect(() => {
     if (currentYear && currentMonth) {
       fetchMonthCalendar(currentYear, currentMonth);
     }
   }, [currentYear, currentMonth]);
 
-  // 달력 day 정보 가져오기
   useEffect(() => {
     if (currentYear && currentMonth && selectedDate) {
       fetchDayCalendar(currentYear, currentMonth, selectedDate);
     }
   }, [selectedDate]);
 
-  // 달력 month 정보 가져오기
   const fetchMonthCalendar = async (year: number, month: number) => {
     try {
       const response = await api.get("/diary/calendar/month", {
@@ -92,7 +89,6 @@ function DiaryCalender() {
     }
   };
 
-  // 달력 day 정보 가져오기
   const fetchDayCalendar = async (year: number, month: number, day: number) => {
     try {
       const response = await api.get("/diary/calendar/day", {

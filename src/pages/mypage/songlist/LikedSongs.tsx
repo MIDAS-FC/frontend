@@ -1,12 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import * as S from "../Styles/LikedSongs.style";
-import api from "../../../axiosInterceptor.js";
 import {
   AnimatePresence,
-  MotionConfig,
-  motion,
-  useAnimation,
+  useAnimation
 } from "framer-motion";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import api from "../../../axiosInterceptor.js";
+import * as S from "../Styles/LikedSongs.style";
 
 export interface Artist {
   name: string;
