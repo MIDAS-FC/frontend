@@ -18,9 +18,15 @@ function Router() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      axios.defaults.headers.common["authorization-access"] = `Bearer ${token}`;
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (accessToken && refreshToken) {
+      axios.defaults.headers.common[
+        "authorization-access"
+      ] = `Bearer ${accessToken}`;
+      axios.defaults.headers.common[
+        "authorization-refresh"
+      ] = `Bearer ${refreshToken}`;
     }
     setLoading(false);
   }, []);

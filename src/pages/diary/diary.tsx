@@ -1,10 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import api from '../../axiosInterceptor';
+import api from "../../axiosInterceptor";
 import EmotionModal from "./EmotionModal";
-import MusicModal from "./MusicModal";
+
 import * as S from "./Styles/WriteDiary.style";
+import MusicModal from "./musicModal";
 
 function WriteDiary() {
   const location = useLocation();
@@ -139,7 +140,12 @@ function WriteDiary() {
           <S.Button type="submit">일기 작성</S.Button>
         </S.ButtonGroup>
       </S.Form>
-      {isModalOpen && <EmotionModal onClose={() => setIsModalOpen(false)} onSelect={handleEmotionSelect} />}
+      {isModalOpen && (
+        <EmotionModal
+          onClose={() => setIsModalOpen(false)}
+          onSelect={handleEmotionSelect}
+        />
+      )}
       {isSongModalOpen && trackId && (
         <MusicModal
           trackId={trackId}

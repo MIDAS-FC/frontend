@@ -51,15 +51,6 @@ function DiaryCalender() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("accessToken");
-  //   if (token) {
-  //     axios.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-  //     // console.log(token);
-  //   } else {
-  //   }
-  // }, []);
-
   useEffect(() => {
     const today = new Date();
     setCurrentYear(today.getFullYear());
@@ -145,6 +136,10 @@ function DiaryCalender() {
     }
   };
 
+  const decodeText = (text: string) => {
+    return decodeURIComponent(text).replace(/\+/g, " ");
+  };
+
   return (
     <S.Container>
       <h2>
@@ -194,13 +189,13 @@ function DiaryCalender() {
               <S.InfoContainer>
                 <S.InfoTitle>제목</S.InfoTitle>
                 <S.InfoText>
-                  {dayInfo?.title && decodeURIComponent(dayInfo.title)}
+                  {dayInfo?.title && decodeText(dayInfo.title)}
                 </S.InfoText>
               </S.InfoContainer>
               <S.InfoContainer>
                 <S.InfoTitle>내용</S.InfoTitle>
                 <S.InfoText>
-                  {dayInfo?.comment && decodeURIComponent(dayInfo.comment)}
+                  {dayInfo?.comment && decodeText(dayInfo.comment)}
                 </S.InfoText>
               </S.InfoContainer>
               <S.ButtonsContainer>

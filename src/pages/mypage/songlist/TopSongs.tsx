@@ -11,19 +11,8 @@ function TopSongs() {
   const startX = useRef(0);
   const scrollLeft = useRef(0);
 
-  //임시 상태관리
   const [likedSongs, setLikedSongs] = useState<number[]>([]);
   const [selectedSong, setSelectedSong] = useState<TrackInfo | null>(null);
-
-  //   useEffect(() => {
-  //     const token = localStorage.getItem("accessToken");
-  //     if (token) {
-  //       api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-  //       //   console.log("Access token retrieved:", token);
-  //     } else {
-  //       console.log("token error");
-  //     }
-  //   }, []);
 
   // api 연결
   useEffect(() => {
@@ -51,49 +40,6 @@ function TopSongs() {
 
     fetchTopLikedSongs();
   }, []);
-
-  // useEffect(() => {
-  //   const fetchTopLikedSongs = async () => {
-  //     try {
-  //       // 더미 데이터 생성
-  //       const dummyResponse = [
-  //         {
-  //           id: "1",
-  //           title: "Song 1",
-  //           artist: "Artist 1",
-  //           albumCoverUrl: "path/to/image1",
-  //           durationMs: 200000,
-  //           popularity: 90,
-  //           releaseDate: "2023-01-01",
-  //         },
-  //         {
-  //           id: "2",
-  //           title: "Song 2",
-  //           artist: "Artist 2",
-  //           albumCoverUrl: "path/to/image2",
-  //           durationMs: 180000,
-  //           popularity: 85,
-  //           releaseDate: "2023-01-02",
-  //         },
-  //         {
-  //           id: "3",
-  //           title: "Song 3",
-  //           artist: "Artist 3",
-  //           albumCoverUrl: "path/to/image3",
-  //           durationMs: 220000,
-  //           popularity: 80,
-  //           releaseDate: "2023-01-03",
-  //         },
-  //       ];
-
-  //       setSongs(dummyResponse);
-  //     } catch (error) {
-  //       console.log("Error fetching top songs (dummy data): ", error);
-  //     }
-  //   };
-
-  //   fetchTopLikedSongs();
-  // }, []);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;

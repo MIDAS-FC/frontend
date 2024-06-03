@@ -10,12 +10,6 @@ function EditProfile() {
   const [profileImageUrl, setProfileImageUrl] = useState("");
 
   useEffect(() => {
-    // const token = localStorage.getItem("accessToken");
-    // if (token) {
-    //   api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-    // } else {
-    //   console.log("token error");
-    // }
     const storedNickname = localStorage.getItem("nickName");
     if (storedNickname) {
       setPresentNickName(storedNickname);

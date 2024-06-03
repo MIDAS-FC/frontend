@@ -46,19 +46,8 @@ function LikedSongs() {
   const [like, setLike] = useState<{ [key: string]: boolean }>({});
   // const [like, setLike] = useState(true);
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("accessToken");
-  //   if (token) {
-  //     api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-  //     // console.log("Access token retrieved:", token);
-  //   } else {
-  //     console.log("token error");
-  //   }
-  // }, []);
-
   const fetchLikes = useCallback(async (pageToFetch: number) => {
     try {
-      // api 연결하기
       const response = await api.get("/music/likes", {
         params: { page: pageToFetch, size: 15 },
       });
@@ -81,6 +70,10 @@ function LikedSongs() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    fetchLikes(page);
+  }, [fetchLikes, page]);
 
   const toggleLike = async (songId: string) => {
     const isLiked = likedSongs.includes(songId);
