@@ -125,9 +125,9 @@ function DiaryCalender() {
   };
 
   const handleEditClick = () => {
-    if (currentYear && currentMonth && selectedDate) {
+    if (dayInfo && currentYear && currentMonth && selectedDate) {
       navigate(
-        `/WriteDiary?year=${currentYear}&month=${currentMonth}&day=${selectedDate}`
+        `/DiaryModify?year=${currentYear}&month=${currentMonth}&day=${selectedDate}`
       );
     }
   };

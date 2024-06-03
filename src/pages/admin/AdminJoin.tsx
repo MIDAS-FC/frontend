@@ -1,7 +1,31 @@
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 import api from "../../axiosInterceptor";
+import * as S from "./Styles/Admin.style";
+
+const generateStarPositions = (numStars: number) => {
+  return Array.from({ length: numStars }).map(() => ({
+    top: Math.random() * 100 + '%',
+    left: Math.random() * 100 + '%'
+  }));
+};
+
+const Stars = () => {
+  const [starPositions, setStarPositions] = useState(generateStarPositions(50));
+
+  useEffect(() => {
+    setStarPositions(generateStarPositions(50));
+  }, []);
+
+  return (
+    <>
+      {starPositions.map((pos, index) => (
+        <S.Star key={index} style={{ top: pos.top, left: pos.left }} />
+      ))}
+    </>
+  );
+};
+
 
 const AdminJoin = () => {
   const [formData, setFormData] = useState({
@@ -32,80 +56,24 @@ const AdminJoin = () => {
   };
 
   return (
-    <Container>
-      <JoinPage>
-        <JoinForm onSubmit={onSubmit}>
+    <S.Container>
+      <Stars/>
+      <S.JoinPage>
+        <S.JoinForm onSubmit={onSubmit}>
           <div>
-            <label>Email</label>
-            <JoinInput type="email" name="email" value={email} onChange={onChange} required />
+            <S.JoinInput placeholder="e-mail" type="email" name="email" value={email} onChange={onChange} required />
           </div>
           <div>
-            <label>Password</label>
-            <JoinInput type="password" name="password" value={password} onChange={onChange} required />
+            <S.JoinInput placeholder="password" type="password" name="password" value={password} onChange={onChange} required />
           </div>
           <div>
-            <label>Admin Code</label>
-            <JoinInput type="password" name="adminCode" value={adminCode} onChange={onChange} required />
+            <S.JoinInput placeholder="ddmin code" type="password" name="adminCode" value={adminCode} onChange={onChange} required />
           </div>
-          <JoinBtn type="submit">Register</JoinBtn>
-        </JoinForm>
-      </JoinPage>
-    </Container>
+          <S.JoinBtn type="submit">관리자 회원가입</S.JoinBtn>
+        </S.JoinForm>
+      </S.JoinPage>
+    </S.Container>
   );
 };
 
 export default AdminJoin;
-
-const Container = styled.div`
-  position: relative;
-  height: 120vh;
-  top: 100px;
-`;
-
-const JoinPage = styled.div`
-  width: 100%;
-  height: 100%;
-  background: #ffb8b3;
-  overflow: auto;
-`;
-
-const JoinForm = styled.form`
-  background: #ffffff;
-  width: 30%;
-  margin: 100px auto 0 auto;
-  padding: 45px;
-  text-align: center;
-  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1);
-`;
-
-const JoinInput = styled.input`
-  outline: 0;
-  width: 100%;
-  margin: 0 0 15px;
-  padding: 15px 0;
-  box-sizing: border-box;
-  font-size: 14px;
-  border-top: none;
-  border-right: none;
-  border-left: none;
-  border-bottom: 1px solid #ccc;
-`;
-
-const JoinBtn = styled.button`
-  text-transform: uppercase;
-  outline: 0;
-  background: #ff8379;
-  width: 100%;
-  border: 0;
-  padding: 15px;
-  margin-bottom: 30px;
-  color: #ffffff;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-
-  &:disabled {
-    background: #ffe2e0;
-    cursor: normal;
-  }
-`;

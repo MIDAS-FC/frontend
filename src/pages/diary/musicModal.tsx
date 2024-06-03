@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as S from "./Styles/WriteDiary.style";
@@ -24,7 +24,7 @@ interface TrackInfo {
   name: string;
   artists: Artist[];
   album: Album;
-  preview_url: string;
+  preview_url: string | null;
 }
 
 const MusicModal: React.FC<MusicModalProps> = ({ trackId, likedSongs, toggleLike, onClose }) => {
@@ -37,6 +37,7 @@ const MusicModal: React.FC<MusicModalProps> = ({ trackId, likedSongs, toggleLike
     const fetchTrackInfo = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/spotify/track/${trackId}`);
+        console.log("Track info:", response.data);  // 로그 추가
         setTrackInfo(response.data);
       } catch (error) {
         console.error('Error fetching track info:', error);
@@ -61,7 +62,7 @@ const MusicModal: React.FC<MusicModalProps> = ({ trackId, likedSongs, toggleLike
       });
       toggleLike(trackId);
       setShowNotification(true);
-      setTimeout(() => setShowNotification(false), 5000); // 5초 후에 알림창 사라짐
+      setTimeout(() => setShowNotification(false), 2000); // 2초 후에 알림창 사라짐
     } catch (error) {
       console.error('Error updating like status:', error);
     }
@@ -70,7 +71,7 @@ const MusicModal: React.FC<MusicModalProps> = ({ trackId, likedSongs, toggleLike
   const isLiked = likedSongs.includes(trackId);
 
   return (
-    <S.ModalOverlay onClick={handleClose}>
+    <S.ModalOverlay>
       <S.ModalContainer onClick={(e) => e.stopPropagation()}>
         <S.ModalContent>
           <h3>추천 노래</h3>
@@ -78,40 +79,33 @@ const MusicModal: React.FC<MusicModalProps> = ({ trackId, likedSongs, toggleLike
             <>
               <div>{trackInfo.name} - {trackInfo.artists.map(artist => artist.name).join(', ')}</div>
               <div>Album: {trackInfo.album.name}</div>
-              <img src={trackInfo.album.images[0].url} alt="Album Cover" style={{ width: '100%', maxWidth: '300px', margin: '10px 0' }} />
-              <audio ref={audioRef} controls autoPlay>
-                <source src={trackInfo.preview_url} type="audio/mpeg" />
-              </audio>
-              <S.LikeButton onClick={handleLikeToggle} style={{ fontSize: '2rem' }}>
+              <S.AlbumCover src={trackInfo.album.images[0].url} alt="Album Cover" />
+              {trackInfo.preview_url ? (
+                <audio ref={audioRef} controls autoPlay>
+                  <source src={trackInfo.preview_url ?? undefined} type="audio/mpeg" />
+                </audio>
+              ) : (
+                <p>이 곡은 재생할 수 없습니다.</p>
+              )}
+              <S.LikeButton onClick={handleLikeToggle}>
                 {isLiked ? '❤️' : '🤍'}
               </S.LikeButton>
               <AnimatePresence>
                 {showNotification && (
-                  <motion.div
+                  <S.Notification
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    style={{
-                      position: 'fixed',
-                      bottom: '20px',
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      background: 'rgba(0, 0, 0, 0.7)',
-                      color: 'white',
-                      padding: '10px 20px',
-                      borderRadius: '5px',
-                      zIndex: 1000,
-                    }}
                   >
                     좋아요를 누르셨습니다.
-                  </motion.div>
+                  </S.Notification>
                 )}
               </AnimatePresence>
             </>
           ) : (
             <p>노래를 추천중입니다...</p>
           )}
-          <S.ModalButton onClick={handleClose}>닫기</S.ModalButton>
+          <S.ModalButton onClick={handleClose}>×</S.ModalButton>
         </S.ModalContent>
       </S.ModalContainer>
     </S.ModalOverlay>

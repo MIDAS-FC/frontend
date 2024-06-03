@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import { motion } from 'framer-motion';
+import styled, { keyframes } from 'styled-components';
 
 export const Container = styled.div`
   display: flex;
@@ -32,6 +33,16 @@ export const Form = styled.form`
   flex-direction: column;
   width: 100%;
 `;
+
+export const FormGroup = styled.div`
+  margin-bottom: 20px;
+`;
+
+export const Label = styled.label`
+  margin-bottom: 5px;
+  font-weight: bold;
+`;
+
 
 export const Input = styled.input`
   font-family: 'Arial', sans-serif;
@@ -91,62 +102,84 @@ export const Button = styled.button`
 `;
 
 
+export const rotate = keyframes`
+from {
+  transform: rotate(0deg);
+}
+to {
+  transform: rotate(360deg);
+}
+`;
+
 export const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); /* 배경화면을 어둡고 투명하게 변경 */
+  z-index: 999;
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 1000;
+  align-items: center;
 `;
 
 export const ModalContainer = styled.div`
   background: white;
+  border-radius: 10px;
   padding: 20px;
-  border-radius: 8px;
-  width: 400px;
-  text-align: center;
+  width: 90%;
+  max-width: 800px; /* 모달 크기를 더 크게 */
+  z-index: 1000;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 export const ModalContent = styled.div`
-  max-height: 80vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
 `;
 
-export const ModalButton = styled.button`
-  margin: 10px;
-  padding: 10px 20px;
-  background: #007BFF;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-
-  &:hover {
-    background: #0056b3;
-  }
+export const AlbumCover = styled.img`
+  width: 300px; /* 크기를 더 크게 */
+  height: 300px; /* 크기를 더 크게 */
+  border-radius: 50%;
+  animation: ${rotate} 20s linear infinite;
+  margin: 20px 0;
 `;
 
 export const LikeButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
+  font-size: 2rem;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+`;
+
+export const ModalButton = styled.button`
   position: absolute;
   top: 10px;
   right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+`;
 
-  svg {
-    width: 24px;
-    height: 24px;
-    transition: fill 0.3s;
-
-    &:hover {
-      fill: red;
-    }
-  }
+export const Notification = styled(motion.div)`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 1000;
 `;

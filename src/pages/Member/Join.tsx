@@ -1,9 +1,32 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import * as S from "./Styles/Member.style";
 
 axios.defaults.baseURL = "/auth";
+
+const generateStarPositions = (numStars: number) => {
+  return Array.from({ length: numStars }).map(() => ({
+    top: Math.random() * 100 + '%',
+    left: Math.random() * 100 + '%'
+  }));
+};
+
+const Stars = () => {
+  const [starPositions, setStarPositions] = useState(generateStarPositions(50));
+
+  useEffect(() => {
+    setStarPositions(generateStarPositions(50));
+  }, []);
+
+  return (
+    <>
+      {starPositions.map((pos, index) => (
+        <S.Star key={index} style={{ top: pos.top, left: pos.left }} />
+      ))}
+    </>
+  );
+};
 
 const Join = () => {
   const [email, setEmail] = useState("");
@@ -24,6 +47,7 @@ const Join = () => {
         email,
         emailType: "sign-up",
         socialType: "SoundOfFlower",
+        role: "USER",
       });
       setRandomNum(response.data.randomNum);
       alert("인증번호가 전송되었습니다.");
@@ -44,6 +68,7 @@ const Join = () => {
         sendTime: new Date(),
         expireTime: new Date(new Date().getTime() + 30 * 1000), //인증번호 유효시간 30초
         emailType: "sign-up", // 또는 "reset-password" 등의 유효한 값
+        role: "USER",
       });
       alert("인증 성공!");
       setIsVerified(true);
@@ -129,111 +154,70 @@ const Join = () => {
   };
 
   return (
-    <Container>
-      <JoinPage>
-        <JoinForm>
-          <JoinInput
-            disabled={isSend}
-            name="email"
-            placeholder="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <JoinBtn type="button" onClick={sendEmail} disabled={isSend}>
-            인증번호 전송
-          </JoinBtn>
-          <JoinInput
-            disabled={isVerified}
-            name="verificationCode"
-            placeholder="Verification Code"
-            value={verificationCode}
-            onChange={(e) => setVerificationCode(e.target.value)}
-          />
-          <JoinBtn type="button" onClick={verifyEmail} disabled={isVerified}>
-            인증하기
-          </JoinBtn>
-          <JoinBtn type="button" onClick={resendEmail}>
-            이메일 재전송
-          </JoinBtn>
-          <JoinInput
-            name="nickName"
-            placeholder="nickname"
-            value={nickName}
-            onChange={(e) => setNickName(e.target.value)}
-          />
-          <JoinBtn type="button" onClick={verifyNickname}>
-            중복 확인
-          </JoinBtn>
-          <JoinFunction onSubmit={handleSubmit}>
-            <JoinInput
-              name="password"
-              type="password"
-              placeholder="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+      <S.Container>
+        <Stars />
+        <S.JoinPage>
+          <S.JoinForm>
+            <S.JoinInput
+              disabled={isSend}
+              name="email"
+              placeholder="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="username"
             />
-            <input type="file" name="file" onChange={handleFileChange} />
-            <JoinBtn type="submit">Sign up</JoinBtn>
-          </JoinFunction>
-        </JoinForm>
-      </JoinPage>
-    </Container>
+            <S.FullWidthBtn type="button" onClick={sendEmail} disabled={isSend}>
+              인증번호 전송
+            </S.FullWidthBtn>
+            <S.JoinInput
+              disabled={isVerified}
+              name="verificationCode"
+              placeholder="Verification Code"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              autoComplete="off"
+            />
+            <S.FullWidthBtn type="button" onClick={verifyEmail} disabled={isVerified}>
+              인증하기
+            </S.FullWidthBtn>
+            <S.FullWidthBtn type="button" onClick={resendEmail}>
+              이메일 재전송
+            </S.FullWidthBtn>
+            <S.JoinInput
+              name="nickName"
+              placeholder="nickname"
+              value={nickName}
+              onChange={(e) => setNickName(e.target.value)}
+              autoComplete="off"
+            />
+            <S.FullWidthBtn type="button" onClick={verifyNickname}>
+              중복 확인
+            </S.FullWidthBtn>
+            <S.JoinFunction onSubmit={handleSubmit}>
+              {/* 자동 완성 기능 향상 및 보안 및 접근성 강화 */}
+              <input
+                type="text"
+                name="username"
+                value={email}
+                autoComplete="username"
+                style={{ display: "none" }}
+                readOnly
+              />
+              <S.JoinInput
+                name="password"
+                type="password"
+                placeholder="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
+              />
+              <S.FileInput type="file" name="file" onChange={handleFileChange} />
+              <S.FullWidthBtn type="submit">Sign up</S.FullWidthBtn>
+            </S.JoinFunction>
+          </S.JoinForm>
+        </S.JoinPage>
+    </S.Container>
   );
 };
 
 export default Join;
-
-const Container = styled.div`
-  position: relative;
-  height: 120vh;
-  top: 100px;
-`;
-
-const JoinPage = styled.div`
-  width: 100%;
-  height: 100%;
-  background: #ffb8b3;
-  overflow: auto;
-`;
-
-const JoinForm = styled.div`
-  background: #ffffff;
-  width: 30%;
-  margin: 100px auto 0 auto;
-  padding: 45px;
-  text-align: center;
-  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1);
-`;
-
-const JoinFunction = styled.form``;
-
-const JoinInput = styled.input`
-  outline: 0;
-  width: 100%;
-  margin: 0 0 15px;
-  padding: 15px 0;
-  box-sizing: border-box;
-  font-size: 14px;
-  border-top: none;
-  border-right: none;
-  border-left: none;
-  border-bottom: 1px solid #ccc;
-`;
-const JoinBtn = styled.button`
-  text-transform: uppercase;
-  outline: 0;
-  background: #ff8379;
-  width: 100%;
-  border: 0;
-  padding: 15px;
-  margin-bottom: 30px;
-  color: #ffffff;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-
-  &:disabled {
-    background: #ffe2e0;
-    cursor: normal;
-  }
-`;

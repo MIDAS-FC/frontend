@@ -1,5 +1,6 @@
 import styled, { keyframes } from "styled-components";
 
+
 const twinkle = keyframes`
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
@@ -9,10 +10,11 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(to bottom, #000428, #004e92);
+  background: linear-gradient(to bottom, rgba(0, 4, 40, 0.8), rgba(0, 78, 146, 0.8));
+  background-size: cover;
   position: relative;
   overflow: hidden;
 `;
@@ -29,10 +31,11 @@ export const Content = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: absolute;
-  right: 10%;
-  top: 40%;
+  position: relative;
   transform: translateY(-50%);
+  margin-bottom: 50px; /* Adjust as necessary */
+  right:20%;
+  bottom:30%;
 `;
 
 export const Logo = styled.h2`

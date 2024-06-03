@@ -1,11 +1,12 @@
 import styled from "styled-components";
 
 export const MainContent = styled.div`
-  display: flex;
-  margin-top: 70px;
+  margin:0;
+  flex-direction: row;
+  height: 100vh;
 `;
 
 export const Content = styled.div`
   flex: 1;
-  padding: 20px;
+  overflow-y: auto;
 `;

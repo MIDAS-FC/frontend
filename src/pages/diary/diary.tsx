@@ -48,7 +48,12 @@ function WriteDiary() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setImages(Array.from(e.target.files));
+      const selectedFiles = Array.from(e.target.files);
+      if (images.length + selectedFiles.length > 9) {
+        alert("이미지는 최대 9개까지 업로드할 수 있습니다.");
+        return;
+      }
+      setImages((prevImages) => [...prevImages, ...selectedFiles]);
     }
   };
 
