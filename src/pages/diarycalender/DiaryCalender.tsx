@@ -1,19 +1,18 @@
-import axios from "axios";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
-import api from "../../axiosInterceptor";
-import Calender from "./Calender";
-import * as S from "./Styles/DiaryCalender.style";
-import EmptyDiary from "../../assets/images/EmptyDiary.webp";
-import Rose from "../../assets/icons/flowers/Rose.webp";
-import Sunflower from "../../assets/icons/flowers/Sunflower.webp";
-import Tulip from "../../assets/icons/flowers/Tulip.webp";
-import Lilac from "../../assets/icons/flowers/Lilac.webp";
 import BlueDaisy from "../../assets/icons/flowers/BlueDaisy.webp";
 import Chamomile from "../../assets/icons/flowers/Chamomile.webp";
 import Dahlia from "../../assets/icons/flowers/Dahlia.webp";
+import Lilac from "../../assets/icons/flowers/Lilac.webp";
+import Rose from "../../assets/icons/flowers/Rose.webp";
+import Sunflower from "../../assets/icons/flowers/Sunflower.webp";
+import Tulip from "../../assets/icons/flowers/Tulip.webp";
+import EmptyDiary from "../../assets/images/EmptyDiary.webp";
+import api from "../../axiosInterceptor";
+import Calender from "./Calender";
+import * as S from "./Styles/DiaryCalender.style";
 
 export interface DiaryInfoResponse {
   diaryId: number;

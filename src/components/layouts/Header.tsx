@@ -10,9 +10,9 @@ function Header() {
   const { isLoggedIn, setIsLoggedIn, nickname, email } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
 
-  const token = localStorage.getItem("accessToken");
-  const refreshToken = localStorage.getItem("refreshToken");
-  const role = localStorage.getItem("role");
+  const token = localStorage.getItem('accessToken');
+  const refreshToken = localStorage.getItem('refreshToken');
+  const role = localStorage.getItem('role');
 
   const handleLogoClick = () => {
     navigate("/");
@@ -51,8 +51,10 @@ function Header() {
       localStorage.removeItem("email");
       localStorage.removeItem("role");
 
+
       delete axios.defaults.headers.common["Authorization-Access"];
       delete axios.defaults.headers.common["Authorization-Refresh"];
+
       setIsLoggedIn(false);
       navigate("/");
     } catch (error) {

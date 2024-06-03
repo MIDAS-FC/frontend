@@ -1,8 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import api from "../../axiosInterceptor";
-import EmotionModal from "./EmotionModal"; // 추가된 모달 컴포넌트
+import api from '../../axiosInterceptor';
+import EmotionModal from "./EmotionModal";
+import MusicModal from "./MusicModal";
 import * as S from "./Styles/WriteDiary.style";
 
 function WriteDiary() {
@@ -17,6 +18,8 @@ function WriteDiary() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEmotion, setSelectedEmotion] = useState<string | null>(null);
   const [maintainEmotion, setMaintainEmotion] = useState<boolean>(false);
+  const [isSongModalOpen, setIsSongModalOpen] = useState(false);
+  const [trackId, setTrackId] = useState<string | null>(null);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -36,7 +39,10 @@ function WriteDiary() {
   };
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
+    const value = e.target.value;
+    if (value.length <= 4000) {
+      setContent(value);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,9 +88,10 @@ function WriteDiary() {
         },
       });
       console.log(response);
-      alert("일기가 저장되었습니다!");
-      navigate("/");
-    } catch (error: unknown) {
+      // 응답에서 trackId를 받아서 설정
+      setTrackId(response.data.spotify);
+      setIsSongModalOpen(true); // 노래 모달 열기
+    } catch (error) {
       console.error("Error saving diary:", error);
 
       if (axios.isAxiosError(error)) {
@@ -96,7 +103,7 @@ function WriteDiary() {
           navigate("/login");
         }
       } else {
-        console.error("에러 메시지:", (error as Error).message);
+        console.error("에러 메시지:");
       }
     }
   };
@@ -125,16 +132,18 @@ function WriteDiary() {
           value={content}
           onChange={handleContentChange}
           placeholder="오늘의 이야기를 들려주세요..."
+          maxLength={1000} // This will also prevent typing beyond 1000 characters
         />
         <S.FileInput type="file" multiple onChange={handleFileChange} />
         <S.ButtonGroup>
           <S.Button type="submit">일기 작성</S.Button>
         </S.ButtonGroup>
       </S.Form>
-      {isModalOpen && (
-        <EmotionModal
-          onClose={() => setIsModalOpen(false)}
-          onSelect={handleEmotionSelect}
+      {isModalOpen && <EmotionModal onClose={() => setIsModalOpen(false)} onSelect={handleEmotionSelect} />}
+      {isSongModalOpen && trackId && (
+        <MusicModal
+          trackId={trackId}
+          onClose={() => setIsSongModalOpen(false)}
         />
       )}
     </S.Container>
