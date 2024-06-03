@@ -1,33 +1,27 @@
-import {
-  AnimatePresence,
-  useAnimation
-} from "framer-motion";
+import { AnimatePresence, useAnimation } from "framer-motion";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import api from "../../../axiosInterceptor.js";
 import * as S from "../Styles/LikedSongs.style";
+import axios from "axios";
+import { TrackInfo, TrackInfoWithLike } from "./TopSongs.js";
 
-export interface Artist {
-  name: string;
-}
-
-export interface Album {
-  name: string;
-  images: { url: string }[];
-  release_date: string;
-}
-
-export interface TrackInfo {
-  id: string;
-  name: string;
-  artists: Artist[];
-  album: Album;
-  preview_url: string;
-  duration_ms: number;
+export interface LikedSongInfo {
+  data: string[];
+  last: boolean;
 }
 
 function LikedSongs() {
-  //받아온 노래 리스트
-  const [songs, setSongs] = useState<TrackInfo[]>([]);
+  // 선택한 노래
+  const [selectedSong, setSelectedSong] = useState<TrackInfoWithLike | null>(
+    null
+  );
+  // api로 받아온 트랙 id
+  const [trackIds, setTrackIds] = useState<string[]>([]);
+  // 스포티파이 통해 가져온 트랙 정보
+  const [trackInfos, setTrackInfos] = useState<TrackInfoWithLike[]>([]);
+  // 좋아요 상태
+  const [likedSongs, setLikedSongs] = useState<string[]>([]);
+  //페이지
   const [page, setPage] = useState(1);
   const [last, setLast] = useState(false);
   const loader = useRef<HTMLDivElement | null>(null);
@@ -37,79 +31,93 @@ function LikedSongs() {
   const scrollLeft = useRef(0);
   const controls = useAnimation();
 
-  //  좋아요를 누른 노래들의 ID
-  const [likedSongs, setLikedSongs] = useState<string[]>([]);
-  const [selectedSong, setSelectedSong] = useState<TrackInfo | null>(null);
-  // // 좋아요 상태
-  const [like, setLike] = useState<{ [key: string]: boolean }>({});
-  // const [like, setLike] = useState(true);
+  useEffect(() => {
+    const fetchLikes = async (pageToFetch: number) => {
+      try {
+        const response = await api.get("/music/likes", {
+          params: { page: pageToFetch, size: 5 },
+        });
+        // const { data } = response;
+        // setTrackIds((prevSongInfo) =>
+        //   pageToFetch === 1 ? data : [...prevSongInfo, ...data]
+        // );
+        // setLast(data.last);
+        const trackIdArray = Array.isArray(response.data.data)
+          ? response.data.data
+          : Object.keys(response.data.data);
 
-  const fetchLikes = useCallback(async (pageToFetch: number) => {
-    try {
-      const response = await api.get("/music/likes", {
-        params: { page: pageToFetch, size: 15 },
-      });
-      const { data, last } = response.data;
-
-      setSongs((prevSongs) =>
-        pageToFetch === 1 ? data : [...prevSongs, ...data]
-      );
-      setLast(last);
-      console.log(`Fetched ${data.length} songs, last: ${last}`);
-    } catch (error: any) {
-      if (error.response && error.response.data) {
-        if (error.response.data.code === "SAG1") {
-          console.log("외부 API와 통신이 불가능합니다.");
+        setTrackIds((prevTrackIds) =>
+          pageToFetch === 1 ? trackIdArray : [...prevTrackIds, ...trackIdArray]
+        );
+        console.log("트랙 아이디 출력: ", trackIds);
+        setLast(response.data.last);
+      } catch (error: any) {
+        if (error.response && error.response.data) {
+          if (error.response.data.code === "SAG1") {
+            console.log("외부 API와 통신이 불가능합니다.");
+          } else {
+            console.error("Error fetching liked songs: ", error);
+          }
         } else {
-          console.error("Error fetching liked songs: ", error);
+          console.log("알 수 없는 오류가 발생했습니다.");
         }
-      } else {
-        console.log("알 수 없는 오류가 발생했습니다.");
       }
-    }
-  }, []);
+    };
+
+    fetchLikes(page);
+  }, [page]);
 
   useEffect(() => {
-    fetchLikes(page);
-  }, [fetchLikes, page]);
+    const fetchTrackInfos = async () => {
+      const trackInfoArray: TrackInfoWithLike[] = [];
 
-  const toggleLike = async (songId: string) => {
-    const isLiked = likedSongs.includes(songId);
-    const updatedLikeStatus = !isLiked;
+      for (const id of trackIds) {
+        try {
+          const response = await axios.get(
+            `http://localhost:8000/spotify/track/${id}`
+          );
+          const trackData: TrackInfoWithLike = {
+            ...response.data,
+            liked: true,
+          };
+          trackInfoArray.push(trackData);
+        } catch (error) {
+          console.error("Error fetching track info:", error);
+        }
+      }
 
+      setTrackInfos(trackInfoArray);
+      console.log("trackInfoss", trackInfos);
+    };
+
+    fetchTrackInfos();
+  }, [trackIds]);
+
+  const handleLikeToggle = async (trackId: string) => {
     try {
-      await api.post("/music/likes", {
-        spotify: songId,
-        like: updatedLikeStatus,
+      const isLiked = likedSongs.includes(trackId);
+      const response = await axios.post("http://localhost:8080/music/likes", {
+        spotify: trackId,
+        like: !isLiked,
       });
 
-      setLike((prevLike) => ({
-        ...prevLike,
-        [songId]: updatedLikeStatus,
-      }));
-
-      setLikedSongs((prevLikedSongs) => {
-        if (updatedLikeStatus) {
-          return [...prevLikedSongs, songId];
-        } else {
-          return prevLikedSongs.filter((id) => id !== songId);
-        }
-      });
-
-      setSongs((prevSongs) => {
-        if (!updatedLikeStatus) {
-          return prevSongs.filter((song) => song.id !== songId);
-        }
-        return prevSongs;
-      });
-
-      // setLike((prevLike) => ({
-      //   ...prevLike,
-      //   [songId]: updatedLikeStatus,
-      // }));
+      toggleLike(trackId);
     } catch (error) {
       console.error("Error updating like status:", error);
     }
+  };
+
+  const toggleLike = (trackId: string) => {
+    setLikedSongs((prevLikedSongs) =>
+      prevLikedSongs.includes(trackId)
+        ? prevLikedSongs.filter((id) => id !== trackId)
+        : [...prevLikedSongs, trackId]
+    );
+    setTrackInfos((prevTrackInfos) =>
+      prevTrackInfos.map((track) =>
+        track.id === trackId ? { ...track, liked: !track.liked } : track
+      )
+    );
   };
 
   useEffect(() => {
@@ -168,7 +176,7 @@ function LikedSongs() {
     // });
   };
 
-  const handleSongClick = (song: TrackInfo) => {
+  const handleSongClick = (song: TrackInfoWithLike) => {
     setSelectedSong(song);
   };
 
@@ -179,7 +187,7 @@ function LikedSongs() {
   return (
     <S.Container>
       <h2>마음에 든 노래</h2>
-      {songs.length === 0 ? (
+      {trackInfos.length === 0 ? (
         <S.NoSongsMessage>좋아요를 누른 노래가 없습니다</S.NoSongsMessage>
       ) : (
         <S.SliderContainer
@@ -189,11 +197,12 @@ function LikedSongs() {
           onMouseUp={handleMouseUp}
           onMouseMove={handleMouseMove}
         >
-          {songs.map((song) => (
-            <S.SliderItem key={song.id}>
+          {trackInfos.map((song, index) => (
+            <S.SliderItem key={`${song.id}-${index}`}>
               <S.AlbumCover
                 src={song.album.images[0].url}
                 alt="song album"
+                draggable="false"
                 onClick={() => handleSongClick(song)}
               />
               <S.SongDetails>
@@ -202,12 +211,11 @@ function LikedSongs() {
                   {song.artists.map((artist) => artist.name).join(" ")}
                 </S.ArtistName>
               </S.SongDetails>
-              <S.HeartButton onClick={() => toggleLike(song.id)}>
-                {like[song.id] ? "❤️" : "🤍"}
+              <S.HeartButton onClick={() => handleLikeToggle(song.id)}>
+                {likedSongs.includes(song.id) ? "❤️" : "🤍"}
               </S.HeartButton>
             </S.SliderItem>
           ))}
-          <div ref={loader} style={{ width: "100%", height: "1px" }} />
         </S.SliderContainer>
       )}
       <AnimatePresence>
@@ -225,6 +233,7 @@ function LikedSongs() {
               <S.PopupAlbumCover
                 src={selectedSong.album.images[0].url}
                 alt="album cover"
+                draggable="false"
               />
               <S.PopupSongTitle>{selectedSong.album.name}</S.PopupSongTitle>
               <S.PopupArtistName>

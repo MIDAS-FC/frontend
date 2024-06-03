@@ -2,29 +2,60 @@ import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import api from "../../../axiosInterceptor.js";
 import * as S from "../Styles/TopSongs.style";
-import { TrackInfo } from "./LikedSongs";
+import axios from "axios";
+
+export interface TrackInfoWithLike extends TrackInfo {
+  liked: boolean;
+}
+
+export interface Artist {
+  name: string;
+}
+
+export interface Album {
+  name: string;
+  images: { url: string }[];
+  release_date: string;
+}
+
+export interface TrackInfo {
+  id: string;
+  name: string;
+  artists: Artist[];
+  album: Album;
+  preview_url: string;
+  duration_ms: number;
+  popularity: number;
+}
 
 function TopSongs() {
-  const [songs, setSongs] = useState<TrackInfo[]>([]);
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
 
-  const [likedSongs, setLikedSongs] = useState<number[]>([]);
-  const [selectedSong, setSelectedSong] = useState<TrackInfo | null>(null);
+  // 선택한 노래
+  const [selectedSong, setSelectedSong] = useState<TrackInfoWithLike | null>(
+    null
+  );
+  // api로 받아온 트랙 id
+  const [trackIds, setTrackIds] = useState<string[]>([]);
+  // 스포티파이 통해 가져온 트랙 정보
+  const [trackInfos, setTrackInfos] = useState<TrackInfoWithLike[]>([]);
+  // 좋아요 눌렀던 노래
+  const [likedSongs, setLikedSongs] = useState<string[]>([]);
 
   // api 연결
   useEffect(() => {
     const fetchTopLikedSongs = async () => {
       try {
-        const response = await api.get("/music/top10");
-        console.log("top 10", response.data);
-        setSongs((prevSongs) => {
-          return response.data.length
-            ? [...prevSongs, ...response.data]
-            : prevSongs;
-        });
+        const response = await axios.get("http://localhost:8080/music/top10");
+
+        const trackIdArray = Array.isArray(response.data)
+          ? response.data
+          : Object.keys(response.data);
+
+        setTrackIds(trackIdArray);
       } catch (error: any) {
         if (error.response && error.response.data) {
           if (error.response.data.code === "SAG1") {
@@ -40,6 +71,60 @@ function TopSongs() {
 
     fetchTopLikedSongs();
   }, []);
+
+  useEffect(() => {
+    const fetchTrackInfos = async () => {
+      const trackInfoArray: TrackInfoWithLike[] = [];
+
+      for (const id of trackIds) {
+        try {
+          const response = await axios.get(
+            `http://localhost:8000/spotify/track/${id}`
+          );
+          const trackData: TrackInfoWithLike = {
+            ...response.data,
+            liked: likedSongs.includes(response.data.id),
+          };
+          trackInfoArray.push(response.data);
+          // console.log("스포티파이 전체 출력", trackInfoArray);
+        } catch (error) {
+          console.error("Error fetching track info:", error);
+        }
+      }
+
+      setTrackInfos(trackInfoArray);
+      console.log("trackInfoss", trackInfos);
+    };
+
+    fetchTrackInfos();
+  }, [trackIds]);
+
+  const handleLikeToggle = async (trackId: string) => {
+    try {
+      const isLiked = likedSongs.includes(trackId);
+      const response = await axios.post("http://localhost:8080/music/likes", {
+        spotify: trackId,
+        like: !isLiked,
+      });
+
+      toggleLike(trackId);
+    } catch (error) {
+      console.error("Error updating like status:", error);
+    }
+  };
+
+  const toggleLike = (trackId: string) => {
+    setLikedSongs((prevLikedSongs) =>
+      prevLikedSongs.includes(trackId)
+        ? prevLikedSongs.filter((id) => id !== trackId)
+        : [...prevLikedSongs, trackId]
+    );
+    setTrackInfos((prevTrackInfos) =>
+      prevTrackInfos.map((track) =>
+        track.id === trackId ? { ...track, liked: !track.liked } : track
+      )
+    );
+  };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
@@ -69,16 +154,7 @@ function TopSongs() {
     sliderRef.current!.scrollLeft = scrollLeft.current - walk;
   };
 
-  // 임시 toggle
-  const toggleLike = (index: number) => {
-    setLikedSongs((prevLikedSongs) =>
-      prevLikedSongs.includes(index)
-        ? prevLikedSongs.filter((i) => i !== index)
-        : [...prevLikedSongs, index]
-    );
-  };
-
-  const handleSongClick = (song: TrackInfo) => {
+  const handleSongClick = (song: TrackInfoWithLike) => {
     setSelectedSong(song);
   };
 
@@ -88,8 +164,8 @@ function TopSongs() {
 
   return (
     <S.Container>
-      <S.HeaderText>인기곡 Top 10</S.HeaderText>
-      {songs.length === 0 ? (
+      <S.HeaderText>좋아요 많은 곡 Top 10</S.HeaderText>
+      {trackInfos.length === 0 ? (
         <S.NoSongsMessage>
           <strong>Loding...</strong>
         </S.NoSongsMessage>
@@ -101,11 +177,12 @@ function TopSongs() {
           onMouseUp={handleMouseUp}
           onMouseMove={handleMouseMove}
         >
-          {songs.map((song, index) => (
-            <S.SliderItem key={index}>
+          {trackInfos.map((song) => (
+            <S.SliderItem key={song.id}>
               <S.AlbumCover
                 src={song.album.images[0].url}
                 alt="song album"
+                draggable="false"
                 onClick={() => handleSongClick(song)}
               />
               <S.SongDetails>
@@ -114,8 +191,8 @@ function TopSongs() {
                   {song.artists.map((artist) => artist.name).join(" ")}
                 </S.ArtistName>
               </S.SongDetails>
-              <S.HeartButton onClick={() => toggleLike(index)}>
-                {likedSongs.includes(index) ? "❤️" : "🤍"}
+              <S.HeartButton onClick={() => handleLikeToggle(song.id)}>
+                {song.liked ? "❤️" : "🤍"}
               </S.HeartButton>
             </S.SliderItem>
           ))}
@@ -136,6 +213,7 @@ function TopSongs() {
               <S.PopupAlbumCover
                 src={selectedSong.album.images[0].url}
                 alt="album cover"
+                draggable="false"
               />
               <S.PopupSongTitle>{selectedSong.album.name}</S.PopupSongTitle>
               <S.PopupArtistName>
@@ -145,6 +223,10 @@ function TopSongs() {
                 <S.PopupSongDetail>
                   <strong>Duration:</strong>
                   {selectedSong.duration_ms}
+                </S.PopupSongDetail>
+                <S.PopupSongDetail>
+                  <strong>Popularity:</strong>
+                  {selectedSong.popularity}
                 </S.PopupSongDetail>
                 <S.PopupSongDetail>
                   <strong>Release Date:</strong>
