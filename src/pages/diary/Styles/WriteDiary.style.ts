@@ -1,85 +1,95 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const Container = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 20px auto;
 `;
 
 export const Header = styled.h1`
-  font-family: "Malgun Gothic", sans-serif;
-  font-size: 36px;
-  color: #d38b8b;
+  font-family: 'Arial', sans-serif;
+  font-size: 24px;
+  color: #262626;
   margin-bottom: 20px;
-  text-align: center;
+`;
+
+export const DateDisplay = styled.div`
+  font-family: 'Arial', sans-serif;
+  font-size: 14px;
+  color: #8e8e8e;
+  margin-bottom: 20px;
 `;
 
 export const Form = styled.form`
   display: flex;
   flex-direction: column;
+  width: 100%;
 `;
 
 export const Input = styled.input`
-  font-family: "Malgun Gothic", sans-serif;
-  font-size: 24px;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  font-family: 'Arial', sans-serif;
   font-size: 16px;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #dbdbdb;
+  border-radius: 3px;
+  outline: none;
+  transition: border-color 0.3s;
+
+  &:focus {
+    border-color: #a8a8a8;
+  }
 `;
 
 export const TextArea = styled.textarea`
-  font-family: "Malgun Gothic", sans-serif;
-  font-size: 18px;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  font-family: 'Arial', sans-serif;
   font-size: 16px;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #dbdbdb;
+  border-radius: 3px;
   height: 200px;
   resize: none;
+  outline: none;
+  transition: border-color 0.3s;
+
+  &:focus {
+    border-color: #a8a8a8;
+  }
 `;
 
 export const FileInput = styled.input`
-  margin-bottom: 10px;
-`;
-
-export const ImageContainer = styled.div`
-  margin: 20px 0;
-`;
-
-export const BackgroundImage = styled.img`
-  width: 100%;
-  height: auto;
-  border-radius: 10px;
-`;
-
-export const Button = styled.button`
-  font-family: "Malgun Gothic", sans-serif;
-  font-size: 24px;
-  padding: 10px 20px;
-  background-color: #d38b8b;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-
-  &:hover {
-    background-color: #bf7171;
-    transform: scale(1.05);
-  }
+  margin-bottom: 15px;
 `;
 
 export const ButtonGroup = styled.div`
   display: flex;
-  justify-content: center;
-  margin-top: 20px;
+  justify-content: flex-end;
 `;
+
+export const Button = styled.button`
+  background-color: #0095f6;
+  color: #fff;
+  font-family: 'Arial', sans-serif;
+  font-size: 14px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #007bb5;
+  }
+`;
+
 
 export const ModalOverlay = styled.div`
   position: fixed;

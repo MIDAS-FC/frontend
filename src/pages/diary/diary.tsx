@@ -39,7 +39,10 @@ function WriteDiary() {
   };
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
+    const value = e.target.value;
+    if (value.length <= 4000) {
+      setContent(value);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,15 +94,15 @@ function WriteDiary() {
       console.error("Error saving diary:", error);
 
       if (axios.isAxiosError(error)) {
-        console.error("응답 데이터:", (error as any).response?.data);
-        console.error("응답 상태:", (error as any).response?.status);
-        console.error("응답 헤더:", (error as any).response?.headers);
-        if ((error as any).response?.status === 401) {
+        console.error("응답 데이터:", error.response?.data);
+        console.error("응답 상태:", error.response?.status);
+        console.error("응답 헤더:", error.response?.headers);
+        if (error.response?.status === 401) {
           alert("인증 오류입니다. 다시 로그인해주세요.");
           navigate("/login");
         }
       } else {
-        console.error("에러 메시지:", (error as Error).message);
+        console.error("에러 메시지:");
       }
     }
   };
@@ -128,6 +131,7 @@ function WriteDiary() {
           value={content}
           onChange={handleContentChange}
           placeholder="오늘의 이야기를 들려주세요..."
+          maxLength={1000} // This will also prevent typing beyond 1000 characters
         />
         <S.FileInput type="file" multiple onChange={handleFileChange} />
         <S.ButtonGroup>
@@ -135,7 +139,12 @@ function WriteDiary() {
         </S.ButtonGroup>
       </S.Form>
       {isModalOpen && <EmotionModal onClose={() => setIsModalOpen(false)} onSelect={handleEmotionSelect} />}
-      {isSongModalOpen && trackId && <MusicModal trackId={trackId} onClose={() => setIsSongModalOpen(false)} />}
+      {isSongModalOpen && trackId && (
+        <MusicModal 
+          trackId={trackId} 
+          onClose={() => setIsSongModalOpen(false)}
+        />
+      )}
     </S.Container>
   );
 }

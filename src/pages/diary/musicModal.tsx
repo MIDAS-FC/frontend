@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as S from "./Styles/WriteDiary.style";
 
 interface MusicModalProps {
@@ -27,11 +28,12 @@ const MusicModal: React.FC<MusicModalProps> = ({ trackId, onClose }) => {
   const [trackInfo, setTrackInfo] = useState<TrackInfo | null>(null);
   const [liked, setLiked] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTrackInfo = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/spotify/track/${trackId}`);
+        const response = await axios.get(`http://localhost:8000/spotify/track/7wAkQFShJ27V8362MqevQr`);
         setTrackInfo(response.data);
       } catch (error) {
         console.error('Error fetching track info:', error);
@@ -43,52 +45,9 @@ const MusicModal: React.FC<MusicModalProps> = ({ trackId, onClose }) => {
     }
   }, [trackId]);
 
-  useEffect(() => {
-    const audioElement = audioRef.current;
-
-    if (audioElement && trackInfo) {
-      const playAudio = () => {
-        audioElement.currentTime = 0;
-        audioElement.play().catch(error => {
-          console.error('Error attempting to play audio:', error);
-        });
-      };
-
-      // Set the audio to start playing from the beginning
-      playAudio();
-
-      // Stop playback after 30 seconds
-      const stopPlayback = () => {
-        setTimeout(() => {
-          audioElement.pause();
-        }, 30000);
-      };
-
-      // Ensure playback stops after 30 seconds
-      stopPlayback();
-
-      // Cleanup function to remove event listeners
-      return () => {
-        audioElement.removeEventListener('play', playAudio);
-      };
-    }
-  }, [trackInfo]);
-
-  const handleLike = async () => {
-    setLiked(!liked);
-
-    try {
-      await axios.post('http://localhost:8000/music/likes', {
-        spotify: trackId,
-        like: !liked,
-      });
-    } catch (error) {
-      console.error('Error updating like status:', error);
-    }
-  };
-
   const handleClose = () => {
     onClose();
+    navigate("/");
   };
 
   return (
