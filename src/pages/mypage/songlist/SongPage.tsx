@@ -1,8 +1,7 @@
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-import api from "../../../axiosInterceptor.js";
-import * as S from "../Styles/TopSongs.style";
 import axios from "axios";
+import * as S from "../Styles/TopSongs.style";
 
 export interface TrackInfoWithLike extends TrackInfo {
   liked: boolean;
@@ -28,54 +27,49 @@ export interface TrackInfo {
   popularity: number;
 }
 
-function TopSongs() {
+function SongsPage() {
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
 
-  // 선택한 노래
+  // const [likedSongs, setLikedSongs] = useState<string[]>(() => {
+  //   const saved = localStorage.getItem("likedSongs");
+  //   return saved ? JSON.parse(saved) : [];
+  // });
+
+  const [likedSongs, setLikedSongs] = useState<string[]>([]);
+
   const [selectedSong, setSelectedSong] = useState<TrackInfoWithLike | null>(
     null
   );
-  // api로 받아온 트랙 id
   const [trackIds, setTrackIds] = useState<string[]>([]);
-  // 스포티파이 통해 가져온 트랙 정보
   const [trackInfos, setTrackInfos] = useState<TrackInfoWithLike[]>([]);
-  // 좋아요 눌렀던 노래
-  const [likedSongs, setLikedSongs] = useState<string[]>([]);
+  const [page, setPage] = useState(1);
+  const [last, setLast] = useState(false);
 
-  // api 연결
+  const loader = useRef<HTMLDivElement | null>(null);
+
+  // Fetch top liked songs
   useEffect(() => {
     const fetchTopLikedSongs = async () => {
       try {
         const response = await axios.get("http://localhost:8080/music/top10");
-
         const trackIdArray = Array.isArray(response.data)
           ? response.data
           : Object.keys(response.data);
-
         setTrackIds(trackIdArray);
       } catch (error: any) {
-        if (error.response && error.response.data) {
-          if (error.response.data.code === "SAG1") {
-            console.log("외부 API와 통신이 불가능합니다.");
-          } else {
-            console.log("노래 리스트를 가져오는 데 실패했습니다.");
-          }
-        } else {
-          console.log("알 수 없는 오류가 발생했습니다.");
-        }
+        console.error("Error fetching top liked songs:", error);
       }
     };
-
     fetchTopLikedSongs();
   }, []);
 
+  // Fetch track info
   useEffect(() => {
     const fetchTrackInfos = async () => {
       const trackInfoArray: TrackInfoWithLike[] = [];
-
       for (const id of trackIds) {
         try {
           const response = await axios.get(
@@ -85,46 +79,135 @@ function TopSongs() {
             ...response.data,
             liked: likedSongs.includes(response.data.id),
           };
-          trackInfoArray.push(response.data);
-          // console.log("스포티파이 전체 출력", trackInfoArray);
+          trackInfoArray.push(trackData);
         } catch (error) {
           console.error("Error fetching track info:", error);
         }
       }
-
       setTrackInfos(trackInfoArray);
-      console.log("trackInfoss", trackInfos);
     };
-
     fetchTrackInfos();
-  }, [trackIds]);
+  }, [trackIds, likedSongs]);
 
-  const handleLikeToggle = async (trackId: string) => {
+  // // Fetch liked songs
+  // useEffect(() => {
+  //   const fetchLikes = async (pageToFetch: number) => {
+  //     try {
+  //       const response = await axios.get("/music/likes", {
+  //         params: { page: pageToFetch, size: 5 },
+  //       });
+  //       const trackIdArray = Array.isArray(response.data.data)
+  //         ? response.data.data
+  //         : Object.keys(response.data.data);
+  //       setTrackIds((prevTrackIds) =>
+  //         pageToFetch === 1 ? trackIdArray : [...prevTrackIds, ...trackIdArray]
+  //       );
+  //       setLikedSongs((prevLikedSongs) =>
+  //         pageToFetch === 1
+  //           ? trackIdArray
+  //           : [...prevLikedSongs, ...trackIdArray]
+  //       );
+  //       setLast(response.data.last);
+  //     } catch (error: any) {
+  //       console.error("Error fetching liked songs:", error);
+  //     }
+  //   };
+  //   fetchLikes(page);
+  // }, [page]);
+
+  // Fetch liked songs
+  useEffect(() => {
+    const fetchLikes = async (pageToFetch: number) => {
+      try {
+        const response = await axios.get("http://localhost:8080/music/likes", {
+          params: { page: pageToFetch, size: 5 },
+        });
+        const trackIdArray = Array.isArray(response.data.data)
+          ? response.data.data
+          : Object.keys(response.data.data);
+        setTrackIds((prevTrackIds) =>
+          pageToFetch === 1 ? trackIdArray : [...prevTrackIds, ...trackIdArray]
+        );
+        setLikedSongs((prevLikedSongs) =>
+          pageToFetch === 1
+            ? trackIdArray
+            : [...prevLikedSongs, ...trackIdArray]
+        );
+        setLast(response.data.last);
+      } catch (error: any) {
+        console.error("Error fetching liked songs:", error);
+      }
+    };
+    fetchLikes(page);
+  }, [page]);
+
+  // Handle like toggle
+  const handleLikeToggle = async (trackId: string, isLiked: boolean) => {
     try {
-      const isLiked = likedSongs.includes(trackId);
-      const response = await axios.post("http://localhost:8080/music/likes", {
+      await axios.post("http://localhost:8080/music/likes", {
         spotify: trackId,
         like: !isLiked,
       });
-
-      toggleLike(trackId);
+      toggleLike(trackId, !isLiked);
     } catch (error) {
       console.error("Error updating like status:", error);
     }
   };
 
-  const toggleLike = (trackId: string) => {
-    setLikedSongs((prevLikedSongs) =>
-      prevLikedSongs.includes(trackId)
-        ? prevLikedSongs.filter((id) => id !== trackId)
-        : [...prevLikedSongs, trackId]
-    );
+  // // Toggle like state
+  // const toggleLike = (trackId: string, newLikeStatus: boolean) => {
+  //   setLikedSongs((prevLikedSongs) => {
+  //     const updatedLikedSongs = newLikeStatus
+  //       ? [...prevLikedSongs, trackId]
+  //       : prevLikedSongs.filter((id) => id !== trackId);
+  //     localStorage.setItem("likedSongs", JSON.stringify(updatedLikedSongs));
+  //     return updatedLikedSongs;
+  //   });
+
+  //   setTrackInfos((prevTrackInfos) =>
+  //     prevTrackInfos.map((track) =>
+  //       track.id === trackId ? { ...track, liked: newLikeStatus } : track
+  //     )
+  //   );
+  // };
+
+  // Toggle like state
+  const toggleLike = (trackId: string, newLikeStatus: boolean) => {
+    setLikedSongs((prevLikedSongs) => {
+      const updatedLikedSongs = newLikeStatus
+        ? [...prevLikedSongs, trackId]
+        : prevLikedSongs.filter((id) => id !== trackId);
+      return updatedLikedSongs;
+    });
+
     setTrackInfos((prevTrackInfos) =>
       prevTrackInfos.map((track) =>
-        track.id === trackId ? { ...track, liked: !track.liked } : track
+        track.id === trackId ? { ...track, liked: newLikeStatus } : track
       )
     );
   };
+
+  // Infinite scroll setup
+  useEffect(() => {
+    const options = {
+      root: null,
+      rootMargin: "20px",
+      threshold: 1.0,
+    };
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !last) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    }, options);
+    if (loader.current) {
+      observer.observe(loader.current);
+    }
+    return () => {
+      if (loader.current) {
+        observer.unobserve(loader.current);
+      }
+    };
+  }, [last]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
@@ -167,7 +250,7 @@ function TopSongs() {
       <S.HeaderText>좋아요 많은 곡 Top 10</S.HeaderText>
       {trackInfos.length === 0 ? (
         <S.NoSongsMessage>
-          <strong>Loding...</strong>
+          <strong>Loading...</strong>
         </S.NoSongsMessage>
       ) : (
         <S.SliderContainer
@@ -191,7 +274,9 @@ function TopSongs() {
                   {song.artists.map((artist) => artist.name).join(" ")}
                 </S.ArtistName>
               </S.SongDetails>
-              <S.HeartButton onClick={() => handleLikeToggle(song.id)}>
+              <S.HeartButton
+                onClick={() => handleLikeToggle(song.id, song.liked)}
+              >
                 {song.liked ? "❤️" : "🤍"}
               </S.HeartButton>
             </S.SliderItem>
@@ -238,8 +323,45 @@ function TopSongs() {
           </S.Overlay>
         )}
       </AnimatePresence>
+      <div ref={loader} />
+      <h2>마음에 든 노래</h2>
+      {trackInfos.length === 0 ? (
+        <S.NoSongsMessage>좋아요를 누른 노래가 없습니다</S.NoSongsMessage>
+      ) : (
+        <S.SliderContainer
+          ref={sliderRef}
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseLeave}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+        >
+          {trackInfos
+            .filter((song) => likedSongs.includes(song.id))
+            .map((song, index) => (
+              <S.SliderItem key={`${song.id}-${index}`}>
+                <S.AlbumCover
+                  src={song.album.images[0].url}
+                  alt="song album"
+                  draggable="false"
+                  onClick={() => handleSongClick(song)}
+                />
+                <S.SongDetails>
+                  <S.SongTitle>{song.album.name}</S.SongTitle>
+                  <S.ArtistName>
+                    {song.artists.map((artist) => artist.name).join(" ")}
+                  </S.ArtistName>
+                </S.SongDetails>
+                <S.HeartButton
+                  onClick={() => handleLikeToggle(song.id, song.liked)}
+                >
+                  {song.liked ? "❤️" : "🤍"}
+                </S.HeartButton>
+              </S.SliderItem>
+            ))}
+        </S.SliderContainer>
+      )}
     </S.Container>
   );
 }
 
-export default TopSongs;
+export default SongsPage;
