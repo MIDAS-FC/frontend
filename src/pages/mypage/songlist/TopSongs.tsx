@@ -2,20 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as S from "../Styles/TopSongs.style";
 import api from "../../../axiosInterceptor.js";
 import { AnimatePresence, useAnimation } from "framer-motion";
-
-// 임시 인터페이스
-interface SongInfo {
-  id: string;
-  title: string;
-  artist: string;
-  albumCoverUrl: string;
-  durationMs: number;
-  popularity: number;
-  releaseDate: string;
-}
+import { TrackInfo } from "./LikedSongs";
 
 function TopSongs() {
-  const [songs, setSongs] = useState<SongInfo[]>([]);
+  const [songs, setSongs] = useState<TrackInfo[]>([]);
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
@@ -23,7 +13,7 @@ function TopSongs() {
 
   //임시 상태관리
   const [likedSongs, setLikedSongs] = useState<number[]>([]);
-  const [selectedSong, setSelectedSong] = useState<SongInfo | null>(null);
+  const [selectedSong, setSelectedSong] = useState<TrackInfo | null>(null);
 
   //   useEffect(() => {
   //     const token = localStorage.getItem("accessToken");
@@ -35,6 +25,7 @@ function TopSongs() {
   //     }
   //   }, []);
 
+  // api 연결
   useEffect(() => {
     const fetchTopLikedSongs = async () => {
       try {
@@ -60,6 +51,49 @@ function TopSongs() {
 
     fetchTopLikedSongs();
   }, []);
+
+  // useEffect(() => {
+  //   const fetchTopLikedSongs = async () => {
+  //     try {
+  //       // 더미 데이터 생성
+  //       const dummyResponse = [
+  //         {
+  //           id: "1",
+  //           title: "Song 1",
+  //           artist: "Artist 1",
+  //           albumCoverUrl: "path/to/image1",
+  //           durationMs: 200000,
+  //           popularity: 90,
+  //           releaseDate: "2023-01-01",
+  //         },
+  //         {
+  //           id: "2",
+  //           title: "Song 2",
+  //           artist: "Artist 2",
+  //           albumCoverUrl: "path/to/image2",
+  //           durationMs: 180000,
+  //           popularity: 85,
+  //           releaseDate: "2023-01-02",
+  //         },
+  //         {
+  //           id: "3",
+  //           title: "Song 3",
+  //           artist: "Artist 3",
+  //           albumCoverUrl: "path/to/image3",
+  //           durationMs: 220000,
+  //           popularity: 80,
+  //           releaseDate: "2023-01-03",
+  //         },
+  //       ];
+
+  //       setSongs(dummyResponse);
+  //     } catch (error) {
+  //       console.log("Error fetching top songs (dummy data): ", error);
+  //     }
+  //   };
+
+  //   fetchTopLikedSongs();
+  // }, []);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
@@ -98,7 +132,7 @@ function TopSongs() {
     );
   };
 
-  const handleSongClick = (song: SongInfo) => {
+  const handleSongClick = (song: TrackInfo) => {
     setSelectedSong(song);
   };
 
@@ -110,7 +144,9 @@ function TopSongs() {
     <S.Container>
       <S.HeaderText>인기곡 Top 10</S.HeaderText>
       {songs.length === 0 ? (
-        <S.NoSongsMessage>Loading...</S.NoSongsMessage>
+        <S.NoSongsMessage>
+          <strong>Loding...</strong>
+        </S.NoSongsMessage>
       ) : (
         <S.SliderContainer
           ref={sliderRef}
@@ -121,10 +157,16 @@ function TopSongs() {
         >
           {songs.map((song, index) => (
             <S.SliderItem key={index}>
-              <S.AlbumCover src={song.albumCoverUrl} alt="song album" />
+              <S.AlbumCover
+                src={song.album.images[0].url}
+                alt="song album"
+                onClick={() => handleSongClick(song)}
+              />
               <S.SongDetails>
-                <S.SongTitle>{song.title}</S.SongTitle>
-                <S.ArtistName>{song.artist}</S.ArtistName>
+                <S.SongTitle>{song.album.name}</S.SongTitle>
+                <S.ArtistName>
+                  {song.artists.map((artist) => artist.name).join(" ")}
+                </S.ArtistName>
               </S.SongDetails>
               <S.HeartButton onClick={() => toggleLike(index)}>
                 {likedSongs.includes(index) ? "❤️" : "🤍"}
@@ -146,20 +188,21 @@ function TopSongs() {
               exit={{ scale: 0 }}
             >
               <S.PopupAlbumCover
-                src={selectedSong.albumCoverUrl}
+                src={selectedSong.album.images[0].url}
                 alt="album cover"
               />
-              <S.PopupSongTitle>{selectedSong.title}</S.PopupSongTitle>
-              <S.PopupArtistName>{selectedSong.artist}</S.PopupArtistName>
+              <S.PopupSongTitle>{selectedSong.album.name}</S.PopupSongTitle>
+              <S.PopupArtistName>
+                {selectedSong.artists.map((artist) => artist.name).join(" ")}
+              </S.PopupArtistName>
               <S.PopupSongInfo>
                 <S.PopupSongDetail>
                   <strong>Duration:</strong>
+                  {selectedSong.duration_ms}
                 </S.PopupSongDetail>
                 <S.PopupSongDetail>
-                  <strong>Popularity:</strong> {selectedSong.popularity}
-                </S.PopupSongDetail>
-                <S.PopupSongDetail>
-                  <strong>Release Date:</strong> {selectedSong.releaseDate}
+                  <strong>Release Date:</strong>
+                  {selectedSong.album.release_date}
                 </S.PopupSongDetail>
               </S.PopupSongInfo>
               <S.CloseButton onClick={handleClosePopup}>닫기</S.CloseButton>
