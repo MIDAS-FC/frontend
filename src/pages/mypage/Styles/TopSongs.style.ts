@@ -55,11 +55,12 @@ export const HeaderText = styled.h2`
 `;
 
 export const AlbumCover = styled.img`
-  width: 140px;
-  height: 140px;
+  width: 180px;
+  height: 180px;
   border-radius: 10px;
   margin-bottom: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
 `;
 
 export const SongDetails = styled.div`
@@ -97,7 +98,7 @@ export const HeartButton = styled.button`
 
 export const NoSongsMessage = styled.div`
   text-align: center;
-  margin-top: 80px;
+  margin: 80px;
   font-size: 18px;
   color: #666;
 `;
@@ -108,6 +109,7 @@ export const Overlay = styled(motion.div)`
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 1000;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
@@ -115,19 +117,20 @@ export const Overlay = styled(motion.div)`
 `;
 
 export const Popup = styled(motion.div)`
-  background: #fff;
+  background: rgba(255, 255, 255, 0.9);
   padding: 20px;
   border-radius: 10px;
-  width: 300px;
+  width: 400px;
   text-align: center;
 `;
 
 export const PopupAlbumCover = styled.img`
-  width: 100px;
-  height: 100px;
+  width: 200px;
+  height: 200px;
   border-radius: 10px;
   margin-bottom: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
 `;
 
 export const PopupSongTitle = styled.h3`
@@ -140,22 +143,22 @@ export const PopupSongTitle = styled.h3`
 export const PopupArtistName = styled.p`
   font-size: 16px;
   color: #666;
-  margin: 0;
+  margin: 10px;
 `;
 
 export const PopupSongInfo = styled.div`
   text-align: left;
-  margin-top: 10px;
+  margin: 10px;
 `;
 
 export const PopupSongDetail = styled.p`
   font-size: 14px;
   color: #333;
-  margin: 5px 0;
+  margin: 10px;
 `;
 
 export const CloseButton = styled.button`
-  margin-top: 10px;
+  margin-top: 20px;
   padding: 10px 20px;
   background-color: #87ceeb;
   color: white;
@@ -165,6 +168,6 @@ export const CloseButton = styled.button`
   font-size: 14px;
 
   &:hover {
-    background-color: #ff4a4f;
+    background-color: #bfefff;
   }
 `;

@@ -27,7 +27,9 @@ function EditProfile() {
   const fetchProfileImage = async () => {
     try {
       const response = await api.get("/profile");
-      setProfileImageUrl(response.data.imageUrl);
+      if (response) {
+        setProfileImageUrl(response.data.imageUrl);
+      }
     } catch (error: any) {
       if (error.response && error.response.data) {
         if (error.response.data.code === "SAG1") {

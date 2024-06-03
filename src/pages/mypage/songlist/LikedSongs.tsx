@@ -8,15 +8,28 @@ import {
   useAnimation,
 } from "framer-motion";
 
-// 임시 인터페이스
-interface Song {
-  title: string;
-  artist: string;
-  albumCoverUrl: string;
+export interface Artist {
+  name: string;
+}
+
+export interface Album {
+  name: string;
+  images: { url: string }[];
+  release_date: string;
+}
+
+export interface TrackInfo {
+  id: string;
+  name: string;
+  artists: Artist[];
+  album: Album;
+  preview_url: string;
+  duration_ms: number;
 }
 
 function LikedSongs() {
-  const [songs, setSongs] = useState<Song[]>([]);
+  //받아온 노래 리스트
+  const [songs, setSongs] = useState<TrackInfo[]>([]);
   const [page, setPage] = useState(1);
   const [last, setLast] = useState(false);
   const loader = useRef<HTMLDivElement | null>(null);
@@ -26,9 +39,12 @@ function LikedSongs() {
   const scrollLeft = useRef(0);
   const controls = useAnimation();
 
-  //임시 상태관리
-  const [likedSongs, setLikedSongs] = useState<number[]>([]);
-  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
+  //  좋아요를 누른 노래들의 ID
+  const [likedSongs, setLikedSongs] = useState<string[]>([]);
+  const [selectedSong, setSelectedSong] = useState<TrackInfo | null>(null);
+  // // 좋아요 상태
+  const [like, setLike] = useState<{ [key: string]: boolean }>({});
+  // const [like, setLike] = useState(true);
 
   // useEffect(() => {
   //   const token = localStorage.getItem("accessToken");
@@ -40,61 +56,70 @@ function LikedSongs() {
   //   }
   // }, []);
 
-  /////////////////////////////////////////////////////
-
-  // // api 연결하기
-  // const fetchLikes = useCallback(async (pageToFetch: number) => {
-  //   try {
-  //     // api 연결하기
-  //     const response = await api.get("/music/likes", {
-  //       params: { page: pageToFetch, size: 15 },
-  //     });
-  //     const { data, last } = response.data;
-
-  //     setSongs((prevSongs) =>
-  //       pageToFetch === 1 ? data : [...prevSongs, ...data]
-  //     );
-  //     setLast(last);
-  //     console.log(`Fetched ${data.length} songs, last: ${last}`);
-  //   } catch (error: any) {
-  //     if (error.response && error.response.data) {
-  //       if (error.response.data.code === "SAG1") {
-  //         console.log("외부 API와 통신이 불가능합니다.");
-  //       } else {
-  //         console.error("Error fetching liked songs: ", error);
-  //       }
-  //     } else {
-  //       console.log("알 수 없는 오류가 발생했습니다.");
-  //     }
-  //   }
-  // }, []);
-
   const fetchLikes = useCallback(async (pageToFetch: number) => {
     try {
-      // 더미 데이터 생성
-      const dummyResponse = {
-        data: Array.from({ length: 15 }, (_, i) => ({
-          title: `Song ${pageToFetch * 15 - 14 + i}`,
-          artist: `Artist ${pageToFetch * 15 - 14 + i}`,
-          albumCoverUrl: "path/to/image",
-        })),
-        last: pageToFetch >= 3, // 3페이지 이후는 없다고 가정
-      };
+      // api 연결하기
+      const response = await api.get("/music/likes", {
+        params: { page: pageToFetch, size: 15 },
+      });
+      const { data, last } = response.data;
 
-      const { data, last } = dummyResponse;
       setSongs((prevSongs) =>
         pageToFetch === 1 ? data : [...prevSongs, ...data]
       );
       setLast(last);
       console.log(`Fetched ${data.length} songs, last: ${last}`);
-    } catch (error) {
-      console.error("Error fetching liked songs: ", error);
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        if (error.response.data.code === "SAG1") {
+          console.log("외부 API와 통신이 불가능합니다.");
+        } else {
+          console.error("Error fetching liked songs: ", error);
+        }
+      } else {
+        console.log("알 수 없는 오류가 발생했습니다.");
+      }
     }
   }, []);
 
-  useEffect(() => {
-    fetchLikes(page);
-  }, [fetchLikes, page]);
+  const toggleLike = async (songId: string) => {
+    const isLiked = likedSongs.includes(songId);
+    const updatedLikeStatus = !isLiked;
+
+    try {
+      await api.post("/music/likes", {
+        spotify: songId,
+        like: updatedLikeStatus,
+      });
+
+      setLike((prevLike) => ({
+        ...prevLike,
+        [songId]: updatedLikeStatus,
+      }));
+
+      setLikedSongs((prevLikedSongs) => {
+        if (updatedLikeStatus) {
+          return [...prevLikedSongs, songId];
+        } else {
+          return prevLikedSongs.filter((id) => id !== songId);
+        }
+      });
+
+      setSongs((prevSongs) => {
+        if (!updatedLikeStatus) {
+          return prevSongs.filter((song) => song.id !== songId);
+        }
+        return prevSongs;
+      });
+
+      // setLike((prevLike) => ({
+      //   ...prevLike,
+      //   [songId]: updatedLikeStatus,
+      // }));
+    } catch (error) {
+      console.error("Error updating like status:", error);
+    }
+  };
 
   useEffect(() => {
     const options = {
@@ -152,22 +177,14 @@ function LikedSongs() {
     // });
   };
 
-  // 임시 toggle
-  const toggleLike = (index: number) => {
-    setLikedSongs((prevLikedSongs) =>
-      prevLikedSongs.includes(index)
-        ? prevLikedSongs.filter((i) => i !== index)
-        : [...prevLikedSongs, index]
-    );
-  };
-
-  const handleSongClick = (song: Song) => {
+  const handleSongClick = (song: TrackInfo) => {
     setSelectedSong(song);
   };
 
   const handleClosePopup = () => {
     setSelectedSong(null);
   };
+
   return (
     <S.Container>
       <h2>마음에 든 노래</h2>
@@ -181,15 +198,21 @@ function LikedSongs() {
           onMouseUp={handleMouseUp}
           onMouseMove={handleMouseMove}
         >
-          {songs.map((song, index) => (
-            <S.SliderItem key={index} onClick={() => handleSongClick(song)}>
-              <S.AlbumCover src={song.albumCoverUrl} alt="song album" />
+          {songs.map((song) => (
+            <S.SliderItem key={song.id}>
+              <S.AlbumCover
+                src={song.album.images[0].url}
+                alt="song album"
+                onClick={() => handleSongClick(song)}
+              />
               <S.SongDetails>
-                <S.SongTitle>{song.title}</S.SongTitle>
-                <S.ArtistName>{song.artist}</S.ArtistName>
+                <S.SongTitle>{song.album.name}</S.SongTitle>
+                <S.ArtistName>
+                  {song.artists.map((artist) => artist.name).join(" ")}
+                </S.ArtistName>
               </S.SongDetails>
-              <S.HeartButton onClick={() => toggleLike(index)}>
-                {likedSongs.includes(index) ? "❤️" : "🤍"}
+              <S.HeartButton onClick={() => toggleLike(song.id)}>
+                {like[song.id] ? "❤️" : "🤍"}
               </S.HeartButton>
             </S.SliderItem>
           ))}
@@ -209,20 +232,21 @@ function LikedSongs() {
               exit={{ scale: 0 }}
             >
               <S.PopupAlbumCover
-                src={selectedSong.albumCoverUrl}
+                src={selectedSong.album.images[0].url}
                 alt="album cover"
               />
-              <S.PopupSongTitle>{selectedSong.title}</S.PopupSongTitle>
-              <S.PopupArtistName>{selectedSong.artist}</S.PopupArtistName>
+              <S.PopupSongTitle>{selectedSong.album.name}</S.PopupSongTitle>
+              <S.PopupArtistName>
+                {selectedSong.artists.map((artist) => artist.name).join(" ")}
+              </S.PopupArtistName>
               <S.PopupSongInfo>
                 <S.PopupSongDetail>
-                  <strong>Duration:</strong>{" "}
-                </S.PopupSongDetail>
-                <S.PopupSongDetail>
-                  <strong>Popularity:</strong>
+                  <strong>Duration:</strong>
+                  {selectedSong.duration_ms}
                 </S.PopupSongDetail>
                 <S.PopupSongDetail>
                   <strong>Release Date:</strong>
+                  {selectedSong.album.release_date}
                 </S.PopupSongDetail>
               </S.PopupSongInfo>
               <S.CloseButton onClick={handleClosePopup}>닫기</S.CloseButton>

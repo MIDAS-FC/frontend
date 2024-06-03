@@ -9,7 +9,7 @@ export const Container = styled.div`
   background-color: #f9f9f9;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  max-width: 600px; /* Adjusted max-width for better layout */
+  max-width: 600px;
   margin: auto;
 `;
 
