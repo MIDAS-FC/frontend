@@ -194,11 +194,15 @@ function DiaryCalender() {
               </S.InfoContainer>
               <S.InfoContainer>
                 <S.InfoTitle>제목</S.InfoTitle>
-                <S.InfoText>{dayInfo?.title}</S.InfoText>
+                <S.InfoText>
+                  {dayInfo?.title && decodeURIComponent(dayInfo.title)}
+                </S.InfoText>
               </S.InfoContainer>
               <S.InfoContainer>
                 <S.InfoTitle>내용</S.InfoTitle>
-                <S.InfoText>{dayInfo?.comment}</S.InfoText>
+                <S.InfoText>
+                  {dayInfo?.comment && decodeURIComponent(dayInfo.comment)}
+                </S.InfoText>
               </S.InfoContainer>
               <S.ButtonsContainer>
                 {dayInfo ? (
