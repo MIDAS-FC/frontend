@@ -20,6 +20,7 @@ function WriteDiary() {
   const [maintainEmotion, setMaintainEmotion] = useState<boolean>(false);
   const [isSongModalOpen, setIsSongModalOpen] = useState(false);
   const [trackId, setTrackId] = useState<string | null>(null);
+  const [likedSongs, setLikedSongs] = useState<string[]>([]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -115,6 +116,14 @@ function WriteDiary() {
     handleSave();
   };
 
+  const toggleLike = (trackId: string) => {
+    setLikedSongs((prevLikedSongs) =>
+      prevLikedSongs.includes(trackId)
+        ? prevLikedSongs.filter((id) => id !== trackId)
+        : [...prevLikedSongs, trackId]
+    );
+  };
+
   return (
     <S.Container>
       <S.Header>감성 일기작성</S.Header>
@@ -143,6 +152,8 @@ function WriteDiary() {
       {isSongModalOpen && trackId && (
         <MusicModal
           trackId={trackId}
+          likedSongs={likedSongs}
+          toggleLike={toggleLike}
           onClose={() => setIsSongModalOpen(false)}
         />
       )}

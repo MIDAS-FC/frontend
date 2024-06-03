@@ -51,15 +51,6 @@ function DiaryCalender() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("accessToken");
-  //   if (token) {
-  //     axios.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-  //     // console.log(token);
-  //   } else {
-  //   }
-  // }, []);
-
   useEffect(() => {
     const today = new Date();
     setCurrentYear(today.getFullYear());
@@ -67,21 +58,18 @@ function DiaryCalender() {
     setSelectedDate(today.getDate());
   }, []);
 
-  // 달력 month 정보 가져오기
   useEffect(() => {
     if (currentYear && currentMonth) {
       fetchMonthCalendar(currentYear, currentMonth);
     }
   }, [currentYear, currentMonth]);
 
-  // 달력 day 정보 가져오기
   useEffect(() => {
     if (currentYear && currentMonth && selectedDate) {
       fetchDayCalendar(currentYear, currentMonth, selectedDate);
     }
   }, [selectedDate]);
 
-  // 달력 month 정보 가져오기
   const fetchMonthCalendar = async (year: number, month: number) => {
     try {
       const response = await api.get("/diary/calendar/month", {
@@ -101,7 +89,6 @@ function DiaryCalender() {
     }
   };
 
-  // 달력 day 정보 가져오기
   const fetchDayCalendar = async (year: number, month: number, day: number) => {
     try {
       const response = await api.get("/diary/calendar/day", {
@@ -143,6 +130,10 @@ function DiaryCalender() {
         `/WriteDiary?year=${currentYear}&month=${currentMonth}&day=${selectedDate}`
       );
     }
+  };
+
+  const decodeText = (text: string) => {
+    return decodeURIComponent(text).replace(/\+/g, " ");
   };
 
   return (
@@ -193,11 +184,11 @@ function DiaryCalender() {
               </S.InfoContainer>
               <S.InfoContainer>
                 <S.InfoTitle>제목</S.InfoTitle>
-                <S.InfoText>{dayInfo?.title}</S.InfoText>
+                <S.InfoText>{dayInfo?.title && decodeText(dayInfo.title)}</S.InfoText>
               </S.InfoContainer>
               <S.InfoContainer>
                 <S.InfoTitle>내용</S.InfoTitle>
-                <S.InfoText>{dayInfo?.comment}</S.InfoText>
+                <S.InfoText>{dayInfo?.comment && decodeText(dayInfo.comment)}</S.InfoText>
               </S.InfoContainer>
               <S.ButtonsContainer>
                 {dayInfo ? (

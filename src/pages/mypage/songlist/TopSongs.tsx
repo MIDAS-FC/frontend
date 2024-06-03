@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import * as S from "../Styles/TopSongs.style";
+import { AnimatePresence } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
 import api from "../../../axiosInterceptor.js";
-import { AnimatePresence, useAnimation } from "framer-motion";
+import * as S from "../Styles/TopSongs.style";
 import { TrackInfo } from "./LikedSongs";
 
 function TopSongs() {
