@@ -9,10 +9,11 @@ const api = axios.create({
 // 요청 인터셉터 추가
 api.interceptors.request.use(
   (config) => {
-    // access token이 존재하면 헤더에 추가
     const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (accessToken && refreshToken) {
       config.headers["Authorization-Access"] = `Bearer ${accessToken}`;
+      config.headers["Authorization-Refresh"] = `Bearer ${refreshToken}`;
     }
     return config;
   },
@@ -36,23 +37,20 @@ api.interceptors.response.use(
         error.response.data.code === "SAT8"
       ) {
         try {
-          const accessToken = localStorage.getItem("accessToken");
-          const refreshToken = localStorage.getItem("refreshToken");
-
           // 토큰 재발급 엔드포인트 호출
           const response = await axios.post(
             "http://localhost:8080/token/reissue",
             {},
             {
               headers: {
-                "Authorization-Access": `Bearer ${accessToken}`,
-                "Authorization-Refresh": `Bearer ${refreshToken}`,
+                "Content-Type": "application/json",
               },
             }
           );
 
           if (response.status === 200) {
-            // 로컬 스토리지에 새 토큰 저장
+            console.log(response.status);
+
             const newAccessToken =
               response.headers["authorization-access"].split(" ")[1];
             const newRefreshToken =
@@ -65,6 +63,10 @@ api.interceptors.response.use(
             originalRequest.headers[
               "Authorization-Access"
             ] = `Bearer ${newAccessToken}`;
+            originalRequest.headers[
+              "Authorization-Refresh"
+            ] = `Bearer ${newRefreshToken}`;
+            console.log("원래 요청의 헤더를 새 토큰으로 업데이트");
 
             // 새 토큰으로 원래 요청 재시도
             return api(originalRequest);

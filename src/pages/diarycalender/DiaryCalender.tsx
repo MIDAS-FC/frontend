@@ -1,3 +1,6 @@
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
@@ -12,6 +15,12 @@ import EmptyDiary from "../../assets/images/EmptyDiary.webp";
 import api from "../../axiosInterceptor";
 import Calender from "./Calender";
 import * as S from "./Styles/DiaryCalender.style";
+
+export const FaTimes = () => {
+  return (
+    <FontAwesomeIcon icon={faTimes} />
+  );
+};
 
 export interface DiaryInfoResponse {
   diaryId: number;
@@ -31,7 +40,7 @@ export interface DiaryInfoResponse {
   isLike: boolean;
 }
 
-const flowerImageMap: { [key: string]: string } = {
+export const flowerImageMap: { [key: string]: string } = {
   장미: Rose,
   해바라기: Sunflower,
   튤립: Tulip,
@@ -41,27 +50,20 @@ const flowerImageMap: { [key: string]: string } = {
   달리아: Dahlia,
 };
 
-const generateStarPositions = (numStars: number) => {
-  return Array.from({ length: numStars }).map(() => ({
-    top: Math.random() * 100 + '%',
-    left: Math.random() * 100 + '%'
-  }));
-};
 
-const Stars = () => {
-  const [starPositions, setStarPositions] = useState(generateStarPositions(50));
-
-  useEffect(() => {
-    setStarPositions(generateStarPositions(50));
-  }, []);
-
-  return (
-    <>
-      {starPositions.map((pos, index) => (
-        <S.Star key={index} style={{ top: pos.top, left: pos.left }} />
-      ))}
-    </>
-  );
+export const flowerDescriptionMap: { [key: string]: string } = {
+  장미: "Rose: 분노를 상징합니다. 장미는 깊은 감정과 욕망을 상징하며, 열정적인 사랑이나 강렬한 분노와 연관되는 경우가 많습니다.",
+  해바라기:
+    "Sunflower: 기쁨을 상징합니다. 해바라기는 밝고 쾌활한 외모로 알려져 있으며, 행복과 긍정성을 상징하는 경우가 많습니다",
+  튤립: "Tulip: 불안을 상징합니다. 라일락은 섬세한 외모와 강한 향기를 가지고 있어, 향수와 불안의 감정을 상징합니다",
+  라일락:
+    "Lilac: 우울을 상징합니다. 라일락은 섬세한 외모와 강한 향기로 알려져 있으며, 종종 우울과 향수의 감정을 불러일으킵니다.",
+  "블루 데이지":
+    "슬픔을 상징합니다. 블루 데이지는 독특하고 인상적인 외모로, 슬픔과 우울감을 상징하는 경우가 많습니다",
+  캐모마일:
+    "Chamomile: 중립을 상징합니다. 캐모마일 꽃은 진정한 특성으로 알려져 있어, 평화와 중립을 상징합니다.",
+  달리아:
+    "Dahlia: 사랑을 상징합니다. 달리아는 생동감 있고 다양한 모습으로, 영원한 유대와 깊은 사랑을 상징합니다.",
 };
 
 function DiaryCalender() {
@@ -72,6 +74,7 @@ function DiaryCalender() {
   const [dayInfo, setDayInfo] = useState<DiaryInfoResponse | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
+  const [isHovered, setIsHovered] = useState(false);
   const { isLoggedIn } = useAuth();
 
   useEffect(() => {
@@ -167,68 +170,93 @@ function DiaryCalender() {
 
   return (
     <S.Container>
-      <Stars />
-      <h2>
+      <S.Title>
         {currentYear}년 {currentMonth}월
-      </h2>
+      </S.Title>
       <Calender onDateSelect={handleDateSelect} monthInfo={monthInfo} />
-        {selectedDate && (
-          <S.BoxContainer>
-            <S.Box
-              key={selectedDate}
-              variants={boxVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              transition={{ duration: 0.3 }}
-            >
-              {dayInfo && flowerImageMap[dayInfo.flower] && (
-                <S.FlowerImageContainer>
-                  <S.Flower
-                    src={flowerImageMap[dayInfo.flower]}
-                    alt={dayInfo.flower}
+      {selectedDate && (
+  <S.BoxContainer>
+    <S.Box
+      key={selectedDate}
+      initial={{ x: -100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: 100, opacity: 0 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+    >
+      <S.CloseButton
+        onClick={() => setSelectedDate(null)}
+        initial={{ x: 20, y: -20, opacity: 0 }}
+        animate={{ x: 0, y: 0, opacity: 1 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+      >
+        <FaTimes />
+      </S.CloseButton>
+      {dayInfo && flowerImageMap[dayInfo.flower] && (
+        <S.FlowerImageContainer
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <S.Flower
+            src={flowerImageMap[dayInfo.flower]}
+            alt={dayInfo.flower}
+          />
+          <AnimatePresence>
+            {isHovered && (
+              <S.PopupBox
+                variants={popupVariants}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+              >
+                {flowerDescriptionMap[dayInfo.flower]}
+              </S.PopupBox>
+            )}
+          </AnimatePresence>
+        </S.FlowerImageContainer>
+      )}
+      <S.ImageContainer>
+            {dayInfo?.imgUrl && dayInfo.imgUrl.length > 0 ? (
+              dayInfo.imgUrl
+                .slice(0, 3)
+                .map((url, index) => (
+                  <img
+                    key={index}
+                    src={url}
+                    alt={`Diary Image ${index + 1}`}
                   />
-                </S.FlowerImageContainer>
-              )}
-              <S.ImageContainer>
-                {dayInfo?.imgUrl && dayInfo.imgUrl.length > 0 ? (
-                  dayInfo.imgUrl
-                    .slice(0, 3)
-                    .map((url, index) => (
-                      <img
-                        key={index}
-                        src={url}
-                        alt={`Diary Image ${index + 1}`}
-                      />
-                    ))
-                ) : (
-                  <img src={EmptyDiary} alt="Empty Diary" />
-                )}
-              </S.ImageContainer>
-              <S.InfoContainer>
-                <S.InfoTitle>날짜</S.InfoTitle>
-                <S.InfoText>
-                  {currentMonth}월 {selectedDate}일
-                </S.InfoText>
-              </S.InfoContainer>
-              <S.InfoContainer>
-                <S.InfoTitle>제목</S.InfoTitle>
-                <S.InfoText>{dayInfo?.title && decodeText(dayInfo.title)}</S.InfoText>
-              </S.InfoContainer>
-              <S.InfoContainer>
-                <S.InfoTitle>내용</S.InfoTitle>
-                <S.InfoText>{dayInfo?.comment && decodeText(dayInfo.comment)}</S.InfoText>
-              </S.InfoContainer>
-              <S.ButtonsContainer>
-                {dayInfo ? (
-                  <S.Button onClick={handleEditClick}>수정</S.Button>
-                ) : (
-                  <S.Button onClick={handleCreateClick}>작성</S.Button>
-                )}
-              </S.ButtonsContainer>
-            </S.Box>
-          </S.BoxContainer>
-        )}
+                ))
+            ) : (
+              <img src={EmptyDiary} alt="Empty Diary" />
+            )}
+          </S.ImageContainer>
+          <S.InfoContainer>
+            <S.InfoTitle>날짜</S.InfoTitle>
+            <S.InfoText>
+              {currentMonth}월 {selectedDate}일
+            </S.InfoText>
+          </S.InfoContainer>
+          <S.InfoContainer>
+            <S.InfoTitle>제목</S.InfoTitle>
+            <S.InfoText>
+              {dayInfo?.title && decodeText(dayInfo.title)}
+            </S.InfoText>
+          </S.InfoContainer>
+          <S.InfoContainer>
+            <S.InfoTitle>내용</S.InfoTitle>
+            <S.InfoText>
+              {dayInfo?.comment && decodeText(dayInfo.comment)}
+            </S.InfoText>
+          </S.InfoContainer>
+          <S.ButtonsContainer>
+            {dayInfo ? (
+              <S.Button onClick={handleEditClick}>수정</S.Button>
+            ) : (
+              <S.Button onClick={handleCreateClick}>작성</S.Button>
+            )}
+          </S.ButtonsContainer>
+    </S.Box>
+  </S.BoxContainer>
+)}
     </S.Container>
   );
 }
@@ -239,4 +267,9 @@ const boxVariants = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: 30 },
+};
+
+const popupVariants = {
+  hidden: { opacity: 0, y: -10 },
+  visible: { opacity: 1, y: 0 },
 };

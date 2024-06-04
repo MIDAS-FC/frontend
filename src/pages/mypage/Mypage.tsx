@@ -1,13 +1,38 @@
-import React from "react";
-import EditProfile from "./editpage/EditProfile";
-import WeeklyReport from "./WeeklyReport";
+import { useEffect, useState } from "react";
 import * as S from "./Styles/Mypage.style";
-import LikedSongs from "./songlist/LikedSongs";
-import TopSongs from "./songlist/TopSongs";
+import WeeklyReport from "./WeeklyReport";
+import EditProfile from "./editpage/EditProfile";
+import LikeSongPage from "./songlist/LikeSongPage";
+import TopSongPage from "./songlist/TopSongPage";
+
+
+const generateStarPositions = (numStars: number) => {
+  return Array.from({ length: numStars }).map(() => ({
+    top: Math.random() * 100 + "%",
+    left: Math.random() * 100 + "%",
+  }));
+};
+
+const Stars = () => {
+  const [starPositions, setStarPositions] = useState(generateStarPositions(50));
+
+  useEffect(() => {
+    setStarPositions(generateStarPositions(50));
+  }, []);
+
+  return (
+    <>
+      {starPositions.map((pos, index) => (
+        <S.Star key={index} style={{ top: pos.top, left: pos.left }} />
+      ))}
+    </>
+  );
+};
 
 function Mypage() {
   return (
     <S.PageContainer>
+      <Stars />
       <S.Section>
         <EditProfile />
       </S.Section>
@@ -15,10 +40,10 @@ function Mypage() {
         <WeeklyReport />
       </S.Section>
       <S.Section>
-        <LikedSongs />
+        <LikeSongPage />
       </S.Section>
       <S.Section>
-        <TopSongs />
+        <TopSongPage />
       </S.Section>
     </S.PageContainer>
   );

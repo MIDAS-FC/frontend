@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import api from '../../axiosInterceptor';
+import api from "../../axiosInterceptor";
 import EmotionModal from "./EmotionModal";
 import MusicModal from "./MusicModal";
 import * as S from "./Styles/WriteDiary.style";
@@ -21,8 +21,8 @@ function WriteDiary() {
   const [isSongModalOpen, setIsSongModalOpen] = useState(false);
   const [trackId, setTrackId] = useState<string | null>(null);
   const [likedSongs, setLikedSongs] = useState<string[]>([]);
-  
-  const socialId = localStorage.getItem('socialId') || '';
+
+  const socialId = localStorage.getItem("socialId") || "";
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -43,13 +43,13 @@ function WriteDiary() {
         const response = await axios.get(`/music/likes`);
         const likedTracks = response.data.map((item: any) => item.spotify);
         setLikedSongs(likedTracks);
-        localStorage.setItem('likedSongs', JSON.stringify(likedTracks));
+        localStorage.setItem("likedSongs", JSON.stringify(likedTracks));
       } catch (error) {
-        console.error('Error fetching liked songs:', error);
+        console.error("Error fetching liked songs:", error);
       }
     };
 
-    const storedLikedSongs = localStorage.getItem('likedSongs');
+    const storedLikedSongs = localStorage.getItem("likedSongs");
     if (storedLikedSongs) {
       setLikedSongs(JSON.parse(storedLikedSongs));
     } else {
@@ -147,7 +147,7 @@ function WriteDiary() {
       const updatedLikedSongs = prevLikedSongs.includes(trackId)
         ? prevLikedSongs.filter((id) => id !== trackId)
         : [...prevLikedSongs, trackId];
-      localStorage.setItem('likedSongs', JSON.stringify(updatedLikedSongs));
+      localStorage.setItem("likedSongs", JSON.stringify(updatedLikedSongs));
       return updatedLikedSongs;
     });
   };
@@ -176,7 +176,12 @@ function WriteDiary() {
           <S.Button type="submit">일기 작성</S.Button>
         </S.ButtonGroup>
       </S.Form>
-      {isModalOpen && <EmotionModal onClose={() => setIsModalOpen(false)} onSelect={handleEmotionSelect} />}
+      {isModalOpen && (
+        <EmotionModal
+          onClose={() => setIsModalOpen(false)}
+          onSelect={handleEmotionSelect}
+        />
+      )}
       {isSongModalOpen && trackId && (
         <MusicModal
           trackId={trackId}

@@ -14,15 +14,15 @@ export const Container = styled.div`
 `;
 
 export const Title = styled.h2`
-  font-size: 20px;
+  font-size: 28px;
   color: #333;
   margin-bottom: 20px;
 `;
 
 export const ProfileImageContainer = styled.div`
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: 170px;
+  height: 170px;
   margin-bottom: 20px;
   border-radius: 20%;
   overflow: hidden;

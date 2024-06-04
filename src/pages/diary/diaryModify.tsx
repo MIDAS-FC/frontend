@@ -42,7 +42,7 @@ function ModifyDiary() {
   useEffect(() => {
     const fetchLikedSongs = async () => {
       try {
-        const response = await api.get(`/music/likes`);
+        const response = await axios.get(`/music/likes`);
         const likedTracks = Array.isArray(response.data) ? response.data.map((item: any) => item.spotify) : [];
         setLikedSongs(likedTracks);
         localStorage.setItem('likedSongs', JSON.stringify(likedTracks));
@@ -154,7 +154,7 @@ function ModifyDiary() {
       }
     }
   };
-
+  
   const handleEmotionSelect = (emotion: string, maintain: boolean) => {
     setSelectedEmotion(emotion);
     setMaintainEmotion(maintain);

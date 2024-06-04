@@ -35,15 +35,6 @@ function EditPopup({
     }
   }, []);
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("accessToken");
-  //   if (token) {
-  //     api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-  //   } else {
-  //     console.log("token error");
-  //   }
-  // }, []);
-
   const handleNicknameChange = (event: any) => {
     setChangedNickname(event.target.value);
   };
