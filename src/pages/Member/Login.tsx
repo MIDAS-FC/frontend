@@ -136,7 +136,7 @@ const Login = () => {
           />
           <S.LoginBtnGroup>
             <S.LoginBtn type="submit" onClick={handleUserLogin}>
-              Login
+              USER
             </S.LoginBtn>
             <S.LoginBtn type="submit" onClick={handleAdminLogin}>
               Admin

@@ -1,127 +1,239 @@
-import { useEffect, useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../../AuthProvider";
 import api from "../../axiosInterceptor";
+import EmotionModal from "./EmotionModal";
+import MusicModal from "./MusicModal";
 import * as S from "./Styles/WriteDiary.style";
 
-interface DiaryModifyProps {
-  diaryId: number;
-  title: string;
-  comment: string;
-  year: number;
-  month: number;
-  day: number;
-  socialId: string;
-}
-
-const DiaryModify = () => {
-  const [diaryInfo, setDiaryInfo] = useState<DiaryModifyProps | null>(null);
-  const [title, setTitle] = useState("");
-  const [comment, setComment] = useState("");
-  const navigate = useNavigate();
+function ModifyDiary() {
   const location = useLocation();
-  const { isLoggedIn, accessToken } = useAuth();
+  const navigate = useNavigate();
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [selectedDate, setSelectedDate] = useState<number | null>(null);
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
+  const [currentMonth, setCurrentMonth] = useState<number | null>(null);
+  const [images, setImages] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEmotion, setSelectedEmotion] = useState<string | null>(null);
+  const [maintainEmotion, setMaintainEmotion] = useState<boolean>(false);
+  const [isSongModalOpen, setIsSongModalOpen] = useState(false);
+  const [trackId, setTrackId] = useState<string | null>(null);
+  const [likedSongs, setLikedSongs] = useState<string[]>([]);
+
+  const socialId = localStorage.getItem("socialId") || "";
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      navigate("/login");
-      return;
-    }
-
-    const params = new URLSearchParams(location.search);
-    const year = params.get("year");
-    const month = params.get("month");
-    const day = params.get("day");
+    const searchParams = new URLSearchParams(location.search);
+    const year = searchParams.get("year");
+    const month = searchParams.get("month");
+    const day = searchParams.get("day");
 
     if (year && month && day) {
-      fetchDiaryInfo(parseInt(year), parseInt(month), parseInt(day));
+      setCurrentYear(Number(year));
+      setCurrentMonth(Number(month));
+      setSelectedDate(Number(day));
+      fetchDiary(Number(year), Number(month), Number(day));
     }
-  }, [location, isLoggedIn]);
+  }, [location.search]);
 
-  const fetchDiaryInfo = async (year: number, month: number, day: number) => {
+  useEffect(() => {
+    const fetchLikedSongs = async () => {
+      try {
+        const response = await api.get(`/music/likes`);
+        const likedTracks = Array.isArray(response.data)
+          ? response.data.map((item: any) => item.spotify)
+          : [];
+        setLikedSongs(likedTracks);
+        localStorage.setItem("likedSongs", JSON.stringify(likedTracks));
+      } catch (error) {
+        console.error("Error fetching liked songs:", error);
+      }
+    };
+
+    const storedLikedSongs = localStorage.getItem("likedSongs");
+    if (storedLikedSongs) {
+      setLikedSongs(JSON.parse(storedLikedSongs));
+    } else {
+      fetchLikedSongs();
+    }
+  }, [socialId]);
+
+  const fetchDiary = async (year: number, month: number, day: number) => {
     try {
       const response = await api.get("/diary/calendar/day", {
         params: { year, month, day },
       });
-      const diaryData = response.data;
-      setDiaryInfo(diaryData);
-      setTitle(decodeText(diaryData.title));
-      setComment(decodeText(diaryData.comment));
-    } catch (error: any) {
-      console.log("Failed to fetch diary info:", error);
+      const diary = response.data;
+      setTitle(decodeText(diary.title));
+      setContent(decodeText(diary.comment));
+      setExistingImages(diary.imgUrl);
+      setSelectedEmotion(diary.emotion);
+      setTrackId(diary.spotify);
+    } catch (error) {
+      console.error("Error fetching diary:", error);
     }
+  };
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  };
+
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    if (value.length <= 4000) {
+      setContent(value);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const selectedFiles = Array.from(e.target.files);
+      if (images.length + selectedFiles.length + existingImages.length > 9) {
+        alert("이미지는 최대 9개까지 업로드할 수 있습니다.");
+        return;
+      }
+      setImages((prevImages) => [...prevImages, ...selectedFiles]);
+    }
+  };
+
+  const handleSave = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!currentYear || !currentMonth || selectedDate === null) {
+      alert("날짜를 선택해주세요.");
+      return;
+    }
+
+    if (!selectedEmotion) {
+      setIsModalOpen(true); // 모달 열기
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("year", currentYear.toString());
+    formData.append("month", currentMonth.toString());
+    formData.append("day", selectedDate.toString());
+
+    const diaryData = {
+      title,
+      comment: content,
+      emotion: selectedEmotion,
+      maintain: maintainEmotion.toString(),
+    };
+
+    formData.append("title", title);
+    formData.append("comment", content);
+    formData.append("emotion", selectedEmotion);
+    formData.append("maintain", maintainEmotion.toString());
+
+    images.forEach((image) => formData.append("images", image));
+
+    try {
+      const response = await api.put("/diary/calendar", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      setTrackId(response.data.spotify);
+      setIsSongModalOpen(true); // 노래 모달 열기
+    } catch (error) {
+      console.error("Error saving diary:", error);
+
+      if (axios.isAxiosError(error)) {
+        console.error("응답 데이터:", error.response?.data);
+        console.error("응답 상태:", error.response?.status);
+        console.error("응답 헤더:", error.response?.headers);
+        if (error.response?.status === 401) {
+          alert("인증 오류입니다. 다시 로그인해주세요.");
+          navigate("/login");
+        }
+      } else {
+        console.error("에러 메시지:");
+      }
+    }
+  };
+
+  const handleEmotionSelect = (emotion: string, maintain: boolean) => {
+    setSelectedEmotion(emotion);
+    setMaintainEmotion(maintain);
+    setIsModalOpen(false);
+    handleSave();
+  };
+
+  const toggleLike = (trackId: string) => {
+    setLikedSongs((prevLikedSongs) => {
+      const updatedLikedSongs = prevLikedSongs.includes(trackId)
+        ? prevLikedSongs.filter((id) => id !== trackId)
+        : [...prevLikedSongs, trackId];
+      localStorage.setItem("likedSongs", JSON.stringify(updatedLikedSongs));
+      return updatedLikedSongs;
+    });
+  };
+
+  const handleDeleteImage = (url: string) => {
+    setExistingImages((prevImages) =>
+      prevImages.filter((image) => image !== url)
+    );
   };
 
   const decodeText = (text: string) => {
     return decodeURIComponent(text).replace(/\+/g, " ");
   };
 
-  const handleSaveClick = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (diaryInfo) {
-      const formData = new FormData();
-      formData.append("year", diaryInfo.year?.toString() || ""); // 기본값 설정
-      formData.append("month", diaryInfo.month?.toString() || ""); // 기본값 설정
-      formData.append("day", diaryInfo.day?.toString() || ""); // 기본값 설정
-      formData.append("socialId", diaryInfo.socialId || "");
-
-      const diaryData = JSON.stringify({
-        title: encodeURIComponent(title),
-        comment: encodeURIComponent(comment),
-      });
-
-      formData.append(
-        "writeDiaryRequest",
-        new Blob([diaryData], { type: "application/json" })
-      );
-
-      try {
-        await api.put("/diary/calendar", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            "Authorization-Access": `Bearer ${accessToken}`, // 인증 토큰 설정
-          },
-        });
-        navigate("/");
-      } catch (error: any) {
-        console.log("Failed to save diary info:", error);
-        if (error.response && error.response.status === 302) {
-          console.log(
-            "Redirect loop detected. Check the backend configuration."
-          );
-        }
-      }
-    }
-  };
-
-  const handleCancelClick = (e: React.FormEvent) => {
-    e.preventDefault();
-    navigate("/");
-  };
-
   return (
     <S.Container>
-      <S.Form onSubmit={handleSaveClick}>
-        <S.Header>제목</S.Header>
+      <S.Header>감성 일기 수정</S.Header>
+      <div>
+        {currentYear}년 {currentMonth}월 {selectedDate}일
+      </div>
+      <S.Form onSubmit={handleSave}>
         <S.Input
           type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={handleTitleChange}
+          placeholder="제목을 입력하세요"
         />
-        <S.Header>내용</S.Header>
         <S.TextArea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
+          value={content}
+          onChange={handleContentChange}
+          placeholder="오늘의 이야기를 들려주세요..."
+          maxLength={1000} // This will also prevent typing beyond 1000 characters
         />
+        <S.FileInput type="file" multiple onChange={handleFileChange} />
+        <S.ImagePreviewContainer>
+          {existingImages.map((url, index) => (
+            <S.ImagePreview key={index}>
+              <img src={url} alt={`Diary Image ${index + 1}`} />
+              <S.DeleteButton onClick={() => handleDeleteImage(url)}>
+                삭제
+              </S.DeleteButton>
+            </S.ImagePreview>
+          ))}
+        </S.ImagePreviewContainer>
         <S.ButtonGroup>
-          <S.Button type="submit">저장</S.Button>
-          <S.Button type="button" onClick={handleCancelClick}>
-            취소
-          </S.Button>
+          <S.Button type="submit">일기 수정</S.Button>
         </S.ButtonGroup>
       </S.Form>
+      {isModalOpen && (
+        <EmotionModal
+          onClose={() => setIsModalOpen(false)}
+          onSelect={handleEmotionSelect}
+        />
+      )}
+      {isSongModalOpen && trackId && (
+        <MusicModal
+          trackId={trackId}
+          likedSongs={likedSongs}
+          socialId={socialId}
+          toggleLike={toggleLike}
+          onClose={() => setIsSongModalOpen(false)}
+        />
+      )}
     </S.Container>
   );
-};
+}
 
-export default DiaryModify;
+export default ModifyDiary;
