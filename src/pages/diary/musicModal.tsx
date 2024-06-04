@@ -7,6 +7,7 @@ import * as S from "./Styles/WriteDiary.style";
 interface MusicModalProps {
   trackId: string;
   likedSongs: string[];
+  socialId: string;
   toggleLike: (trackId: string) => void;
   onClose: () => void;
 }
@@ -27,10 +28,10 @@ interface TrackInfo {
   preview_url: string | null;
 }
 
-const MusicModal: React.FC<MusicModalProps> = ({ trackId, likedSongs, toggleLike, onClose }) => {
+const MusicModal: React.FC<MusicModalProps> = ({ trackId, likedSongs, socialId, toggleLike, onClose }) => {
   const [trackInfo, setTrackInfo] = useState<TrackInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showNotification, setShowNotification] = useState(false);
+  const [showNotification, setShowNotification] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const navigate = useNavigate();
 
@@ -73,14 +74,16 @@ const MusicModal: React.FC<MusicModalProps> = ({ trackId, likedSongs, toggleLike
   };
 
   const handleLikeToggle = async () => {
+    const isLiked = likedSongs.includes(trackId);
     try {
       await axios.post('http://localhost:8080/music/likes', {
+        social_id: socialId,
         spotify: trackId,
-        like: !likedSongs.includes(trackId),
+        like: !isLiked,
       });
       toggleLike(trackId);
-      setShowNotification(true);
-      setTimeout(() => setShowNotification(false), 2000); // 2초 후에 알림창 사라짐
+      setShowNotification(isLiked ? '좋아요를 취소했습니다.' : '좋아요를 누르셨습니다.');
+      setTimeout(() => setShowNotification(null), 2000); // 2초 후에 알림창 사라짐
     } catch (error) {
       console.error('Error updating like status:', error);
     }
@@ -117,7 +120,7 @@ const MusicModal: React.FC<MusicModalProps> = ({ trackId, likedSongs, toggleLike
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
-                    좋아요를 누르셨습니다.
+                    {showNotification}
                   </S.Notification>
                 )}
               </AnimatePresence>

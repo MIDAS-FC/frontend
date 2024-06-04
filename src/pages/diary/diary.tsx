@@ -21,6 +21,8 @@ function WriteDiary() {
   const [isSongModalOpen, setIsSongModalOpen] = useState(false);
   const [trackId, setTrackId] = useState<string | null>(null);
   const [likedSongs, setLikedSongs] = useState<string[]>([]);
+  
+  const socialId = localStorage.getItem('socialId') || '';
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -34,6 +36,26 @@ function WriteDiary() {
       setSelectedDate(Number(day));
     }
   }, [location.search]);
+
+  useEffect(() => {
+    const fetchLikedSongs = async () => {
+      try {
+        const response = await axios.get(`/music/likes`);
+        const likedTracks = response.data.map((item: any) => item.spotify);
+        setLikedSongs(likedTracks);
+        localStorage.setItem('likedSongs', JSON.stringify(likedTracks));
+      } catch (error) {
+        console.error('Error fetching liked songs:', error);
+      }
+    };
+
+    const storedLikedSongs = localStorage.getItem('likedSongs');
+    if (storedLikedSongs) {
+      setLikedSongs(JSON.parse(storedLikedSongs));
+    } else {
+      fetchLikedSongs();
+    }
+  }, [socialId]);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -121,11 +143,13 @@ function WriteDiary() {
   };
 
   const toggleLike = (trackId: string) => {
-    setLikedSongs((prevLikedSongs) =>
-      prevLikedSongs.includes(trackId)
+    setLikedSongs((prevLikedSongs) => {
+      const updatedLikedSongs = prevLikedSongs.includes(trackId)
         ? prevLikedSongs.filter((id) => id !== trackId)
-        : [...prevLikedSongs, trackId]
-    );
+        : [...prevLikedSongs, trackId];
+      localStorage.setItem('likedSongs', JSON.stringify(updatedLikedSongs));
+      return updatedLikedSongs;
+    });
   };
 
   return (
@@ -157,6 +181,7 @@ function WriteDiary() {
         <MusicModal
           trackId={trackId}
           likedSongs={likedSongs}
+          socialId={socialId}
           toggleLike={toggleLike}
           onClose={() => setIsSongModalOpen(false)}
         />
