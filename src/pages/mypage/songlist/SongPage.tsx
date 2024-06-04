@@ -53,10 +53,12 @@ function SongsPage() {
           ? response.data
           : Object.keys(response.data);
         setTrackIds_top(trackIdArray);
+        console.log("top_trackId:  ", trackIdArray);
       } catch (error: any) {
         console.error("Error fetching top liked songs:", error);
       }
     };
+
     fetchTopLikedSongs();
   }, []);
 
@@ -78,9 +80,12 @@ function SongsPage() {
         }
       }
       setTrackInfos_top(trackInfoArray);
+      console.log("tracksINFO_TOP:   ", trackInfoArray);
     };
-    fetchTrackInfos_top();
-  }, []);
+    if (trackIds_top.length > 0) {
+      fetchTrackInfos_top();
+    }
+  }, [trackIds_top]);
 
   // 좋아요 리스트
   useEffect(() => {
@@ -319,21 +324,27 @@ function SongsPage() {
         >
           {trackInfos_top.map((song, index) => (
             <S.SliderItem key={`${song.id}-${index}`}>
-              <S.AlbumCover
-                src={song.album.images[0].url}
-                alt="song album"
-                draggable="false"
-                onClick={() => handleSongClick(song)}
-              />
-              <S.SongDetails>
-                <S.SongTitle>{song.album.name}</S.SongTitle>
-                <S.ArtistName>
-                  {song.artists.map((artist) => artist.name).join(" ")}
-                </S.ArtistName>
-              </S.SongDetails>
-              <S.HeartButton onClick={() => handleLikeToggle_top(song.id)}>
-                {likedSongs.includes(song.id) ? "❤️" : "🤍"}
-              </S.HeartButton>
+              {song.album ? (
+                <>
+                  <S.AlbumCover
+                    src={song.album.images[0].url}
+                    alt="song album"
+                    draggable="false"
+                    onClick={() => handleSongClick(song)}
+                  />
+                  <S.SongDetails>
+                    <S.SongTitle>{song.album.name}</S.SongTitle>
+                    <S.ArtistName>
+                      {song.artists.map((artist) => artist.name).join(" ")}
+                    </S.ArtistName>
+                  </S.SongDetails>
+                  <S.HeartButton onClick={() => handleLikeToggle_top(song.id)}>
+                    {likedSongs.includes(song.id) ? "❤️" : "🤍"}
+                  </S.HeartButton>
+                </>
+              ) : (
+                <span>불러오지 못했습니다.</span>
+              )}
             </S.SliderItem>
           ))}
         </S.SliderContainer>
@@ -351,7 +362,13 @@ function SongsPage() {
               exit={{ scale: 0 }}
             >
               <S.PopupAlbumCover
-                src={selectedSong.album.images[0].url}
+                src={
+                  selectedSong &&
+                  selectedSong.album.images &&
+                  selectedSong.album.images.length > 0
+                    ? selectedSong.album.images[0].url
+                    : ""
+                }
                 alt="album cover"
                 draggable="false"
               />
@@ -380,7 +397,7 @@ function SongsPage() {
       </AnimatePresence>
       <div ref={loader} />
       <S.HeaderText>마음에 든 노래 </S.HeaderText>
-      {trackInfos_like.length === 0 ? (
+      {/* {trackInfos_like.length === 0 ? (
         <S.NoSongsMessage>좋아요를 누른 노래가 없습니다</S.NoSongsMessage>
       ) : (
         <S.SliderContainer
@@ -392,12 +409,16 @@ function SongsPage() {
         >
           {trackInfos_like.map((song, index) => (
             <S.SliderItem key={`${song.id}-${index}`}>
-              <S.AlbumCover
-                src={song.album.images[0].url}
-                alt="song album"
-                draggable="false"
-                onClick={() => handleSongClick(song)}
-              />
+              {song.album.images && song.album.images.length > 0 ? (
+                <S.AlbumCover
+                  src={song.album.images[0].url}
+                  alt="song album"
+                  draggable="false"
+                  onClick={() => handleSongClick(song)}
+                />
+              ) : (
+                <span>불러오지 못했습니다.</span>
+              )}
               <S.SongDetails>
                 <S.SongTitle>{song.album.name}</S.SongTitle>
                 <S.ArtistName>
@@ -410,7 +431,7 @@ function SongsPage() {
             </S.SliderItem>
           ))}
         </S.SliderContainer>
-      )}
+      )} */}
     </S.Container>
   );
 }

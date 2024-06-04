@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../axiosInterceptor";
 import EmotionModal from "./EmotionModal";
-import MusicModal from "./musicModal";
+import MusicModal from "./MusicModal";
 import * as S from "./Styles/WriteDiary.style";
 
 function WriteDiary() {
