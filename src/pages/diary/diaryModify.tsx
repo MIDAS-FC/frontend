@@ -43,9 +43,13 @@ function ModifyDiary() {
     const fetchLikedSongs = async () => {
       try {
         const response = await axios.get(`/music/likes`);
+<<<<<<< HEAD
         const likedTracks = Array.isArray(response.data)
           ? response.data.map((item: any) => item.spotify)
           : [];
+=======
+        const likedTracks = Array.isArray(response.data) ? response.data.map((item: any) => item.spotify) : [];
+>>>>>>> 264d80643a6d9a2887cbce5cad0184ca5e671a8d
         setLikedSongs(likedTracks);
         localStorage.setItem("likedSongs", JSON.stringify(likedTracks));
       } catch (error) {
@@ -155,7 +159,7 @@ function ModifyDiary() {
       }
     }
   };
-
+  
   const handleEmotionSelect = (emotion: string, maintain: boolean) => {
     setSelectedEmotion(emotion);
     setMaintainEmotion(maintain);
@@ -236,4 +240,8 @@ function ModifyDiary() {
   );
 }
 
+<<<<<<< HEAD
 export default ModifyDiary;
+=======
+export default ModifyDiary;
+>>>>>>> 264d80643a6d9a2887cbce5cad0184ca5e671a8d

@@ -44,6 +44,22 @@ export const Button = styled.button`
   margin: 10px;
   padding: 8px 16px;
   font-size: 16px;
+  border-radius: 5px;
+  border: none;
+  background: none;
+  color: #fff;
+  transition: transform 1s;
+  cursor:pointer;
+  &:hover {
+    animation: ${twinkle} 1.5s infinite ease-in-out;
+  }
+  
+`;
+
+export const LinkButton = styled.button`
+  margin: 10px;
+  padding: 8px 16px;
+  font-size: 16px;
   cursor: pointer;
   border-radius: 5px;
   border: none;
@@ -51,23 +67,6 @@ export const Button = styled.button`
   color: #fff;
   transition: transform 1s;
   &:hover {
-    transform: scale(1.05);
     animation: ${twinkle} 1.5s infinite ease-in-out;
-  }
-`;
-
-export const LinkButton = styled.button`
-  margin: 10px;
-  padding: 10px 20px;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 5px;
-  border: none;
-  background: transparent;
-  color: black;
-  transition: color 0.3s, background-color 0.3s;
-  &:hover {
-    color: rgba(255, 255, 255, 0.5);
   }
 `;

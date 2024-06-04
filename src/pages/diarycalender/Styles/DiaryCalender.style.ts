@@ -7,6 +7,7 @@ const twinkle = keyframes`
 `;
 
 export const Container = styled.div`
+<<<<<<< HEAD
   border: 1px solid red;
   display: flex;
   flex-direction: column;
@@ -20,16 +21,21 @@ export const Container = styled.div`
     rgba(0, 78, 146, 0.8)
   );
   background-size: cover;
+=======
+  width: 100%;
+  height:100vh;
+  background: linear-gradient(to bottom, rgba(0, 4, 40, 0.8), rgba(0, 78, 146, 0.8));
+>>>>>>> 264d80643a6d9a2887cbce5cad0184ca5e671a8d
   position: relative;
-  overflow: hidden;
+  padding: 150px;
 `;
 
 export const Title = styled.h1`
-  position: absolute;
   top: 20px;
   left: 20px;
   color: white;
   font-size: 24px;
+  text-align:right;
 `;
 
 export const Content = styled.div`
@@ -114,25 +120,24 @@ export const BoxContainer = styled.div`
 `;
 
 export const Box = styled(motion.div)`
-  width: 100%;
-  max-width: 600px;
-  margin-top: 20px;
+  position: absolute;
+  width: 600px;
+  margin-top: -300px;
   padding: 20px;
-  position: relative;
   border-radius: 20px;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: #f0f8ff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   overflow: hidden;
-  transition: background-color 0.3s ease, transform 0.3s ease,
-    box-shadow 0.3s ease;
+  box-shadow: 0.3s ease;
+  border: 2px solid #87ceeb;
+
   &:hover {
-    background-color: rgba(245, 245, 245, 0.95);
-    transform: scale(1.02);
+    background-color: #e6f2ff;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
   }
-  border: 2px solid #b0e0e6;
 `;
+
 
 export const ImageContainer = styled.div`
   width: 100%;
@@ -221,3 +226,41 @@ export const Flower = styled.img`
     transform: scale(1.1);
   }
 `;
+<<<<<<< HEAD
+=======
+
+export const PopupBox = styled(motion.div)`
+  position: absolute;
+  top: 50px;
+  right: -50px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  width: 150px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.4;
+`;
+
+export const CloseButton = styled(motion.button)`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #333;
+  transition: color 0.3s ease;
+  initial={{ x: 20, y: -20, opacity: 0 }}
+  animate={{ x: 0, y: 0, opacity: 1 }}
+  transition={{ duration: 0.3, ease: "easeInOut" }}
+
+  &:hover {
+    color: #666;
+  }
+`;
+>>>>>>> 264d80643a6d9a2887cbce5cad0184ca5e671a8d

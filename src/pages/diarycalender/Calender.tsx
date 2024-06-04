@@ -1,4 +1,3 @@
-import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import BlueDaisy from "../../assets/icons/flowers/BlueDaisy.webp";
 import Chamomile from "../../assets/icons/flowers/Chamomile.webp";
@@ -157,4 +156,8 @@ function Calender({ onDateSelect, monthInfo }: CalenderProps) {
   );
 }
 
+<<<<<<< HEAD
 export default Calender;
+=======
+export default Calender;
+>>>>>>> 264d80643a6d9a2887cbce5cad0184ca5e671a8d
