@@ -70,7 +70,10 @@ const DiaryModify = () => {
         comment: encodeURIComponent(comment),
       });
 
-      formData.append("writeDiaryRequest", new Blob([diaryData], { type: "application/json" }));
+      formData.append(
+        "writeDiaryRequest",
+        new Blob([diaryData], { type: "application/json" })
+      );
 
       try {
         await api.put("/diary/calendar", formData, {
@@ -83,7 +86,9 @@ const DiaryModify = () => {
       } catch (error: any) {
         console.log("Failed to save diary info:", error);
         if (error.response && error.response.status === 302) {
-          console.log("Redirect loop detected. Check the backend configuration.");
+          console.log(
+            "Redirect loop detected. Check the backend configuration."
+          );
         }
       }
     }
@@ -110,7 +115,9 @@ const DiaryModify = () => {
         />
         <S.ButtonGroup>
           <S.Button type="submit">저장</S.Button>
-          <S.Button type="button" onClick={handleCancelClick}>취소</S.Button>
+          <S.Button type="button" onClick={handleCancelClick}>
+            취소
+          </S.Button>
         </S.ButtonGroup>
       </S.Form>
     </S.Container>

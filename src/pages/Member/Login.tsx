@@ -4,11 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
 import * as S from "./Styles/Member.style";
 
-
 const generateStarPositions = (numStars: number) => {
   return Array.from({ length: numStars }).map(() => ({
-    top: Math.random() * 100 + '%',
-    left: Math.random() * 100 + '%'
+    top: Math.random() * 100 + "%",
+    left: Math.random() * 100 + "%",
   }));
 };
 
@@ -143,8 +142,8 @@ const Login = () => {
               Admin
             </S.LoginBtn>
           </S.LoginBtnGroup>
-            {/* 자동 완성 기능 향상 및 보안 및 접근성 강화 */}
-            <input
+          {/* 자동 완성 기능 향상 및 보안 및 접근성 강화 */}
+          <input
             type="text"
             name="username"
             value={email}

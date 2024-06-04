@@ -7,20 +7,18 @@ export interface Artist {
   name: string;
 }
 
-export interface Album {
+interface Album {
   name: string;
   images: { url: string }[];
   release_date: string;
 }
-
 export interface TrackInfo {
   id: string;
   name: string;
   artists: Artist[];
   album: Album;
-  preview_url: string;
-  duration_ms: number;
   popularity: number;
+  duration_ms: number;
 }
 
 function SongsPage() {
@@ -74,6 +72,7 @@ function SongsPage() {
           const trackData: TrackInfo = {
             ...response.data,
           };
+
           trackInfoArray.push(trackData);
         } catch (error) {
           console.error("Error fetching track info:", error);
@@ -324,7 +323,9 @@ function SongsPage() {
         >
           {trackInfos_top.map((song, index) => (
             <S.SliderItem key={`${song.id}-${index}`}>
-              {song.album ? (
+              {song.album &&
+              song.album.images &&
+              song.album.images.length > 0 ? (
                 <>
                   <S.AlbumCover
                     src={song.album.images[0].url}
@@ -364,6 +365,7 @@ function SongsPage() {
               <S.PopupAlbumCover
                 src={
                   selectedSong &&
+                  selectedSong.album &&
                   selectedSong.album.images &&
                   selectedSong.album.images.length > 0
                     ? selectedSong.album.images[0].url
@@ -372,9 +374,9 @@ function SongsPage() {
                 alt="album cover"
                 draggable="false"
               />
-              <S.PopupSongTitle>{selectedSong.album.name}</S.PopupSongTitle>
+              <S.PopupSongTitle>{selectedSong.album?.name}</S.PopupSongTitle>
               <S.PopupArtistName>
-                {selectedSong.artists.map((artist) => artist.name).join(" ")}
+                {selectedSong.artists?.map((artist) => artist.name).join(" ")}
               </S.PopupArtistName>
               <S.PopupSongInfo>
                 <S.PopupSongDetail>
@@ -387,7 +389,7 @@ function SongsPage() {
                 </S.PopupSongDetail>
                 <S.PopupSongDetail>
                   <strong>Release Date: </strong>
-                  {selectedSong.album.release_date}
+                  {selectedSong.album?.release_date}
                 </S.PopupSongDetail>
               </S.PopupSongInfo>
               <S.CloseButton onClick={handleClosePopup}>닫기</S.CloseButton>
