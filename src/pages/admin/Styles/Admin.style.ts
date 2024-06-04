@@ -95,3 +95,57 @@ export const JoinBtn = styled.button`
         cursor: normal;
     }
 `;
+
+
+export const Form = styled.form`
+  background: rgba(255, 255, 255, 0.1);
+  width: 90%;
+  max-width: 400px;
+  padding: 45px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  color: #ffffff;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+`;
+
+export const Label = styled.label`
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #ffffff;
+`;
+
+export const Input = styled.input`
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  &::placeholder {
+    color: #e0e0e0;
+  }
+  &:focus {
+    border-color: #82d4f2;
+  }
+`;
+
+export const Button = styled.button`
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #6bbcd6;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  &:hover {
+    background-color: #82d4f2;
+  }
+`;

@@ -1,5 +1,30 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import api from '../../axiosInterceptor';
+import * as S from './Styles/Admin.style';
+
+
+const generateStarPositions = (numStars: number) => {
+    return Array.from({ length: numStars }).map(() => ({
+      top: Math.random() * 100 + '%',
+      left: Math.random() * 100 + '%'
+    }));
+  };
+  
+  const Stars = () => {
+    const [starPositions, setStarPositions] = useState(generateStarPositions(50));
+  
+    useEffect(() => {
+      setStarPositions(generateStarPositions(50));
+    }, []);
+  
+    return (
+      <>
+        {starPositions.map((pos, index) => (
+          <S.Star key={index} style={{ top: pos.top, left: pos.left }} />
+        ))}
+      </>
+    );
+  };
 
 const AdminPage: React.FC = () => {
     const [playlist, setPlaylist] = useState<string>('');
@@ -32,16 +57,15 @@ const AdminPage: React.FC = () => {
     };
 
     return (
-        <div>
-            <h1>Admin Page</h1>
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Playlist:
-                    <input type="text" value={playlist} onChange={handleChange} />
-                </label>
-                <button type="submit">Update Playlist</button>
-            </form>
-        </div>
+        <S.Container>
+            <Stars/>
+            <S.Form onSubmit={handleSubmit}>
+                <S.Label>
+                    <S.Input type="text" value={playlist} onChange={handleChange} placeholder="Enter playlist URL" />
+                </S.Label>
+                <S.Button type="submit">Update Playlist</S.Button>
+            </S.Form>
+        </S.Container>
     );
 };
 

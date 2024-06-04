@@ -32,6 +32,7 @@ const AdminJoin = () => {
     password: '',
     email: '',
     adminCode: '',
+    role: 'ADMIN',
   });
 
   const { password, email, adminCode } = formData;

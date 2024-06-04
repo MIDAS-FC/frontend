@@ -93,7 +93,6 @@ function WriteDiary() {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response);
       // 응답에서 trackId를 받아서 설정
       setTrackId(response.data.spotify);
       setIsSongModalOpen(true); // 노래 모달 열기

@@ -8,6 +8,10 @@ interface DiaryModifyProps {
   diaryId: number;
   title: string;
   comment: string;
+  year: number;
+  month: number;
+  day: number;
+  socialId: string;
 }
 
 const DiaryModify = () => {
@@ -16,7 +20,7 @@ const DiaryModify = () => {
   const [comment, setComment] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, accessToken } = useAuth();
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -55,14 +59,26 @@ const DiaryModify = () => {
   const handleSaveClick = async (e: React.FormEvent) => {
     e.preventDefault();
     if (diaryInfo) {
+      const formData = new FormData();
+      formData.append("year", diaryInfo.year?.toString() || ""); // 기본값 설정
+      formData.append("month", diaryInfo.month?.toString() || ""); // 기본값 설정
+      formData.append("day", diaryInfo.day?.toString() || ""); // 기본값 설정
+      formData.append("socialId", diaryInfo.socialId || "");
+
+      const diaryData = JSON.stringify({
+        title: encodeURIComponent(title),
+        comment: encodeURIComponent(comment),
+      });
+
+      formData.append("writeDiaryRequest", new Blob([diaryData], { type: "application/json" }));
+
       try {
-        await api.put(
-          `/diary/${diaryInfo.diaryId}`,
-          {
-            title: encodeURIComponent(title),
-            comment: encodeURIComponent(comment),
-          }
-        );
+        await api.put("/diary/calendar", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Authorization-Access": `Bearer ${accessToken}`, // 인증 토큰 설정
+          },
+        });
         navigate("/");
       } catch (error: any) {
         console.log("Failed to save diary info:", error);

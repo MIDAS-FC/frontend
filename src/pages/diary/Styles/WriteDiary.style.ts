@@ -102,13 +102,15 @@ export const Button = styled.button`
 `;
 
 
+
+//MusicModal
 export const rotate = keyframes`
-from {
-  transform: rotate(0deg);
-}
-to {
-  transform: rotate(360deg);
-}
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 `;
 
 export const ModalOverlay = styled.div`
@@ -117,7 +119,7 @@ export const ModalOverlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7); /* 배경화면을 어둡고 투명하게 변경 */
+  background: rgba(0, 0, 0, 0.8); /* 배경화면을 어둡고 투명하게 변경 */
   z-index: 999;
   display: flex;
   justify-content: center;
@@ -125,16 +127,18 @@ export const ModalOverlay = styled.div`
 `;
 
 export const ModalContainer = styled.div`
-  background: white;
-  border-radius: 10px;
-  padding: 20px;
+  background: #222;
+  border-radius: 20px;
+  padding: 40px;
   width: 90%;
-  max-width: 800px; /* 모달 크기를 더 크게 */
+  max-width: 600px; /* 모달 크기를 더 크게 */
   z-index: 1000;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  color: #fff;
 `;
 
 export const ModalContent = styled.div`
@@ -142,13 +146,53 @@ export const ModalContent = styled.div`
   flex-direction: column;
   align-items: center;
   position: relative;
+  width: 100%;
+`;
+
+export const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #fff;
+  cursor: pointer;
+`;
+
+export const TrackInfo = styled.div`
+  text-align: center;
+  margin-bottom: 20px;
+`;
+
+export const TrackName = styled.div`
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+`;
+
+export const Artists = styled.div`
+  font-size: 1.2rem;
+  color: #aaa;
+  margin-bottom: 10px;
+`;
+
+export const AlbumName = styled.div`
+  font-size: 1rem;
+  color: #bbb;
+  margin-bottom: 20px;
 `;
 
 export const AlbumCover = styled.img`
-  width: 300px; /* 크기를 더 크게 */
-  height: 300px; /* 크기를 더 크게 */
-  border-radius: 50%;
-  animation: ${rotate} 20s linear infinite;
+  width: 200px; /* 크기를 더 크게 */
+  height: 200px; /* 크기를 더 크게 */
+  border-radius: 20px;
+  margin: 20px 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+`;
+
+export const AudioPlayer = styled.audio`
+  width: 100%;
   margin: 20px 0;
 `;
 
@@ -157,9 +201,7 @@ export const LikeButton = styled.button`
   border: none;
   cursor: pointer;
   font-size: 2rem;
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
+  color: #ff4d4d;
 `;
 
 export const ModalButton = styled.button`
@@ -182,4 +224,14 @@ export const Notification = styled(motion.div)`
   padding: 10px 20px;
   border-radius: 5px;
   z-index: 1000;
+`;
+
+export const ErrorMessage = styled.p`
+  color: #ff4d4d;
+  font-size: 1.2rem;
+`;
+
+export const LoadingMessage = styled.p`
+  color: #fff;
+  font-size: 1.2rem;
 `;

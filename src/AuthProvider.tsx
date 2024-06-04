@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode, createContext, useContext, useState } from "react";
+import { FunctionComponent, ReactNode, createContext, useContext, useEffect, useState } from "react";
 
 interface AuthContextType {
     isLoggedIn: boolean;
@@ -7,6 +7,8 @@ interface AuthContextType {
     setNickname: (nickname: string) => void;
     email: string;
     setEmail: (email: string) => void;
+    accessToken: string;
+    setAccessToken: (token: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -19,6 +21,7 @@ export const AuthProvider: FunctionComponent<AuthProviderProps> = ({ children })
     const [isLoggedIn, setIsLoggedInState] = useState<boolean>(() => localStorage.getItem("isLoggedIn") === "true");
     const [nickname, setNicknameState] = useState<string>(() => localStorage.getItem("nickName") || "");
     const [email, setEmailState] = useState<string>(() => localStorage.getItem("email") || "");
+    const [accessToken, setAccessTokenState] = useState<string>(() => localStorage.getItem("accessToken") || "");
 
     const setIsLoggedIn = (value: boolean) => {
         localStorage.setItem("isLoggedIn", String(value));
@@ -35,8 +38,20 @@ export const AuthProvider: FunctionComponent<AuthProviderProps> = ({ children })
         setEmailState(email);
     };
 
+    const setAccessToken = (token: string) => {
+        localStorage.setItem("accessToken", token);
+        setAccessTokenState(token);
+    };
+
+    useEffect(() => {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+            setAccessToken(token);
+        }
+    }, []);
+
     return (
-        <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, nickname, setNickname, email, setEmail }}>
+        <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, nickname, setNickname, email, setEmail, accessToken, setAccessToken }}>
             {children}
         </AuthContext.Provider>
     );
