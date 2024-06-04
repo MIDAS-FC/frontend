@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../axiosInterceptor";
 import EmotionModal from "./EmotionModal";
-import MusicModal from "./MusicModal";
+import MusicModal from "./musicModal";
 import * as S from "./Styles/WriteDiary.style";
 
 function ModifyDiary() {
@@ -42,7 +42,7 @@ function ModifyDiary() {
   useEffect(() => {
     const fetchLikedSongs = async () => {
       try {
-        const response = await api.get(`/music/likes`);
+        const response = await axios.get(`/music/likes`);
         const likedTracks = Array.isArray(response.data)
           ? response.data.map((item: any) => item.spotify)
           : [];

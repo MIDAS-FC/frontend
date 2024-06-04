@@ -11,7 +11,6 @@ import {
 } from "chart.js";
 import { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
-import api from "../../axiosInterceptor";
 import * as S from "./Styles/Graph.style";
 import {
   HighestEmotionData,
@@ -127,16 +126,6 @@ function Chart({
     ],
   });
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("accessToken");
-  //   if (token) {
-  //     api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
-  //     // console.log("Access token retrieved:", token);
-  //   } else {
-  //     console.log("token error");
-  //   }
-  // }, []);
-
   // 현재주
   useEffect(() => {
     const fetchEmotionStatistics = async (
@@ -148,7 +137,7 @@ function Chart({
       endDay: number
     ) => {
       try {
-        const response = await api.get("/statistic/emotion", {
+        const response = await axios.get("/statistic/emotion", {
           params: {
             startYear,
             startMonth,
@@ -282,7 +271,7 @@ function Chart({
       Previous_endDay: number
     ) => {
       try {
-        const response = await api.get("/statistic/emotion", {
+        const response = await axios.get("/statistic/emotion", {
           params: {
             startYear: Previous_startYear,
             startMonth: Previous_startMonth,

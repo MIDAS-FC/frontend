@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as S from "../Styles/EditPopup.style";
-import axios from "axios";
-import { PresenceContext, motion } from "framer-motion";
 import api from "../../../axiosInterceptor";
+import { PresenceContext, motion } from "framer-motion";
 
 function EditPopup({
   onClose,

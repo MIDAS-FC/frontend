@@ -3,17 +3,12 @@ import { useState } from "react";
 import BlueDaisy from "../../assets/icons/flowers/BlueDaisy.webp";
 import Chamomile from "../../assets/icons/flowers/Chamomile.webp";
 import Dahlia from "../../assets/icons/flowers/Dahlia.webp";
-<<<<<<< HEAD
-import { DiaryInfoResponse, flowerDescriptionMap } from "./DiaryCalender";
-import { AnimatePresence } from "framer-motion";
-=======
 import Lilac from "../../assets/icons/flowers/Lilac.webp";
 import Rose from "../../assets/icons/flowers/Rose.webp";
 import Sunflower from "../../assets/icons/flowers/Sunflower.webp";
 import Tulip from "../../assets/icons/flowers/Tulip.webp";
 import { DiaryInfoResponse } from "./DiaryCalender";
 import * as S from "./Styles/Calender.style";
->>>>>>> d21579396bdb9a259d6984169bf9cec6b372911c
 
 interface CalenderProps {
   onDateSelect: (day: number, month: number, year: number) => void;
@@ -162,8 +157,4 @@ function Calender({ onDateSelect, monthInfo }: CalenderProps) {
   );
 }
 
-<<<<<<< HEAD
 export default Calender;
-=======
-export default Calender;
->>>>>>> d21579396bdb9a259d6984169bf9cec6b372911c

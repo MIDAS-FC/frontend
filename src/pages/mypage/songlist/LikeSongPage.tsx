@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import api from "../../../axiosInterceptor";
 import * as S from "../Styles/SongPage.style";
 
 export interface Artist {
@@ -46,7 +46,7 @@ function LikeSongPage() {
   useEffect(() => {
     const fetchLikes = async (pageToFetch: number) => {
       try {
-        const response = await axios.get("http://localhost:8080/music/likes", {
+        const response = await api.get("http://localhost:8080/music/likes", {
           params: { page: pageToFetch, size: 5 }, // 한번에 5개씩 보여주기
         });
 
@@ -77,7 +77,7 @@ function LikeSongPage() {
       const trackInfoArray: TrackInfo[] = [];
       for (const id of trackIds) {
         try {
-          const response = await axios.get(
+          const response = await api.get(
             `http://localhost:8000/spotify/track/${id}`
           );
           const trackData: TrackInfo = {

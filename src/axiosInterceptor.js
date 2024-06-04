@@ -30,6 +30,9 @@ api.interceptors.response.use(
 
   async (error) => {
     const originalRequest = error.config;
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+
     if (error.response) {
       // 에러 상태가 401이고 에러 코드가 SAT8인 경우 (토큰 만료)
       if (
@@ -43,18 +46,15 @@ api.interceptors.response.use(
             {},
             {
               headers: {
-                "Content-Type": "application/json",
+                "Authorization-Access": accessToken,
+                "Authorization-Refresh": refreshToken,
               },
             }
           );
 
           if (response.status === 200) {
-<<<<<<< HEAD
             console.log(response.status);
 
-=======
-            // 로컬 스토리지에 새 토큰 저장
->>>>>>> d21579396bdb9a259d6984169bf9cec6b372911c
             const newAccessToken =
               response.headers["authorization-access"].split(" ")[1];
             const newRefreshToken =
@@ -67,13 +67,10 @@ api.interceptors.response.use(
             originalRequest.headers[
               "Authorization-Access"
             ] = `Bearer ${newAccessToken}`;
-<<<<<<< HEAD
             originalRequest.headers[
               "Authorization-Refresh"
             ] = `Bearer ${newRefreshToken}`;
             console.log("원래 요청의 헤더를 새 토큰으로 업데이트");
-=======
->>>>>>> d21579396bdb9a259d6984169bf9cec6b372911c
 
             // 새 토큰으로 원래 요청 재시도
             return api(originalRequest);
@@ -92,8 +89,4 @@ api.interceptors.response.use(
   }
 );
 
-<<<<<<< HEAD
 export default api;
-=======
-export default api;
->>>>>>> d21579396bdb9a259d6984169bf9cec6b372911c
