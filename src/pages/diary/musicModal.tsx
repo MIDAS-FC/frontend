@@ -104,7 +104,7 @@ const MusicModal: React.FC<MusicModalProps> = ({ trackId, likedSongs, socialId, 
               <div>Album: {trackInfo.album.name}</div>
               <S.AlbumCover src={trackInfo.album.images[0].url} alt="Album Cover" />
               {trackInfo.preview_url ? (
-                <audio ref={audioRef} controls autoPlay>
+                <audio ref={audioRef} autoPlay>
                   <source src={trackInfo.preview_url ?? undefined} type="audio/mpeg" />
                 </audio>
               ) : (

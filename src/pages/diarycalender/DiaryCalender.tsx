@@ -1,4 +1,3 @@
-import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
@@ -42,12 +41,36 @@ const flowerImageMap: { [key: string]: string } = {
   달리아: Dahlia,
 };
 
+const generateStarPositions = (numStars: number) => {
+  return Array.from({ length: numStars }).map(() => ({
+    top: Math.random() * 100 + '%',
+    left: Math.random() * 100 + '%'
+  }));
+};
+
+const Stars = () => {
+  const [starPositions, setStarPositions] = useState(generateStarPositions(50));
+
+  useEffect(() => {
+    setStarPositions(generateStarPositions(50));
+  }, []);
+
+  return (
+    <>
+      {starPositions.map((pos, index) => (
+        <S.Star key={index} style={{ top: pos.top, left: pos.left }} />
+      ))}
+    </>
+  );
+};
+
 function DiaryCalender() {
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
   const [currentMonth, setCurrentMonth] = useState<number | null>(null);
   const [monthInfo, setMonthInfo] = useState<DiaryInfoResponse[] | null>(null);
   const [dayInfo, setDayInfo] = useState<DiaryInfoResponse | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
 
@@ -95,6 +118,11 @@ function DiaryCalender() {
         params: { year, month, day },
       });
       setDayInfo(response.data);
+  
+      // 년, 월, 일 정보를 로컬 스토리지에 저장
+      localStorage.setItem("calendarYear", year.toString());
+      localStorage.setItem("calendarMonth", month.toString());
+      localStorage.setItem("calendarDay", day.toString());
     } catch (error: any) {
       if (error.response && error.response.data) {
         if (error.response.data.code === "SAG1") {
@@ -109,11 +137,12 @@ function DiaryCalender() {
       }
     }
   };
-
+  
   const handleDateSelect = (day: number, month: number, year: number) => {
     setSelectedDate(day);
     setCurrentMonth(month);
     setCurrentYear(year);
+    setIsExpanded(true);
   };
 
   const handleCreateClick = () => {
@@ -138,11 +167,11 @@ function DiaryCalender() {
 
   return (
     <S.Container>
+      <Stars />
       <h2>
         {currentYear}년 {currentMonth}월
       </h2>
       <Calender onDateSelect={handleDateSelect} monthInfo={monthInfo} />
-      <AnimatePresence>
         {selectedDate && (
           <S.BoxContainer>
             <S.Box
@@ -200,7 +229,6 @@ function DiaryCalender() {
             </S.Box>
           </S.BoxContainer>
         )}
-      </AnimatePresence>
     </S.Container>
   );
 }
