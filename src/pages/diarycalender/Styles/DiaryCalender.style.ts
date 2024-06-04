@@ -1,10 +1,12 @@
-import { AnimatePresence, motion } from "framer-motion";
-import styled from "styled-components";
+import { motion } from "framer-motion";
 import backgroundImage from "src/assets/images/background.webp";
+import styled from "styled-components";
 
 export const Container = styled.div`
+  border:1px solid
   width: 100%;
   margin: auto;
+  margin:80px 0;
   padding: 20px;
   background-color: #fafafa;
   background-image: url(${backgroundImage});

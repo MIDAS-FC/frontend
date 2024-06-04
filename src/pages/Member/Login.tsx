@@ -1,8 +1,32 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import styled from "styled-components";
 import { useAuth } from "../../AuthProvider";
+import * as S from "./Styles/Member.style";
+
+
+const generateStarPositions = (numStars: number) => {
+  return Array.from({ length: numStars }).map(() => ({
+    top: Math.random() * 100 + '%',
+    left: Math.random() * 100 + '%'
+  }));
+};
+
+const Stars = () => {
+  const [starPositions, setStarPositions] = useState(generateStarPositions(50));
+
+  useEffect(() => {
+    setStarPositions(generateStarPositions(50));
+  }, []);
+
+  return (
+    <>
+      {starPositions.map((pos, index) => (
+        <S.Star key={index} style={{ top: pos.top, left: pos.left }} />
+      ))}
+    </>
+  );
+};
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -91,143 +115,56 @@ const Login = () => {
   };
 
   return (
-    <Container>
-      <LoginPage>
-        <LoginForm>
-          <LoginFuncion onSubmit={handleSubmit}>
-            <LoginInput
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="e-mail"
-              type="email"
-              required
-            />
-            <LoginInput
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="password"
-              type="password"
-              required
-            />
-            <LoginBtn type="submit" onClick={handleUserLogin}>
+    <S.Container>
+      <Stars />
+      <S.LoginForm>
+        <S.LoginFuncion onSubmit={handleSubmit}>
+          <S.LoginInput
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="e-mail"
+            type="email"
+            required
+            autoComplete="username"
+          />
+          <S.LoginInput
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="password"
+            type="password"
+            required
+            autoComplete="current-password"
+          />
+          <S.LoginBtnGroup>
+            <S.LoginBtn type="submit" onClick={handleUserLogin}>
               Login
-            </LoginBtn>
-            <LoginBtn type="submit" onClick={handleAdminLogin}>
-              Admin Login
-            </LoginBtn>
-          </LoginFuncion>
-          <Gray>아직 회원이 아니신가요?</Gray>
-          <Link to="/Join">
-            <Red>회원가입</Red>
-          </Link>
-          <SNS>
-            <Kakao onClick={handleKakaoLogin}></Kakao>
-            <Naver onClick={handleNaverLogin}></Naver>
-            <Google onClick={handleGoogleLogin}></Google>
-          </SNS>
-        </LoginForm>
-      </LoginPage>
-    </Container>
+            </S.LoginBtn>
+            <S.LoginBtn type="submit" onClick={handleAdminLogin}>
+              Admin
+            </S.LoginBtn>
+          </S.LoginBtnGroup>
+            {/* 자동 완성 기능 향상 및 보안 및 접근성 강화 */}
+            <input
+            type="text"
+            name="username"
+            value={email}
+            autoComplete="username"
+            style={{ display: "none" }}
+            readOnly
+          />
+        </S.LoginFuncion>
+        <S.Gray>아직 회원이 아니신가요?</S.Gray>
+        <Link to="/Join">
+          <S.Red>회원가입</S.Red>
+        </Link>
+        <S.SNS>
+          <S.Kakao onClick={handleKakaoLogin}></S.Kakao>
+          <S.Naver onClick={handleNaverLogin}></S.Naver>
+          <S.Google onClick={handleGoogleLogin}></S.Google>
+        </S.SNS>
+      </S.LoginForm>
+    </S.Container>
   );
 };
 
 export default Login;
-
-const Container = styled.div`
-  position: relative;
-  height: 120vh;
-  top: 100px;
-`;
-
-const LoginPage = styled.div`
-  width: 100%;
-  height: 100%;
-  background: #ffb8b3;
-  overflow: auto;
-`;
-
-const LoginForm = styled.div`
-  background: #ffffff;
-  width: 30%;
-  margin: 100px auto 0 auto;
-  padding: 45px;
-  text-align: center;
-  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1);
-`;
-
-const LoginFuncion = styled.form``;
-
-const LoginInput = styled.input`
-  outline: 0;
-  width: 100%;
-  margin: 0 0 15px;
-  padding: 15px 0;
-  box-sizing: border-box;
-  font-size: 14px;
-  border-top: none;
-  border-right: none;
-  border-left: none;
-  border-bottom: 1px solid #ccc;
-`;
-
-const LoginBtn = styled.button`
-  text-transform: uppercase;
-  outline: 0;
-  background: #ff8379;
-  width: 100%;
-  border: 0;
-  padding: 15px;
-  margin-bottom: 10px;
-  color: #ffffff;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-`;
-
-const Gray = styled.span`
-  color: #b3b3b3;
-`;
-
-const Red = styled.span`
-  margin: 0 5px;
-  color: #ff8379;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const SNS = styled.div`
-  position: relative;
-  top: 25px;
-  width: 100%;
-  height: 30px;
-`;
-
-const Kakao = styled.button`
-  width: 34.31px;
-  height: 30.8px;
-  background: #ffc700;
-  border-radius: 50%;
-  border: none;
-  margin-right: 10px;
-  cursor: pointer;
-`;
-
-const Naver = styled.button`
-  width: 34.31px;
-  height: 30.8px;
-  border: none;
-  background: #52d700;
-  border-radius: 50%;
-  margin-right: 10px;
-  cursor: pointer;
-`;
-
-const Google = styled.button`
-  width: 34.31px;
-  height: 30.8px;
-  border: none;
-  background: #e0e0e0;
-  border-radius: 50%;
-  cursor: pointer;
-`;

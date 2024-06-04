@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../axiosInterceptor";
 import EmotionModal from "./EmotionModal";
-import MusicModal from "./MusicModal";
+import MusicModal from "./musicModal";
 import * as S from "./Styles/WriteDiary.style";
 
 function WriteDiary() {
@@ -48,7 +48,12 @@ function WriteDiary() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setImages(Array.from(e.target.files));
+      const selectedFiles = Array.from(e.target.files);
+      if (images.length + selectedFiles.length > 9) {
+        alert("이미지는 최대 9개까지 업로드할 수 있습니다.");
+        return;
+      }
+      setImages((prevImages) => [...prevImages, ...selectedFiles]);
     }
   };
 
@@ -88,7 +93,6 @@ function WriteDiary() {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response);
       // 응답에서 trackId를 받아서 설정
       setTrackId(response.data.spotify);
       setIsSongModalOpen(true); // 노래 모달 열기
