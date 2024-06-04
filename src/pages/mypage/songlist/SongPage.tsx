@@ -38,6 +38,7 @@ function SongsPage() {
   const [trackInfos_like, setTrackInfos_like] = useState<TrackInfo[]>([]);
   const [trackIds_top, setTrackIds_top] = useState<string[]>([]);
   const [trackInfos_top, setTrackInfos_top] = useState<TrackInfo[]>([]);
+  const [likedSongs, setLikedSongs] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [last, setLast] = useState(false);
 
@@ -79,7 +80,7 @@ function SongsPage() {
       setTrackInfos_top(trackInfoArray);
     };
     fetchTrackInfos_top();
-  }, [trackIds_top]);
+  }, []);
 
   // 좋아요 리스트
   useEffect(() => {
@@ -135,7 +136,72 @@ function SongsPage() {
       setTrackInfos_like(trackInfoArray);
     };
     fetchTrackInfos_like();
-  }, [trackIds_like]);
+  }, []);
+
+  // const handleLikeToggle_like = async (
+  //   trackId_like: string,
+  //   isLiked: boolean
+  // ) => {
+  //   try {
+  //     await axios.post("http://localhost:8080/music/likes", {
+  //       spotify: trackId_like,
+  //       like: !isLiked,
+  //     });
+  //     toggleLike_like(trackId_like);
+  //   } catch (error) {
+  //     console.error("Error updating like status:", error);
+  //   }
+  // };
+
+  // const toggleLike_like = (trackId: string) => {
+  //   setTrackInfos_like((prevTrackInfos) =>
+  //     prevTrackInfos.filter((track) => track.id !== trackId)
+  //   );
+  //   setTrackIds_like((prevTrackIds) =>
+  //     prevTrackIds.filter((id) => id !== trackId)
+  //   );
+  // };
+
+  const handleLikeToggle_like = async (trackId: string) => {
+    try {
+      await axios.post("http://localhost:8080/music/likes", {
+        spotify: trackId,
+        like: false,
+      });
+      toggleLike(trackId);
+    } catch (error) {
+      console.error("Error updating like status:", error);
+    }
+  };
+
+  const toggleLike = (trackId: string) => {
+    setLikedSongs((prevLikedSongs) => {
+      const updatedLikedSongs = prevLikedSongs.includes(trackId)
+        ? prevLikedSongs.filter((id) => id !== trackId)
+        : [...prevLikedSongs, trackId];
+      return updatedLikedSongs;
+    });
+
+    setTrackInfos_like((prevTrackInfos) =>
+      prevTrackInfos.filter((track) => track.id !== trackId)
+    );
+  };
+
+  const handleLikeToggle_top = async (trackId: string) => {
+    try {
+      await axios.post("http://localhost:8080/music/likes", {
+        spotify: trackId,
+        like: !likedSongs.includes(trackId),
+      });
+      toggleLike(trackId);
+      const likedTrack = trackInfos_top.find((track) => track.id === trackId);
+      if (likedTrack) {
+        setTrackInfos_like((prevTrackInfos) => [...prevTrackInfos, likedTrack]);
+      }
+    } catch (error) {
+      console.error("Error updating like status:", error);
+    }
+  };
 
   // Infinite scroll setup
   useEffect(() => {
@@ -265,6 +331,9 @@ function SongsPage() {
                   {song.artists.map((artist) => artist.name).join(" ")}
                 </S.ArtistName>
               </S.SongDetails>
+              <S.HeartButton onClick={() => handleLikeToggle_top(song.id)}>
+                {likedSongs.includes(song.id) ? "❤️" : "🤍"}
+              </S.HeartButton>
             </S.SliderItem>
           ))}
         </S.SliderContainer>
@@ -322,7 +391,7 @@ function SongsPage() {
           onMouseMove={handleMouseMove_like}
         >
           {trackInfos_like.map((song, index) => (
-            <S.SliderItem key={`${song.id}+${index}`}>
+            <S.SliderItem key={`${song.id}-${index}`}>
               <S.AlbumCover
                 src={song.album.images[0].url}
                 alt="song album"
@@ -335,6 +404,9 @@ function SongsPage() {
                   {song.artists.map((artist) => artist.name).join(" ")}
                 </S.ArtistName>
               </S.SongDetails>
+              <S.HeartButton onClick={() => handleLikeToggle_like(song.id)}>
+                {"❤️"}
+              </S.HeartButton>
             </S.SliderItem>
           ))}
         </S.SliderContainer>

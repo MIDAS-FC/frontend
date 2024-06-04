@@ -118,20 +118,34 @@ export const FlowerImageContainer = styled.div`
   position: absolute;
   top: -14px;
   left: -14px;
-  width: 120px;
+  width: 160px;
   height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
 `;
 
 export const Flower = styled.img`
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
   transition: transform 0.3s ease;
   &:hover {
     transform: scale(1.1);
   }
+`;
+export const PopupBox = styled(motion.div)`
+  position: absolute;
+  top: 50px;
+  right: -50px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  width: 150px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.4;
 `;
