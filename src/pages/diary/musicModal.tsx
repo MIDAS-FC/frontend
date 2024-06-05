@@ -121,14 +121,10 @@ const MusicModal: React.FC<MusicModalProps> = ({
               />
               {trackInfo.preview_url ? (
                 <audio ref={audioRef} autoPlay>
-<<<<<<< HEAD
                   <source
                     src={trackInfo.preview_url ?? undefined}
                     type="audio/mpeg"
                   />
-=======
-                  <source src={trackInfo.preview_url ?? undefined} type="audio/mpeg" />
->>>>>>> 264d80643a6d9a2887cbce5cad0184ca5e671a8d
                 </audio>
               ) : (
                 <p>이 곡은 재생할 수 없습니다.</p>

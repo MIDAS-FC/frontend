@@ -2,6 +2,7 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as S from "./Styles/Admin.style";
 import axios from "axios";
+import api from "../../axiosInterceptor";
 
 const generateStarPositions = (numStars: number) => {
   return Array.from({ length: numStars }).map(() => ({
@@ -44,7 +45,7 @@ const AdminJoin = () => {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/auth/admin/register", formData);
+      const response = await api.post("/auth/admin/register", formData);
       if (response.status === 204) {
         alert("회원가입 성공!");
         navigate("/");

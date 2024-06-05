@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import * as S from "./Styles/Admin.style";
 import axios from "axios";
+import api from "../../axiosInterceptor";
 
 const generateStarPositions = (numStars: number) => {
   return Array.from({ length: numStars }).map(() => ({
@@ -40,7 +41,7 @@ const AdminPage: React.FC = () => {
 
     try {
       const token = getToken();
-      const response = await axios.post(
+      const response = await api.post(
         "/admin/music",
         {
           playlist: playlist,

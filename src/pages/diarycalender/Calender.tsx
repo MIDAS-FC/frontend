@@ -156,8 +156,4 @@ function Calender({ onDateSelect, monthInfo }: CalenderProps) {
   );
 }
 
-<<<<<<< HEAD
 export default Calender;
-=======
-export default Calender;
->>>>>>> 264d80643a6d9a2887cbce5cad0184ca5e671a8d

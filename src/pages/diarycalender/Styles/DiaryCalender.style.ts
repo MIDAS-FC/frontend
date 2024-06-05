@@ -7,25 +7,13 @@ const twinkle = keyframes`
 `;
 
 export const Container = styled.div`
-<<<<<<< HEAD
-  border: 1px solid red;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   background: linear-gradient(
     to bottom,
     rgba(0, 4, 40, 0.8),
     rgba(0, 78, 146, 0.8)
   );
-  background-size: cover;
-=======
-  width: 100%;
-  height:100vh;
-  background: linear-gradient(to bottom, rgba(0, 4, 40, 0.8), rgba(0, 78, 146, 0.8));
->>>>>>> 264d80643a6d9a2887cbce5cad0184ca5e671a8d
   position: relative;
   padding: 150px;
 `;
@@ -35,7 +23,7 @@ export const Title = styled.h1`
   left: 20px;
   color: white;
   font-size: 24px;
-  text-align:right;
+  text-align: right;
 `;
 
 export const Content = styled.div`
@@ -138,7 +126,6 @@ export const Box = styled(motion.div)`
   }
 `;
 
-
 export const ImageContainer = styled.div`
   width: 100%;
   display: flex;
@@ -226,8 +213,6 @@ export const Flower = styled.img`
     transform: scale(1.1);
   }
 `;
-<<<<<<< HEAD
-=======
 
 export const PopupBox = styled(motion.div)`
   position: absolute;
@@ -263,4 +248,3 @@ export const CloseButton = styled(motion.button)`
     color: #666;
   }
 `;
->>>>>>> 264d80643a6d9a2887cbce5cad0184ca5e671a8d

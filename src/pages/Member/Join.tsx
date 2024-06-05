@@ -2,13 +2,14 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as S from "./Styles/Member.style";
+import api from "../../axiosInterceptor";
 
-axios.defaults.baseURL = "/auth";
+// axios.defaults.baseURL = "/auth";
 
 const generateStarPositions = (numStars: number) => {
   return Array.from({ length: numStars }).map(() => ({
-    top: Math.random() * 100 + '%',
-    left: Math.random() * 100 + '%'
+    top: Math.random() * 100 + "%",
+    left: Math.random() * 100 + "%",
   }));
 };
 
@@ -43,7 +44,7 @@ const Join = () => {
   // 이메일 인증번호 보내기
   const sendEmail = async () => {
     try {
-      const response = await axios.post("/email", {
+      const response = await api.post("/email", {
         email,
         emailType: "sign-up",
         socialType: "SoundOfFlower",
@@ -60,7 +61,7 @@ const Join = () => {
   // 인증
   const verifyEmail = async () => {
     try {
-      const response = await axios.post("/register/authentication/number", {
+      const response = await api.post("auth/register/authentication/number", {
         email,
         socialType: "SoundOfFlower",
         randomNum,
@@ -80,7 +81,7 @@ const Join = () => {
   // 이메일 재전송
   const resendEmail = async () => {
     try {
-      await axios.post("/resend-email", { email });
+      await api.post("/resend-email", { email });
       alert("이메일을 재전송했습니다.");
     } catch (error) {
       console.error("이메일 재전송 오류:", error);
@@ -91,7 +92,7 @@ const Join = () => {
   // 닉네임 중복 여부 확인
   const verifyNickname = async () => {
     try {
-      const response = await axios.post("/register/authentication/nickname", {
+      const response = await api.post("/register/authentication/nickname", {
         nickName,
       });
       if (response.status === 204) {
@@ -134,7 +135,7 @@ const Join = () => {
     formData.append("signup", userRequestDtoBlob);
 
     try {
-      const response = await axios.post("/register", formData);
+      const response = await api.post("/register", formData);
 
       alert("회원가입이 완료되었습니다.");
       navigate("/Login"); //로그인 페이지로 유도
@@ -154,68 +155,72 @@ const Join = () => {
   };
 
   return (
-      <S.Container>
-        <Stars />
-        <S.JoinPage>
-          <S.JoinForm>
-            <S.JoinInput
-              disabled={isSend}
-              name="email"
-              placeholder="email"
+    <S.Container>
+      <Stars />
+      <S.JoinPage>
+        <S.JoinForm>
+          <S.JoinInput
+            disabled={isSend}
+            name="email"
+            placeholder="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="username"
+          />
+          <S.FullWidthBtn type="button" onClick={sendEmail} disabled={isSend}>
+            인증번호 전송
+          </S.FullWidthBtn>
+          <S.JoinInput
+            disabled={isVerified}
+            name="verificationCode"
+            placeholder="Verification Code"
+            value={verificationCode}
+            onChange={(e) => setVerificationCode(e.target.value)}
+            autoComplete="off"
+          />
+          <S.FullWidthBtn
+            type="button"
+            onClick={verifyEmail}
+            disabled={isVerified}
+          >
+            인증하기
+          </S.FullWidthBtn>
+          <S.FullWidthBtn type="button" onClick={resendEmail}>
+            이메일 재전송
+          </S.FullWidthBtn>
+          <S.JoinInput
+            name="nickName"
+            placeholder="nickname"
+            value={nickName}
+            onChange={(e) => setNickName(e.target.value)}
+            autoComplete="off"
+          />
+          <S.FullWidthBtn type="button" onClick={verifyNickname}>
+            중복 확인
+          </S.FullWidthBtn>
+          <S.JoinFunction onSubmit={handleSubmit}>
+            {/* 자동 완성 기능 향상 및 보안 및 접근성 강화 */}
+            <input
+              type="text"
+              name="username"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
               autoComplete="username"
+              style={{ display: "none" }}
+              readOnly
             />
-            <S.FullWidthBtn type="button" onClick={sendEmail} disabled={isSend}>
-              인증번호 전송
-            </S.FullWidthBtn>
             <S.JoinInput
-              disabled={isVerified}
-              name="verificationCode"
-              placeholder="Verification Code"
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value)}
-              autoComplete="off"
+              name="password"
+              type="password"
+              placeholder="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
             />
-            <S.FullWidthBtn type="button" onClick={verifyEmail} disabled={isVerified}>
-              인증하기
-            </S.FullWidthBtn>
-            <S.FullWidthBtn type="button" onClick={resendEmail}>
-              이메일 재전송
-            </S.FullWidthBtn>
-            <S.JoinInput
-              name="nickName"
-              placeholder="nickname"
-              value={nickName}
-              onChange={(e) => setNickName(e.target.value)}
-              autoComplete="off"
-            />
-            <S.FullWidthBtn type="button" onClick={verifyNickname}>
-              중복 확인
-            </S.FullWidthBtn>
-            <S.JoinFunction onSubmit={handleSubmit}>
-              {/* 자동 완성 기능 향상 및 보안 및 접근성 강화 */}
-              <input
-                type="text"
-                name="username"
-                value={email}
-                autoComplete="username"
-                style={{ display: "none" }}
-                readOnly
-              />
-              <S.JoinInput
-                name="password"
-                type="password"
-                placeholder="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="new-password"
-              />
-              <S.FileInput type="file" name="file" onChange={handleFileChange} />
-              <S.FullWidthBtn type="submit">Sign up</S.FullWidthBtn>
-            </S.JoinFunction>
-          </S.JoinForm>
-        </S.JoinPage>
+            <S.FileInput type="file" name="file" onChange={handleFileChange} />
+            <S.FullWidthBtn type="submit">Sign up</S.FullWidthBtn>
+          </S.JoinFunction>
+        </S.JoinForm>
+      </S.JoinPage>
     </S.Container>
   );
 };

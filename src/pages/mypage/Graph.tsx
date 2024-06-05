@@ -16,6 +16,7 @@ import {
   HighestEmotionData,
   findWeeklyHighestEmotion,
 } from "./components/findWeeklyHighestEmotion";
+import api from "../../axiosInterceptor";
 
 ChartJS.register(
   CategoryScale,
@@ -126,6 +127,16 @@ function Chart({
     ],
   });
 
+  // useEffect(() => {
+  //   const token = localStorage.getItem("accessToken");
+  //   if (token) {
+  //     api.defaults.headers.common["Authorization-Access"] = `Bearer ${token}`;
+  //     // console.log("Access token retrieved:", token);
+  //   } else {
+  //     console.log("token error");
+  //   }
+  // }, []);
+
   // 현재주
   useEffect(() => {
     const fetchEmotionStatistics = async (
@@ -137,7 +148,7 @@ function Chart({
       endDay: number
     ) => {
       try {
-        const response = await axios.get("/statistic/emotion", {
+        const response = await api.get("/statistic/emotion", {
           params: {
             startYear,
             startMonth,
@@ -271,7 +282,7 @@ function Chart({
       Previous_endDay: number
     ) => {
       try {
-        const response = await axios.get("/statistic/emotion", {
+        const response = await api.get("/statistic/emotion", {
           params: {
             startYear: Previous_startYear,
             startMonth: Previous_startMonth,

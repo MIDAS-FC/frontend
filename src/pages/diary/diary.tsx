@@ -40,7 +40,7 @@ function WriteDiary() {
   useEffect(() => {
     const fetchLikedSongs = async () => {
       try {
-        const response = await axios.get(`/music/likes`);
+        const response = await api.get(`/music/likes`);
         const likedTracks = response.data.map((item: any) => item.spotify);
         setLikedSongs(likedTracks);
         localStorage.setItem("likedSongs", JSON.stringify(likedTracks));

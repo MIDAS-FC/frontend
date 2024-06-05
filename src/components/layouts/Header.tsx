@@ -4,15 +4,16 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
 import logo from "../../assets/icons/logo.webp";
 import * as S from "../layouts/Styles/Header.style";
+import api from "../../axiosInterceptor";
 
 function Header() {
   const navigate = useNavigate();
   const { isLoggedIn, setIsLoggedIn, nickname, email } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
 
-  const token = localStorage.getItem('accessToken');
-  const refreshToken = localStorage.getItem('refreshToken');
-  const role = localStorage.getItem('role');
+  const token = localStorage.getItem("accessToken");
+  const refreshToken = localStorage.getItem("refreshToken");
+  const role = localStorage.getItem("role");
 
   const handleLogoClick = () => {
     navigate("/");
@@ -32,8 +33,8 @@ function Header() {
 
   const handleLogoutClick = async () => {
     try {
-      await axios.post(
-        "http://localhost:8080/token/logout",
+      await api.post(
+        "http://localhost:8080/auth/token/logout",
         {},
         {
           headers: {
@@ -51,9 +52,8 @@ function Header() {
       localStorage.removeItem("email");
       localStorage.removeItem("role");
 
-
-      delete axios.defaults.headers.common["Authorization-Access"];
-      delete axios.defaults.headers.common["Authorization-Refresh"];
+      delete api.defaults.headers.common["Authorization-Access"];
+      delete api.defaults.headers.common["Authorization-Refresh"];
 
       setIsLoggedIn(false);
       navigate("/");
