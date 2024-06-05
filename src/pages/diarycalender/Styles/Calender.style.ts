@@ -5,9 +5,9 @@ export const CalendarWrapper = styled.div`
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  height:450px;
+  width: 300px;  /* 캘린더의 너비 조정 */
+  height: 400px;  /* 캘린더의 높이 조정 */
 `;
-
 
 export const Table = styled.table`
   width: 100%;
@@ -21,8 +21,8 @@ export const Thead = styled.thead`
 `;
 
 export const Td = styled.td`
-  width: 150px;
-  height: 60px;
+  width: 30px;  /* 셀 너비 조정 */
+  height: 30px;  /* 셀 높이 조정 */
   text-align: center;
   vertical-align: middle;
   cursor: pointer;
@@ -36,30 +36,27 @@ export const Td = styled.td`
   }
 `;
 
-// 테이블 헤더 셀 요소
 export const Th = styled.th`
-  padding: 15px;
+  padding: 10px;
   text-align: center;
   font-weight: bold;
   border-bottom: 2px solid #dee2e6;
 `;
 
-// 오늘 날짜를 강조하는 요소
 export const Today = styled.div`
   background-color: rgba(0, 4, 40, 0.8);
-  border-radius:50%;
-  width: 30px;
-  height: 30px;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
   display: flex;
-  margin:0 auto;
+  margin: 0 auto;
   align-items: center;
   justify-content: center;
   transition: transform 0.3s ease;
   position: relative;
-  color:#fff;
+  color: #fff;
 `;
 
-// 꽃 이미지 컨테이너
 export const FlowerContainer = styled.div`
   display: inline-block;
   padding-top: 5px;
@@ -67,8 +64,8 @@ export const FlowerContainer = styled.div`
 `;
 
 export const Flower = styled.img`
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
   position: absolute;
   top: -5px;
   right: 0;

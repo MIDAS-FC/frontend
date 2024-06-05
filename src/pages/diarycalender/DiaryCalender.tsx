@@ -173,101 +173,97 @@ function DiaryCalender() {
       <S.Title>
         {currentYear}년 {currentMonth}월
       </S.Title>
-      <Calender onDateSelect={handleDateSelect} monthInfo={monthInfo} />
-      {selectedDate && (
-  <S.BoxContainer>
-    <S.Box
-      key={selectedDate}
-      initial={{ x: -100, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 100, opacity: 0 }}
-      transition={{ duration: 0.5, ease: "easeInOut" }}
-    >
-      <S.CloseButton
-        onClick={() => setSelectedDate(null)}
-        initial={{ x: 20, y: -20, opacity: 0 }}
-        animate={{ x: 0, y: 0, opacity: 1 }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-      >
-        <FaTimes />
-      </S.CloseButton>
-      {dayInfo && flowerImageMap[dayInfo.flower] && (
-        <S.FlowerImageContainer
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          <S.Flower
-            src={flowerImageMap[dayInfo.flower]}
-            alt={dayInfo.flower}
-          />
-          <AnimatePresence>
-            {isHovered && (
-              <S.PopupBox
-                variants={popupVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
+      <S.ContentWrapper>
+        <S.BoxContainer>
+          {selectedDate && (
+            <S.Box
+              key={selectedDate}
+              initial={{ x: -100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 100, opacity: 0 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              <S.CloseButton
+                onClick={() => setSelectedDate(null)}
+                initial={{ x: 20, y: -20, opacity: 0 }}
+                animate={{ x: 0, y: 0, opacity: 1 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
               >
-                {flowerDescriptionMap[dayInfo.flower]}
-              </S.PopupBox>
-            )}
-          </AnimatePresence>
-        </S.FlowerImageContainer>
-      )}
-      <S.ImageContainer>
-            {dayInfo?.imgUrl && dayInfo.imgUrl.length > 0 ? (
-              dayInfo.imgUrl
-                .slice(0, 3)
-                .map((url, index) => (
-                  <img
-                    key={index}
-                    src={url}
-                    alt={`Diary Image ${index + 1}`}
+                <FaTimes />
+              </S.CloseButton>
+              {dayInfo && flowerImageMap[dayInfo.flower] && (
+                <S.FlowerImageContainer
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                >
+                  <S.Flower
+                    src={flowerImageMap[dayInfo.flower]}
+                    alt={dayInfo.flower}
                   />
-                ))
-            ) : (
-              <img src={EmptyDiary} alt="Empty Diary" />
-            )}
-          </S.ImageContainer>
-          <S.InfoContainer>
-            <S.InfoTitle>날짜</S.InfoTitle>
-            <S.InfoText>
-              {currentMonth}월 {selectedDate}일
-            </S.InfoText>
-          </S.InfoContainer>
-          <S.InfoContainer>
-            <S.InfoTitle>제목</S.InfoTitle>
-            <S.InfoText>
-              {dayInfo?.title && decodeText(dayInfo.title)}
-            </S.InfoText>
-          </S.InfoContainer>
-          <S.InfoContainer>
-            <S.InfoTitle>내용</S.InfoTitle>
-            <S.InfoText>
-              {dayInfo?.comment && decodeText(dayInfo.comment)}
-            </S.InfoText>
-          </S.InfoContainer>
-          <S.ButtonsContainer>
-            {dayInfo ? (
-              <S.Button onClick={handleEditClick}>수정</S.Button>
-            ) : (
-              <S.Button onClick={handleCreateClick}>작성</S.Button>
-            )}
-          </S.ButtonsContainer>
-    </S.Box>
-  </S.BoxContainer>
-)}
+                  <AnimatePresence>
+                    {isHovered && (
+                      <S.PopupBox
+                        variants={popupVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden"
+                      >
+                        {flowerDescriptionMap[dayInfo.flower]}
+                      </S.PopupBox>
+                    )}
+                  </AnimatePresence>
+                </S.FlowerImageContainer>
+              )}
+              <S.ImageContainer>
+                {dayInfo?.imgUrl && dayInfo.imgUrl.length > 0 ? (
+                  dayInfo.imgUrl
+                    .slice(0, 3)
+                    .map((url, index) => (
+                      <img
+                        key={index}
+                        src={url}
+                        alt={`Diary Image ${index + 1}`}
+                      />
+                    ))
+                ) : (
+                  <img src={EmptyDiary} alt="Empty Diary" />
+                )}
+              </S.ImageContainer>
+              <S.InfoContainer>
+                <S.InfoTitle>날짜</S.InfoTitle>
+                <S.InfoText>
+                  {currentMonth}월 {selectedDate}일
+                </S.InfoText>
+              </S.InfoContainer>
+              <S.InfoContainer>
+                <S.InfoTitle>제목</S.InfoTitle>
+                <S.InfoText>
+                  {dayInfo?.title && decodeText(dayInfo.title)}
+                </S.InfoText>
+              </S.InfoContainer>
+              <S.InfoContainer>
+                <S.InfoTitle>내용</S.InfoTitle>
+                <S.InfoText>
+                  {dayInfo?.comment && decodeText(dayInfo.comment)}
+                </S.InfoText>
+              </S.InfoContainer>
+              <S.ButtonsContainer>
+                {dayInfo ? (
+                  <S.Button onClick={handleEditClick}>수정</S.Button>
+                ) : (
+                  <S.Button onClick={handleCreateClick}>작성</S.Button>
+                )}
+              </S.ButtonsContainer>
+            </S.Box>
+          )}
+        </S.BoxContainer>
+        <Calender onDateSelect={handleDateSelect} monthInfo={monthInfo} />
+      </S.ContentWrapper>
     </S.Container>
   );
 }
 
 export default DiaryCalender;
-
-const boxVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: 30 },
-};
 
 const popupVariants = {
   hidden: { opacity: 0, y: -10 },

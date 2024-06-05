@@ -12,20 +12,24 @@ interface MusicModalProps {
   onClose: () => void;
 }
 
-interface Artist {
+export interface Artist {
   name: string;
 }
 
-interface Album {
+export interface Album {
   name: string;
   images: { url: string }[];
+  release_date: string;
 }
 
-interface TrackInfo {
+export interface TrackInfo {
+  id: string;
   name: string;
   artists: Artist[];
   album: Album;
   preview_url: string | null;
+  popularity: number;  // popularity 속성 추가
+  duration_ms: number;
 }
 
 const MusicModal: React.FC<MusicModalProps> = ({
