@@ -1,4 +1,5 @@
 import axios from "axios";
+import { motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../AuthProvider";
 import { Artist, TrackInfo } from "../../diary/MusicModal";
@@ -12,8 +13,11 @@ const LikeSongPage: React.FC = () => {
   const [last, setLast] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [selectedTrack, setSelectedTrack] = useState<TrackInfo | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   const loader = useRef<HTMLDivElement | null>(null);
+  const sliderContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const fetchLikes = async (pageToFetch: number) => {
@@ -84,42 +88,108 @@ const LikeSongPage: React.FC = () => {
     };
   }, [last, loading]);
 
+  const handleLikeButtonClick = (track: TrackInfo) => {
+    setSelectedTrack(track);
+    setShowModal(true);
+  };
+
+  // Implement mouse drag for horizontal scroll
+  useEffect(() => {
+    const slider = sliderContainerRef.current;
+    let isDown = false;
+    let startX: number;
+    let scrollLeft: number;
+
+    const handleMouseDown = (e: MouseEvent) => {
+      isDown = true;
+      slider?.classList.add('active');
+      startX = e.pageX - slider!.offsetLeft;
+      scrollLeft = slider!.scrollLeft;
+    };
+
+    const handleMouseLeave = () => {
+      isDown = false;
+      slider?.classList.remove('active');
+    };
+
+    const handleMouseUp = () => {
+      isDown = false;
+      slider?.classList.remove('active');
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - slider!.offsetLeft;
+      const walk = (x - startX) * 3; // scroll-fast
+      slider!.scrollLeft = scrollLeft - walk;
+    };
+
+    if (slider) {
+      slider.addEventListener('mousedown', handleMouseDown);
+      slider.addEventListener('mouseleave', handleMouseLeave);
+      slider.addEventListener('mouseup', handleMouseUp);
+      slider.addEventListener('mousemove', handleMouseMove);
+    }
+
+    return () => {
+      if (slider) {
+        slider.removeEventListener('mousedown', handleMouseDown);
+        slider.removeEventListener('mouseleave', handleMouseLeave);
+        slider.removeEventListener('mouseup', handleMouseUp);
+        slider.removeEventListener('mousemove', handleMouseMove);
+      }
+    };
+  }, []);
+
   console.log("trackInfos:", trackInfos);
 
   return (
     <S.Container>
       <S.HeaderText>{nickname}님의 playlist</S.HeaderText>
       {error && <p>{error}</p>}
-      {trackInfos.length === 0 ? (
-        <S.NoSongsMessage>
-          <strong>Loading...</strong>
-        </S.NoSongsMessage>
-      ) : (
-        <S.SliderContainer>
-          {trackInfos.map((song, index) => (
-            <S.SliderItem key={`${song.id}-${index}`}>
-              {song.album && song.album.images ? (
-                <>
-                  <S.AlbumCover
-                    src={song.album.images[0]?.url || 'default_image_url_here'}
-                    alt="song album"
-                    draggable="false"
-                  />
-                  <S.SongDetails>
-                    <S.SongTitle>{song.name}</S.SongTitle>
-                    <S.ArtistName>
-                      {song.artists.map((artist: Artist) => artist.name).join(", ")}
-                    </S.ArtistName>
-                  </S.SongDetails>
-                </>
-              ) : (
-                <span>불러오지 못했습니다.</span>
-              )}
-            </S.SliderItem>
-          ))}
-          <div ref={loader} style={{ height: '1px' }} />
-        </S.SliderContainer>
-      )}
+      <S.ScrollableContainer>
+        {trackInfos.length === 0 ? (
+          <S.NoSongsMessage>
+            <strong>Loading...</strong>
+          </S.NoSongsMessage>
+        ) : (
+          <S.SliderContainer ref={sliderContainerRef}>
+            {trackInfos.map((song, index) => (
+              <motion.div
+                key={`${song.id}-${index}`}
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <S.SliderItem>
+                  {song.album && song.album.images ? (
+                    <>
+                      <S.AlbumCover
+                        src={song.album.images[0]?.url || 'default_image_url_here'}
+                        alt="song album"
+                        draggable="false"
+                      />
+                      <S.SongDetails>
+                        <S.LikeButton onClick={() => handleLikeButtonClick(song)}>
+                          {song.isLiked ? "🤍" : "❤️"}
+                        </S.LikeButton>
+                        <S.SongTitle>{song.name}</S.SongTitle>
+                        <S.ArtistName>
+                          {song.artists.map((artist: Artist) => artist.name).join(", ")}
+                        </S.ArtistName>
+                      </S.SongDetails>
+                    </>
+                  ) : (
+                    <span>불러오지 못했습니다.</span>
+                  )}
+                </S.SliderItem>
+              </motion.div>
+            ))}
+            <div ref={loader} style={{ height: '1px' }} />
+          </S.SliderContainer>
+        )}
+      </S.ScrollableContainer>
     </S.Container>
   );
 };

@@ -1,6 +1,6 @@
+import axios from "axios";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
 import * as S from "../Styles/SongPage.style";
 
 export interface Artist {

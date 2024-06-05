@@ -216,9 +216,7 @@ function ModifyDiary() {
       {isSongModalOpen && trackId && (
         <MusicModal
           trackId={trackId}
-          likedSongs={likedSongs}
           socialId={socialId}
-          toggleLike={toggleLike}
           onClose={() => setIsSongModalOpen(false)}
         />
       )}

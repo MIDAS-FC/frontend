@@ -6,9 +6,7 @@ import * as S from "./Styles/WriteDiary.style";
 
 interface MusicModalProps {
   trackId: string;
-  likedSongs: string[];
   socialId: string;
-  toggleLike: (trackId: string) => void;
   onClose: () => void;
 }
 
@@ -28,17 +26,11 @@ export interface TrackInfo {
   artists: Artist[];
   album: Album;
   preview_url: string | null;
-  popularity: number;  // popularity 속성 추가
   duration_ms: number;
+  isLiked: boolean; // 백엔드에서 제공하는 isLiked 값을 포함
 }
 
-const MusicModal: React.FC<MusicModalProps> = ({
-  trackId,
-  likedSongs,
-  socialId,
-  toggleLike,
-  onClose,
-}) => {
+const MusicModal: React.FC<MusicModalProps> = ({ trackId, socialId, onClose }) => {
   const [trackInfo, setTrackInfo] = useState<TrackInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showNotification, setShowNotification] = useState<string | null>(null);
@@ -86,24 +78,24 @@ const MusicModal: React.FC<MusicModalProps> = ({
   };
 
   const handleLikeToggle = async () => {
-    const isLiked = likedSongs.includes(trackId);
+    if (!trackInfo) return;
+
+    const isLiked = trackInfo.isLiked;
     try {
-      await axios.post("http://localhost:8080/music/likes", {
-        social_id: socialId,
+      await axios.put("http://localhost:8080/music/likes", {
+        socialId: socialId,
         spotify: trackId,
-        like: !isLiked,
+        like: isLiked,
       });
-      toggleLike(trackId);
+      setTrackInfo({ ...trackInfo, isLiked: !isLiked }); // isLiked 상태 토글
       setShowNotification(
         isLiked ? "좋아요를 취소했습니다." : "좋아요를 누르셨습니다."
       );
-      setTimeout(() => setShowNotification(null), 2000); // 2초 후에 알림창 사라짐
+      setTimeout(() => setShowNotification(null), 2000);
     } catch (error) {
       console.error("Error updating like status:", error);
     }
   };
-
-  const isLiked = likedSongs.includes(trackId);
 
   return (
     <S.ModalOverlay>
@@ -131,7 +123,7 @@ const MusicModal: React.FC<MusicModalProps> = ({
                 <p>이 곡은 재생할 수 없습니다.</p>
               )}
               <S.LikeButton onClick={handleLikeToggle}>
-                {isLiked ? "❤️" : "🤍"}
+                {trackInfo.isLiked ? "❤️" : "🤍"}
               </S.LikeButton>
               <AnimatePresence>
                 {showNotification && (
