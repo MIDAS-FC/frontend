@@ -130,7 +130,7 @@ const TopSongPage = forwardRef<{ fetchTopSongs: () => void }, TopSongPageProps>(
                   );
                   const likes = trackInfo ? trackInfo.likes : 0;
                   return (
-                    <S.SliderItem
+                    <S.TopSliderItem
                       key={`${song.id}-${index}`}
                       initial={{ opacity: 0, y: 50 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -150,17 +150,17 @@ const TopSongPage = forwardRef<{ fetchTopSongs: () => void }, TopSongPageProps>(
                           />
                           <S.SongDetails>
                             <S.SongTitle>{song.name}</S.SongTitle>
-                            <S.ArtistName>
+                            <S.TopArtistName index={index}>
                               {song.artists
                                 .map((artist: Artist) => artist.name)
                                 .join(", ")}
-                            </S.ArtistName>
+                            </S.TopArtistName>
                           </S.SongDetails>
                         </>
                       ) : (
                         <span>불러오지 못했습니다.</span>
                       )}
-                    </S.SliderItem>
+                    </S.TopSliderItem>
                   );
                 })}
               </AnimatePresence>
