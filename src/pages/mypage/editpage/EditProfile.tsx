@@ -1,0 +1,93 @@
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import api from "../../../axiosInterceptor";
+import * as S from "../Styles/EditProfile.style";
+import EditPopup from "./EditPopup";
+
+function EditProfile() {
+  const [showPopup, setShowPopup] = useState(false);
+  const [presentNickName, setPresentNickName] = useState("");
+  const [profileImageUrl, setProfileImageUrl] = useState("");
+
+  useEffect(() => {
+    const storedNickname = localStorage.getItem("nickName");
+    if (storedNickname) {
+      setPresentNickName(storedNickname);
+    }
+
+    fetchProfileImage();
+  }, []);
+
+  const fetchProfileImage = async () => {
+    try {
+      const response = await api.get("/profile");
+      if (response) {
+        setProfileImageUrl(response.data.imageUrl);
+      }
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        if (error.response.data.code === "SAG1") {
+          console.log("외부 api와 통신이 불가능합니다.");
+        } else {
+          console.log("프로필 사진을 가져오는 데 실패했습니다.");
+        }
+      } else {
+        console.log("알 수 없는 오류가 발생했습니다.");
+      }
+    }
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
+
+  const handleNicknameUpdate = (newNickname: string) => {
+    setPresentNickName(newNickname);
+  };
+
+  // 프로필 사진 상태 리프레시
+  const handleProfileImageUpdate = () => {
+    fetchProfileImage();
+  };
+
+  return (
+    <S.Container>
+      <S.Title>프로필 수정</S.Title>
+      <S.ProfileImageContainer>
+        {profileImageUrl ? (
+          <S.ProfileImage src={profileImageUrl} alt="Profile" />
+        ) : (
+          <span>loading</span>
+        )}
+      </S.ProfileImageContainer>
+      <S.UserInfo>
+        <S.UserName>{decodeURIComponent(presentNickName)}</S.UserName>
+        <S.EditSection>
+          <S.EditText>프로필 수정을 원하시면</S.EditText>
+          <S.EditButton onClick={() => setShowPopup(true)}>
+            프로필 수정
+          </S.EditButton>
+        </S.EditSection>
+      </S.UserInfo>
+      <AnimatePresence>
+        {showPopup && (
+          <motion.div
+            initial={{ opacity: 0, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <EditPopup
+              onClose={handleClosePopup}
+              onNicknameUpdate={handleNicknameUpdate}
+              profileImageUrl={profileImageUrl}
+              onProfileImageUpdate={handleProfileImageUpdate}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </S.Container>
+  );
+}
+
+export default EditProfile;
