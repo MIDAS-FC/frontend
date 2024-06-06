@@ -49,13 +49,13 @@ function Mypage() {
         <WeeklyReport />
       </S.Section>
       <S.Section>
-        <LikeSongPage onLikeStatusChange={handleLikeStatusChange} />
-      </S.Section>
-      <S.Section>
-        <TopSongPage
+      <TopSongPage
           ref={topSongPageRef}
           likeStatusChanged={likeStatusChanged}
         />
+      </S.Section>
+      <S.Section>
+        <LikeSongPage onLikeStatusChange={handleLikeStatusChange} />
       </S.Section>
     </S.PageContainer>
   );

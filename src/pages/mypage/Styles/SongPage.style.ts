@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 export const Container = styled.div`
   width: 100%;
+  height:500px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -15,6 +16,7 @@ export const Container = styled.div`
 export const ScrollableContainer = styled.div`
   position: relative;
   width: 100%;
+  heigth:400px;
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -71,6 +73,65 @@ export const SliderItem = styled(motion.div)`
     transform: translateY(50px);
     transition: opacity 0.5s ease, transform 0.5s ease;
   }
+`;
+
+export const TopSliderItem = styled(motion.div)`
+  position:relative;
+  flex: 0 0 auto;
+  width: 250px;
+  height: 400px;
+  margin-right: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 25px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  scroll-snap-align: start;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 24px rgba(1, 0, 0, 0.2);
+  }
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  &.removing {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+    &:nth-child(1) {
+    background-color: #ffeb3b;
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(255, 235, 59, 0.4);
+  }
+
+  &:nth-child(2) {
+    background-color: #ff5722;
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(255, 87, 34, 0.4);
+  }
+
+  &:nth-child(3) {
+    background-color: #4caf50;
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(76, 175, 80, 0.4);
+  }
+`;
+
+export const TopArtistName = styled.p<{ index: number }>`
+  font-size: 16px;
+  margin: 0;
+
+  color: ${({ index }) =>
+    index === 0 ? "#333" : index === 1 ? "#333" : index === 2 ? "#333" : "#888"};
+
 `;
 
 export const HeaderText = styled.h2`
