@@ -5,13 +5,8 @@ export const CalendarWrapper = styled.div`
   border-radius: 0 10px 10px 0;
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-<<<<<<< HEAD
-  width: 300px; /* 캘린더의 너비 조정 */
-  height: 400px; /* 캘린더의 높이 조정 */
-=======
-  width: 400px;  /* 캘린더의 너비 조정 */
-  height: 445px;  /* 캘린더의 높이 조정 */
->>>>>>> 92ceeef83d9ed0e3b6c82f275b61b8bd20d9e93a
+  width: 400px; /* 캘린더의 너비 조정 */
+  height: 445px; /* 캘린더의 높이 조정 */
 `;
 
 export const Table = styled.table`
