@@ -42,6 +42,7 @@ export const SliderContainer = styled.div`
 `;
 
 export const SliderItem = styled(motion.div)`
+  position:relative;
   flex: 0 0 auto;
   width: 250px;
   height: 400px;
@@ -92,7 +93,6 @@ export const AlbumCover = styled.img`
 
 export const SongDetails = styled.div`
   position: relative;
-  padding-right: 2.5rem; /* 좋아요 버튼의 공간 확보 */
 `;
 
 export const SongTitle = styled.p`
@@ -135,14 +135,14 @@ export const LoadMoreButton = styled.button`
 `;
 
 export const LikeButton = styled.button`
+  position:absolute;
   border: none;
   background: none;
   cursor: pointer;
   font-size: 2rem;
   color: #ff4d4d;
-  position: absolute;
-  top: 10px;
-  right: 10px;
+  right: 0;
+  top:0;
   transition: transform 0.3s ease, color 0.3s ease;
 
   &:hover {

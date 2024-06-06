@@ -1,6 +1,6 @@
 import axios from "axios";
 import { AnimatePresence } from "framer-motion";
-import React, {
+import {
   forwardRef,
   useEffect,
   useImperativeHandle,
@@ -138,7 +138,6 @@ const TopSongPage = forwardRef<{ fetchTopSongs: () => void }, TopSongPageProps>(
                       whileHover={{ y: -10 }}
                       transition={{ duration: 0.1, ease: "easeInOut" }}
                     >
-                      <span>Likes: {likes}</span>
                       {song.album && song.album.images ? (
                         <>
                           <S.AlbumCover

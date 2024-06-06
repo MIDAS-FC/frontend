@@ -5,7 +5,6 @@ import SideBar from "./SideBar";
 import * as S from "./Styles/Layout.style";
 
 function Layout() {
-
   return (
     <>
       <Header />

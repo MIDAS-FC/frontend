@@ -24,7 +24,11 @@ function ModifyDiary() {
   const [likedSongs, setLikedSongs] = useState<string[]>([]);
   const [like, setLike] = useState<boolean>(false); // 좋아요 상태를 추가
 
+<<<<<<< HEAD
   const socialId = localStorage.getItem("socialId") || "";
+=======
+  const socialId = localStorage.getItem('socialId') || '';
+>>>>>>> 702f4b393731aad9e470b3089f9339667fd79e58
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -43,10 +47,15 @@ function ModifyDiary() {
   useEffect(() => {
     const fetchLikedSongs = async () => {
       try {
+<<<<<<< HEAD
         const response = await axios.get(`/music/likes`);
         const likedTracks = Array.isArray(response.data)
           ? response.data.map((item: any) => item.spotify)
           : [];
+=======
+        const response = await axios.get(`http://localhost:8080/music/likes`);
+        const likedTracks = Array.isArray(response.data) ? response.data.map((item: any) => item.spotify) : [];
+>>>>>>> 702f4b393731aad9e470b3089f9339667fd79e58
         setLikedSongs(likedTracks);
         localStorage.setItem("likedSongs", JSON.stringify(likedTracks));
       } catch (error) {
@@ -117,25 +126,42 @@ function ModifyDiary() {
     formData.append("year", currentYear.toString());
     formData.append("month", currentMonth.toString());
     formData.append("day", selectedDate.toString());
+<<<<<<< HEAD
 
     const diaryData = {
+=======
+    formData.append("title", title);
+  
+    const diaryData = JSON.stringify({
+>>>>>>> 702f4b393731aad9e470b3089f9339667fd79e58
       title,
       comment: content,
       emotion: selectedEmotion,
       maintain: maintainEmotion.toString(),
+<<<<<<< HEAD
     };
 
     formData.append("title", title);
     formData.append("comment", content);
     formData.append("emotion", selectedEmotion);
     formData.append("maintain", maintainEmotion.toString());
+=======
+    });
+    formData.append(
+      "diary",
+      new Blob([diaryData], { type: "application/json" })
+    );
+
+>>>>>>> 702f4b393731aad9e470b3089f9339667fd79e58
 
     images.forEach((image) => formData.append("images", image));
 
     try {
-      const response = await api.put("/diary/calendar", formData, {
+      const response = await api.put(`/diary/calendar`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          "Authorization-Access": `Bearer ${localStorage.getItem('accessToken')}`,
+          "Authorization-Refresh": `Bearer ${localStorage.getItem('refreshToken')}`
         },
       });
 
