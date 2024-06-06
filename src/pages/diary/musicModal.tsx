@@ -8,6 +8,7 @@ interface MusicModalProps {
   trackId: string;
   socialId: string;
   onClose: () => void;
+  like: boolean;
 }
 
 export interface Artist {
@@ -27,17 +28,20 @@ export interface TrackInfo {
   album: Album;
   preview_url: string | null;
   duration_ms: number;
-  isLiked: boolean; // 백엔드에서 제공하는 isLiked 값을 포함
+  isLiked: boolean;
+  haveSeen: boolean;
 }
 
 const MusicModal: React.FC<MusicModalProps> = ({
   trackId,
   socialId,
   onClose,
+  like,
 }) => {
   const [trackInfo, setTrackInfo] = useState<TrackInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showNotification, setShowNotification] = useState<string | null>(null);
+  const [isLiked, setIsLiked] = useState<boolean>(like);
   const audioRef = useRef<HTMLAudioElement>(null);
   const navigate = useNavigate();
 
@@ -45,25 +49,17 @@ const MusicModal: React.FC<MusicModalProps> = ({
     const fetchTrackInfo = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/spotify/track/${trackId}`
+          `http://localhost:8000/spotify/track/${trackId}`,
+          {
+            params: { socialId },
+          }
         );
-
-        switch (response.data.status_code) {
-          case 200:
-            setTrackInfo(response.data.response);
-            setError(null);
-            break;
-          case 204:
-            setError("스포티파이 토큰을 검색할 수 없습니다.");
-            break;
-          case 404:
-            setError("트랙 내용을 찾을 수 없습니다. 다른 트랙을 시도하십시오.");
-            break;
-          case 503:
-            setError("스포티파이 코드가 200이 아닙니다.");
-            break;
-          default:
-            setError("Unknown error occurred.");
+        if (response.data.status_code === 200) {
+          const trackData = response.data.response;
+          setTrackInfo(trackData);
+          setError(null);
+        } else {
+          handleErrorResponse(response.data.status_code);
         }
       } catch (error) {
         console.error("트랙 정보를 가져오는 중 오류 발생:", error);
@@ -74,7 +70,23 @@ const MusicModal: React.FC<MusicModalProps> = ({
     if (trackId) {
       fetchTrackInfo();
     }
-  }, [trackId]);
+  }, [trackId, socialId]);
+
+  const handleErrorResponse = (statusCode: number) => {
+    switch (statusCode) {
+      case 204:
+        setError("스포티파이 토큰을 검색할 수 없습니다.");
+        break;
+      case 404:
+        setError("트랙 내용을 찾을 수 없습니다. 다른 트랙을 시도하십시오.");
+        break;
+      case 503:
+        setError("스포티파이 코드가 200이 아닙니다.");
+        break;
+      default:
+        setError("Unknown error occurred.");
+    }
+  };
 
   const handleClose = () => {
     onClose();
@@ -84,20 +96,57 @@ const MusicModal: React.FC<MusicModalProps> = ({
   const handleLikeToggle = async () => {
     if (!trackInfo) return;
 
-    const isLiked = trackInfo.isLiked;
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    if (!accessToken || !refreshToken) {
+      console.error("Missing tokens, redirecting to login.");
+      return;
+    }
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Authorization-Refresh": `Bearer ${refreshToken}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const data = {
+      socialId: socialId,
+      spotify: trackId,
+      like: !isLiked,
+    };
+
     try {
-      await axios.put("http://localhost:8080/music/likes", {
-        socialId: socialId,
-        spotify: trackId,
-        like: isLiked,
+      const url = "http://localhost:8080/music/likes";
+      const method = trackInfo.haveSeen ? "PUT" : "POST";
+
+      const response = await axios({
+        method: method,
+        url: url,
+        headers: config.headers,
+        data: data,
       });
-      setTrackInfo({ ...trackInfo, isLiked: !isLiked }); // isLiked 상태 토글
-      setShowNotification(
-        isLiked ? "좋아요를 취소했습니다." : "좋아요를 누르셨습니다."
-      );
-      setTimeout(() => setShowNotification(null), 2000);
+
+      if (response.status === 204 || response.status === 200) {
+        setIsLiked(!isLiked);
+        setShowNotification(
+          isLiked ? "좋아요를 취소했습니다." : "좋아요를 누르셨습니다."
+        );
+        setTimeout(() => setShowNotification(null), 2000);
+      } else {
+        console.error("Unexpected response status:", response.status);
+      }
     } catch (error) {
       console.error("Error updating like status:", error);
+      if (axios.isAxiosError(error)) {
+        if (error.response && error.response.status === 401) {
+          console.error("Unauthorized, please login again.");
+        }
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
     }
   };
 
@@ -130,7 +179,7 @@ const MusicModal: React.FC<MusicModalProps> = ({
                 <p>이 곡은 재생할 수 없습니다.</p>
               )}
               <S.LikeButton onClick={handleLikeToggle}>
-                {trackInfo.isLiked ? "❤️" : "🤍"}
+                {isLiked ? "❤️" : "🤍"}
               </S.LikeButton>
               <AnimatePresence>
                 {showNotification && (

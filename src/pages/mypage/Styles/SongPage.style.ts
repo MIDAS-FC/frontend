@@ -15,6 +15,8 @@ export const Container = styled.div`
 export const ScrollableContainer = styled.div`
   position: relative;
   width: 100%;
+  display: flex;
+  align-items: center;
   overflow: hidden;
 `;
 
@@ -62,6 +64,12 @@ export const SliderItem = styled(motion.div)`
   &:last-child {
     margin-right: 0;
   }
+
+  &.removing {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
 `;
 
 export const HeaderText = styled.h2`
@@ -106,29 +114,52 @@ export const NoSongsMessage = styled.div`
   align-items: center;
 `;
 
-export const ScrollButton = styled.button`
+export const LoadMoreButton = styled.button`
   background-color: #87ceeb;
   color: white;
   border: none;
-  border-radius: 50%;
-  padding: 15px;
+  border-radius: 20px;
+  padding: 10px 20px;
   cursor: pointer;
-  font-size: 24px;
-  margin: 0 10px;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 
   &:hover {
     background-color: #00bfff;
-    transform: translateY(-50%) scale(1.1);
   }
 
-  &:focus {
-    outline: none;
+  &:disabled {
+    background-color: #87ceeb;
+    cursor: not-allowed;
   }
+`;
+
+export const LikeButton = styled.button`
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 2rem;
+  color: #ff4d4d;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  transition: transform 0.3s ease, color 0.3s ease;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+`;
+
+export const ScrollButton = styled.button`
+  background: none;
+  color: white;
+  border: none;
+  padding: 15px;
+  cursor: pointer;
+  margin: 0 10px;
+  position: relative;
+  height: 350px;
+  transform: translateY(0%);
 `;
 
 export const Overlay = styled(motion.div)`
@@ -201,21 +232,5 @@ export const CloseButton = styled.button`
 
   &:hover {
     background-color: #00bfff;
-  }
-`;
-
-export const LikeButton = styled.button`
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 2rem;
-  color: #ff4d4d;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  transition: transform 0.3s ease, color 0.3s ease;
-
-  &:hover {
-    transform: scale(1.2);
   }
 `;

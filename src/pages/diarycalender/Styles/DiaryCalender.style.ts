@@ -1,10 +1,5 @@
 import { motion } from "framer-motion";
-import styled, { keyframes } from "styled-components";
-
-const twinkle = keyframes`
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-`;
+import styled from "styled-components";
 
 export const Container = styled.div`
   width: 100%;
@@ -24,9 +19,9 @@ export const Container = styled.div`
 export const ContentWrapper = styled.div`
   display: flex;
   width: 100%;
-  justify-content: space-between;
+  justify-content: center; /* 중앙 정렬 */
   align-items: flex-start;
-  gap: 20px; /* Box와 Calender 사이의 간격을 줄임 */
+  padding-top: 20px;
 `;
 
 export const BoxContainer = styled.div`
@@ -35,12 +30,13 @@ export const BoxContainer = styled.div`
   justify-content: center;
   align-items: center;
   max-width: 600px;
+  margin-right: 0; /* 오른쪽 마진 제거 */
 `;
 
 export const Box = styled(motion.div)`
   width: 100%;
   padding: 20px;
-  border-radius: 20px;
+  border-radius: 20px 0 0 20px;
   background-color: #f0f8ff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -48,11 +44,10 @@ export const Box = styled(motion.div)`
 `;
 
 export const FlowerImageContainer = styled.div`
-  position: absolute;
+  position: relative;
   top: -14px;
   left: -14px;
   width: 160px;
-  height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -63,22 +58,19 @@ export const Flower = styled.img`
   height: 80px;
   object-fit: contain;
   transition: transform 0.3s ease;
-  &:hover {
-    transform: scale(1.1);
-  }
 `;
 
 export const PopupBox = styled(motion.div)`
   position: absolute;
-  top: 50px;
-  right: -50px;
+  top: 20px;
+  right: -120px;
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid #ddd;
   padding: 10px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 10;
-  width: 150px;
+  width: 200px;
   text-align: center;
   font-size: 12px;
   line-height: 1.4;
@@ -169,6 +161,8 @@ export const Button = styled.button`
 export const Title = styled.h1`
   color: white;
   font-size: 24px;
-  text-align: right;
-  width: 100%;
+  text-align: center;
+  margin-top: 140px;
+  position: relative;
+  transform: translateX(300px); /* 약간 오른쪽으로 이동 */
 `;

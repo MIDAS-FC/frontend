@@ -180,14 +180,6 @@ function DiaryCalender() {
               exit={{ x: 100, opacity: 0 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
-              <S.CloseButton
-                onClick={() => setSelectedDate(null)}
-                initial={{ x: 20, y: -20, opacity: 0 }}
-                animate={{ x: 0, y: 0, opacity: 1 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-              >
-                <FaTimes />
-              </S.CloseButton>
               {dayInfo && flowerImageMap[dayInfo.flower] && (
                 <S.FlowerImageContainer
                   onMouseEnter={() => setIsHovered(true)}
