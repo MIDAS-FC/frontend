@@ -15,6 +15,7 @@ const LikeSongPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const sliderContainerRef = useRef<HTMLDivElement | null>(null);
+  const loaderRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const fetchLikes = async (pageToFetch: number) => {
@@ -65,6 +66,30 @@ const LikeSongPage: React.FC = () => {
     }
   }, [trackIds]);
 
+  useEffect(() => {
+    const options = {
+      root: null,
+      rootMargin: "20px",
+      threshold: 1.0,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !last && !loading) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    }, options);
+
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => {
+      if (loaderRef.current) {
+        observer.unobserve(loaderRef.current);
+      }
+    };
+  }, [last, loading]);
+
   const handleLikeToggle = async (track: TrackInfo) => {
     const accessToken = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
@@ -92,7 +117,6 @@ const LikeSongPage: React.FC = () => {
       const response = await axios.put("http://localhost:8080/music/likes", data, config);
 
       if (response.status === 204 || response.status === 200) {
-        // 애니메이션을 위해 UI에서 항목을 제거
         setTrackInfos((prevTrackInfos) =>
           prevTrackInfos.map((t) =>
             t.id === track.id ? { ...t, isLiked: !t.isLiked, isRemoving: true } : t
@@ -120,28 +144,38 @@ const LikeSongPage: React.FC = () => {
 
   const scrollLeft = () => {
     if (sliderContainerRef.current) {
-      sliderContainerRef.current.scrollBy({
-        left: -300,
-        behavior: "smooth",
-      });
+      const isAtStart = sliderContainerRef.current.scrollLeft === 0;
+      if (isAtStart) {
+        sliderContainerRef.current.scrollLeft = sliderContainerRef.current.scrollWidth;
+      } else {
+        sliderContainerRef.current.scrollBy({
+          left: -300,
+          behavior: "smooth",
+        });
+      }
     }
   };
 
   const scrollRight = () => {
     if (sliderContainerRef.current) {
-      sliderContainerRef.current.scrollBy({
-        left: 300,
-        behavior: "smooth",
-      });
+      const isAtEnd = sliderContainerRef.current.scrollLeft + sliderContainerRef.current.clientWidth >= sliderContainerRef.current.scrollWidth;
+      if (isAtEnd) {
+        sliderContainerRef.current.scrollLeft = 0;
+      } else {
+        sliderContainerRef.current.scrollBy({
+          left: 300,
+          behavior: "smooth",
+        });
+      }
     }
   };
 
   return (
     <S.Container>
-      <S.HeaderText>{nickname}님의 playlist</S.HeaderText>
+      <S.HeaderText>{decodeURIComponent(nickname)}님의 playlist</S.HeaderText>
       {error && <p>{error}</p>}
       <S.ScrollableContainer>
-        <S.ScrollButton onClick={scrollLeft}>{""}</S.ScrollButton>
+        <S.ScrollButton onClick={scrollLeft}>{"<"}</S.ScrollButton>
         {trackInfos.length === 0 ? (
           <S.NoSongsMessage>
             <strong>Loading...</strong>
@@ -165,14 +199,14 @@ const LikeSongPage: React.FC = () => {
                         alt="song album"
                         draggable="false"
                       />
+                      <S.LikeButton onClick={() => handleLikeToggle(song)}>
+                        {song.isLiked ? "❤️" : "🤍"}
+                      </S.LikeButton>
                       <S.SongDetails>
                         <S.SongTitle>{song.name}</S.SongTitle>
                         <S.ArtistName>
                           {song.artists.map((artist: Artist) => artist.name).join(", ")}
                         </S.ArtistName>
-                        <S.LikeButton onClick={() => handleLikeToggle(song)}>
-                          {song.isLiked ? "❤️" : "🤍"}
-                        </S.LikeButton>
                       </S.SongDetails>
                     </>
                   ) : (
@@ -181,9 +215,10 @@ const LikeSongPage: React.FC = () => {
                 </S.SliderItem>
               ))}
             </AnimatePresence>
+            <div ref={loaderRef} style={{ width: "100%", height: "1px" }} />
           </S.SliderContainer>
         )}
-        <S.ScrollButton onClick={scrollRight}>{""}</S.ScrollButton>
+        <S.ScrollButton onClick={scrollRight}>{">"}</S.ScrollButton>
       </S.ScrollableContainer>
     </S.Container>
   );

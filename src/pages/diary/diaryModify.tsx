@@ -23,7 +23,7 @@ function ModifyDiary() {
   const [trackId, setTrackId] = useState<string | null>(null);
   const [likedSongs, setLikedSongs] = useState<string[]>([]);
   const [like, setLike] = useState<boolean>(false); // 좋아요 상태를 추가
-  
+
   const socialId = localStorage.getItem('socialId') || '';
 
   useEffect(() => {
@@ -43,7 +43,7 @@ function ModifyDiary() {
   useEffect(() => {
     const fetchLikedSongs = async () => {
       try {
-        const response = await axios.get(`/music/likes`);
+        const response = await axios.get(`http://localhost:8080/music/likes`);
         const likedTracks = Array.isArray(response.data) ? response.data.map((item: any) => item.spotify) : [];
         setLikedSongs(likedTracks);
         localStorage.setItem('likedSongs', JSON.stringify(likedTracks));
@@ -76,8 +76,7 @@ function ModifyDiary() {
       console.error("Error fetching diary:", error);
     }
   };
-  
-  
+
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
@@ -106,44 +105,47 @@ function ModifyDiary() {
       alert("날짜를 선택해주세요.");
       return;
     }
-  
+
     if (!selectedEmotion) {
       setIsModalOpen(true); // 모달 열기
       return;
     }
-  
+
     const formData = new FormData();
     formData.append("year", currentYear.toString());
     formData.append("month", currentMonth.toString());
     formData.append("day", selectedDate.toString());
+    formData.append("title", title);
   
-    const diaryData = {
+    const diaryData = JSON.stringify({
       title,
       comment: content,
       emotion: selectedEmotion,
       maintain: maintainEmotion.toString(),
-    };
-  
-    formData.append("title", title);
-    formData.append("comment", content);
-    formData.append("emotion", selectedEmotion);
-    formData.append("maintain", maintainEmotion.toString());
-  
+    });
+    formData.append(
+      "diary",
+      new Blob([diaryData], { type: "application/json" })
+    );
+
+
     images.forEach((image) => formData.append("images", image));
-  
+
     try {
-      const response = await api.put("/diary/calendar", formData, {
+      const response = await api.put(`/diary/calendar`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          "Authorization-Access": `Bearer ${localStorage.getItem('accessToken')}`,
+          "Authorization-Refresh": `Bearer ${localStorage.getItem('refreshToken')}`
         },
       });
-  
+
       setTrackId(response.data.spotify);
       setLike(response.data.like); // 응답에서 like 값 설정
       setIsSongModalOpen(true); // 노래 모달 열기
     } catch (error) {
       console.error("Error saving diary:", error);
-  
+
       if (axios.isAxiosError(error)) {
         console.error("응답 데이터:", error.response?.data);
         console.error("응답 상태:", error.response?.status);
@@ -157,7 +159,7 @@ function ModifyDiary() {
       }
     }
   };
-  
+
   const handleEmotionSelect = (emotion: string, maintain: boolean) => {
     setSelectedEmotion(emotion);
     setMaintainEmotion(maintain);

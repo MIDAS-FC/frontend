@@ -3,6 +3,7 @@ import * as S from "./Styles/Mypage.style";
 import WeeklyReport from "./WeeklyReport";
 import EditProfile from "./editpage/EditProfile";
 import LikeSongPage from "./songlist/LikeSongPage";
+import TopSongPage from "./songlist/TopSongPage";
 
 
 const generateStarPositions = (numStars: number) => {
@@ -42,7 +43,7 @@ function Mypage() {
         <LikeSongPage />
       </S.Section>
       <S.Section>
-        {/* <TopSongPage /> */}
+        <TopSongPage />
       </S.Section>
     </S.PageContainer>
   );

@@ -22,23 +22,16 @@ export interface TrackInfo {
   duration_ms: number;
 }
 
-// TOP 10
-function TopSongPage() {
-  // 트랙 id
+const TopSongPage: React.FC = () => {
   const [trackIds, setTrackIds] = useState<string[]>([]);
-  // 트랙 id에 대한 노래 정보
   const [trackInfos, setTrackInfos] = useState<TrackInfo[]>([]);
-  // 선택한 노래
   const [selectedSong, setSelectedSong] = useState<TrackInfo | null>(null);
 
-  // 슬라이더 관련
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
-  const loader = useRef<HTMLDivElement | null>(null);
 
-  // 탑10 리스트
   useEffect(() => {
     const fetchTopSongs = async () => {
       try {
@@ -47,7 +40,7 @@ function TopSongPage() {
           ? response.data
           : Object.keys(response.data);
         setTrackIds(trackIdArray);
-      } catch (error: any) {
+      } catch (error) {
         console.error("Error fetching top liked songs:", error);
       }
     };
@@ -55,7 +48,6 @@ function TopSongPage() {
     fetchTopSongs();
   }, []);
 
-  // spotify
   useEffect(() => {
     const fetchTrackInfos = async () => {
       const trackInfoArray: TrackInfo[] = [];
@@ -68,7 +60,7 @@ function TopSongPage() {
           const trackData: TrackInfo = {
             ...response.data,
           };
-
+          console.log(`Fetched track info for id ${id}:`, trackData); // 콘솔 로그 추가
           trackInfoArray.push(trackData);
         } catch (error) {
           console.error("Error fetching track info:", error);
@@ -77,10 +69,11 @@ function TopSongPage() {
       setTrackInfos(trackInfoArray);
     };
 
-    fetchTrackInfos();
+    if (trackIds.length > 0) {
+      fetchTrackInfos();
+    }
   }, [trackIds]);
 
-  // 슬라이더 관련
   const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
     startX.current = e.pageX - sliderRef.current!.offsetLeft;
@@ -109,7 +102,6 @@ function TopSongPage() {
     sliderRef.current!.scrollLeft = scrollLeft.current - walk;
   };
 
-  // 노래 선택
   const handleSongClick = (song: TrackInfo) => {
     setSelectedSong(song);
   };
@@ -118,14 +110,11 @@ function TopSongPage() {
     setSelectedSong(null);
   };
 
-  // ms => 분 초
   const formatDuration = (duration_ms: number) => {
     const seconds = Math.floor(duration_ms / 1000);
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `  ${minutes}분 ${
-      remainingSeconds < 10 ? "0" : ""
-    }${remainingSeconds}초`;
+    return `${minutes}분 ${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}초`;
   };
 
   return (
@@ -154,7 +143,7 @@ function TopSongPage() {
                     onClick={() => handleSongClick(song)}
                   />
                   <S.SongDetails>
-                    <S.SongTitle>{song.album.name}</S.SongTitle>
+                    <S.SongTitle>{song.name}</S.SongTitle>
                     <S.ArtistName>
                       {song.artists.map((artist) => artist.name).join(" ")}
                     </S.ArtistName>
@@ -168,7 +157,6 @@ function TopSongPage() {
         </S.SliderContainer>
       )}
 
-      {/* 팝업 */}
       <AnimatePresence>
         {selectedSong && (
           <S.Overlay
@@ -186,7 +174,7 @@ function TopSongPage() {
                 alt="album cover"
                 draggable="false"
               />
-              <S.PopupSongTitle>{selectedSong.album.name}</S.PopupSongTitle>
+              <S.PopupSongTitle>{selectedSong.name}</S.PopupSongTitle>
               <S.PopupArtistName>
                 {selectedSong.artists.map((artist) => artist.name).join(" ")}
               </S.PopupArtistName>
@@ -209,9 +197,8 @@ function TopSongPage() {
           </S.Overlay>
         )}
       </AnimatePresence>
-      <div ref={loader} />
     </S.Container>
   );
-}
+};
 
 export default TopSongPage;
