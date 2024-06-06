@@ -1,5 +1,5 @@
 import axios from "axios";
-import { motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../AuthProvider";
 import { Artist, TrackInfo } from "../../diary/MusicModal";
@@ -13,10 +13,7 @@ const LikeSongPage: React.FC = () => {
   const [last, setLast] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [selectedTrack, setSelectedTrack] = useState<TrackInfo | null>(null);
-  const [showModal, setShowModal] = useState(false);
 
-  const loader = useRef<HTMLDivElement | null>(null);
   const sliderContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -26,8 +23,6 @@ const LikeSongPage: React.FC = () => {
         const response = await axios.get("http://localhost:8080/music/likes", {
           params: { page: pageToFetch, size: 5 },
         });
-
-        console.log("response.data:", response.data);
 
         const trackIdArray = response.data.data || [];
         setTrackIds((prevTrackIds) => [...prevTrackIds, ...trackIdArray]);
@@ -46,8 +41,11 @@ const LikeSongPage: React.FC = () => {
     const fetchTrackInfo = async (trackId: string) => {
       try {
         const response = await axios.get(`http://localhost:8000/spotify/track/${trackId}`);
-        console.log("fetchTrackInfo response:", response.data);
-        return response.data.response; // TrackInfo 타입 객체를 반환합니다.
+        const trackData = response.data.response;
+        return {
+          ...trackData,
+          isLiked: true // 서버에서 응답이 오는 데이터를 기반으로 설정
+        };
       } catch (error) {
         console.error("Error fetching track info:", error);
         return null;
@@ -67,102 +65,99 @@ const LikeSongPage: React.FC = () => {
     }
   }, [trackIds]);
 
-  useEffect(() => {
-    const options = {
-      root: null,
-      rootMargin: "20px",
-      threshold: 1.0,
-    };
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !last && !loading) {
-        setPage((prevPage) => prevPage + 1);
-      }
-    }, options);
-    if (loader.current) {
-      observer.observe(loader.current);
-    }
-    return () => {
-      if (loader.current) {
-        observer.unobserve(loader.current);
-      }
-    };
-  }, [last, loading]);
+  const handleLikeToggle = async (track: TrackInfo) => {
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
 
-  const handleLikeButtonClick = (track: TrackInfo) => {
-    setSelectedTrack(track);
-    setShowModal(true);
+    if (!accessToken || !refreshToken) {
+      console.error("Missing tokens, redirecting to login.");
+      return;
+    }
+
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Authorization-Refresh': `Bearer ${refreshToken}`,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    const data = {
+      socialId: socialId,
+      spotify: track.id,
+      like: !track.isLiked
+    };
+
+    try {
+      const response = await axios.put("http://localhost:8080/music/likes", data, config);
+
+      if (response.status === 204 || response.status === 200) {
+        // 애니메이션을 위해 UI에서 항목을 제거
+        setTrackInfos((prevTrackInfos) =>
+          prevTrackInfos.map((t) =>
+            t.id === track.id ? { ...t, isLiked: !t.isLiked, isRemoving: true } : t
+          )
+        );
+        setTimeout(() => {
+          setTrackInfos((prevTrackInfos) =>
+            prevTrackInfos.filter((t) => t.id !== track.id)
+          );
+        }, 500);
+      } else {
+        console.error("Unexpected response status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error updating like status:", error);
+      if (axios.isAxiosError(error)) {
+        if (error.response && error.response.status === 401) {
+          console.error("Unauthorized, please login again.");
+        }
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
+    }
   };
 
-  // Implement mouse drag for horizontal scroll
-  useEffect(() => {
-    const slider = sliderContainerRef.current;
-    let isDown = false;
-    let startX: number;
-    let scrollLeft: number;
-
-    const handleMouseDown = (e: MouseEvent) => {
-      isDown = true;
-      slider?.classList.add('active');
-      startX = e.pageX - slider!.offsetLeft;
-      scrollLeft = slider!.scrollLeft;
-    };
-
-    const handleMouseLeave = () => {
-      isDown = false;
-      slider?.classList.remove('active');
-    };
-
-    const handleMouseUp = () => {
-      isDown = false;
-      slider?.classList.remove('active');
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDown) return;
-      e.preventDefault();
-      const x = e.pageX - slider!.offsetLeft;
-      const walk = (x - startX) * 3; // scroll-fast
-      slider!.scrollLeft = scrollLeft - walk;
-    };
-
-    if (slider) {
-      slider.addEventListener('mousedown', handleMouseDown);
-      slider.addEventListener('mouseleave', handleMouseLeave);
-      slider.addEventListener('mouseup', handleMouseUp);
-      slider.addEventListener('mousemove', handleMouseMove);
+  const scrollLeft = () => {
+    if (sliderContainerRef.current) {
+      sliderContainerRef.current.scrollBy({
+        left: -300,
+        behavior: "smooth",
+      });
     }
+  };
 
-    return () => {
-      if (slider) {
-        slider.removeEventListener('mousedown', handleMouseDown);
-        slider.removeEventListener('mouseleave', handleMouseLeave);
-        slider.removeEventListener('mouseup', handleMouseUp);
-        slider.removeEventListener('mousemove', handleMouseMove);
-      }
-    };
-  }, []);
-
-  console.log("trackInfos:", trackInfos);
+  const scrollRight = () => {
+    if (sliderContainerRef.current) {
+      sliderContainerRef.current.scrollBy({
+        left: 300,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
     <S.Container>
       <S.HeaderText>{nickname}님의 playlist</S.HeaderText>
       {error && <p>{error}</p>}
       <S.ScrollableContainer>
+        <S.ScrollButton onClick={scrollLeft}>{""}</S.ScrollButton>
         {trackInfos.length === 0 ? (
           <S.NoSongsMessage>
             <strong>Loading...</strong>
           </S.NoSongsMessage>
         ) : (
           <S.SliderContainer ref={sliderContainerRef}>
-            {trackInfos.map((song, index) => (
-              <motion.div
-                key={`${song.id}-${index}`}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <S.SliderItem>
+            <AnimatePresence>
+              {trackInfos.map((song, index) => (
+                <S.SliderItem
+                  key={`${song.id}-${index}`}
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 50 }}
+                  whileHover={{ y: -10 }}
+                  transition={{ duration: 0.1, ease: "easeInOut" }}
+                >
                   {song.album && song.album.images ? (
                     <>
                       <S.AlbumCover
@@ -171,24 +166,24 @@ const LikeSongPage: React.FC = () => {
                         draggable="false"
                       />
                       <S.SongDetails>
-                        <S.LikeButton onClick={() => handleLikeButtonClick(song)}>
-                          {song.isLiked ? "🤍" : "❤️"}
-                        </S.LikeButton>
                         <S.SongTitle>{song.name}</S.SongTitle>
                         <S.ArtistName>
                           {song.artists.map((artist: Artist) => artist.name).join(", ")}
                         </S.ArtistName>
+                        <S.LikeButton onClick={() => handleLikeToggle(song)}>
+                          {song.isLiked ? "❤️" : "🤍"}
+                        </S.LikeButton>
                       </S.SongDetails>
                     </>
                   ) : (
                     <span>불러오지 못했습니다.</span>
                   )}
                 </S.SliderItem>
-              </motion.div>
-            ))}
-            <div ref={loader} style={{ height: '1px' }} />
+              ))}
+            </AnimatePresence>
           </S.SliderContainer>
         )}
+        <S.ScrollButton onClick={scrollRight}>{""}</S.ScrollButton>
       </S.ScrollableContainer>
     </S.Container>
   );

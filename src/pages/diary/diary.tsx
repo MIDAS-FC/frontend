@@ -20,6 +20,7 @@ function WriteDiary() {
   const [maintainEmotion, setMaintainEmotion] = useState<boolean>(false);
   const [isSongModalOpen, setIsSongModalOpen] = useState(false);
   const [trackId, setTrackId] = useState<string | null>(null);
+  const [like, setLike] = useState<boolean>(false); // 좋아요 상태를 추가
 
   const socialId = localStorage.getItem("socialId") || "";
 
@@ -94,8 +95,9 @@ function WriteDiary() {
           "Content-Type": "multipart/form-data",
         },
       });
-      // 응답에서 trackId를 받아서 설정
+      // 응답에서 trackId와 like를 받아서 설정
       setTrackId(response.data.spotify);
+      setLike(response.data.like);
       setIsSongModalOpen(true); // 노래 모달 열기
     } catch (error) {
       console.error("Error saving diary:", error);
@@ -156,6 +158,7 @@ function WriteDiary() {
           trackId={trackId}
           socialId={socialId}
           onClose={() => setIsSongModalOpen(false)}
+          like={like} // like 값을 전달
         />
       )}
     </S.Container>

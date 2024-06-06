@@ -22,6 +22,7 @@ function ModifyDiary() {
   const [isSongModalOpen, setIsSongModalOpen] = useState(false);
   const [trackId, setTrackId] = useState<string | null>(null);
   const [likedSongs, setLikedSongs] = useState<string[]>([]);
+  const [like, setLike] = useState<boolean>(false); // 좋아요 상태를 추가
   
   const socialId = localStorage.getItem('socialId') || '';
 
@@ -70,6 +71,7 @@ function ModifyDiary() {
       setExistingImages(diary.imgUrl);
       setSelectedEmotion(diary.emotion);
       setTrackId(diary.spotify);
+      setLike(diary.like); // diary 데이터에서 like 값 설정
     } catch (error) {
       console.error("Error fetching diary:", error);
     }
@@ -137,6 +139,7 @@ function ModifyDiary() {
       });
   
       setTrackId(response.data.spotify);
+      setLike(response.data.like); // 응답에서 like 값 설정
       setIsSongModalOpen(true); // 노래 모달 열기
     } catch (error) {
       console.error("Error saving diary:", error);
@@ -218,6 +221,7 @@ function ModifyDiary() {
           trackId={trackId}
           socialId={socialId}
           onClose={() => setIsSongModalOpen(false)}
+          like={like} // like 값을 전달
         />
       )}
     </S.Container>
