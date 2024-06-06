@@ -5,7 +5,13 @@ import { useAuth } from "../../../AuthProvider";
 import { Artist, TrackInfo } from "../../diary/musicModal";
 import * as S from "../Styles/SongPage.style";
 
-const LikeSongPage: React.FC = () => {
+interface LikeSongPageProps {
+  onLikeStatusChange: () => void;
+}
+
+const LikeSongPage: React.FC<LikeSongPageProps> = ({
+  onLikeStatusChange,
+}: LikeSongPageProps) => {
   const { email: socialId, nickname } = useAuth(); // Assuming the email is used as socialId
   const [trackIds, setTrackIds] = useState<string[]>([]);
   const [trackInfos, setTrackInfos] = useState<TrackInfo[]>([]);
@@ -111,6 +117,9 @@ const LikeSongPage: React.FC = () => {
             prevTrackInfos.filter((t) => t.id !== track.id)
           );
         }, 500);
+
+        // 상태 변화를 상위 컴포넌트에 알려 TopSongPage 재호출
+        onLikeStatusChange();
       } else {
         console.error("Unexpected response status:", response.status);
       }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as S from "./Styles/Mypage.style";
 import WeeklyReport from "./WeeklyReport";
 import EditProfile from "./editpage/EditProfile";
@@ -29,6 +29,16 @@ const Stars = () => {
 };
 
 function Mypage() {
+  const [likeStatusChanged, setLikeStatusChanged] = useState(false);
+  const topSongPageRef = useRef<{ fetchTopSongs: () => void }>(null);
+
+  const handleLikeStatusChange = () => {
+    setLikeStatusChanged((prev) => !prev); // 상태를 토글
+    if (topSongPageRef.current) {
+      topSongPageRef.current.fetchTopSongs();
+    }
+  };
+
   return (
     <S.PageContainer>
       <Stars />
@@ -39,10 +49,13 @@ function Mypage() {
         <WeeklyReport />
       </S.Section>
       <S.Section>
-        <LikeSongPage />
+        <LikeSongPage onLikeStatusChange={handleLikeStatusChange} />
       </S.Section>
       <S.Section>
-        <TopSongPage />
+        <TopSongPage
+          ref={topSongPageRef}
+          likeStatusChanged={likeStatusChanged}
+        />
       </S.Section>
     </S.PageContainer>
   );
