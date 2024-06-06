@@ -1,28 +1,62 @@
-import { motion } from 'framer-motion';
-import styled, { keyframes } from 'styled-components';
+import { motion } from "framer-motion";
+import styled, { keyframes } from "styled-components";
+
+const twinkle = keyframes`
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+`;
+
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+export const Background = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 4, 40, 0.8),
+    rgba(0, 78, 146, 0.8)
+  );
+  background-size: cover;
+  position: relative;
+  overflow: hidden;
+`;
 
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-  background-color: #fff;
-  border: 1px solid #dbdbdb;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin: 20px auto;
+  padding: 30px;
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.9
+  ); /* Slightly transparent white background */
+  border: 1px solid rgba(219, 219, 219, 0.5); /* Softer border */
+  border-radius: 15px; /* More rounded corners */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Softer shadow */
+  width: 600px;
 `;
 
 export const Header = styled.h1`
-  font-family: 'Arial', sans-serif;
-  font-size: 24px;
+  font-family: "Arial", sans-serif;
+  font-size: 28px;
   color: #262626;
   margin-bottom: 20px;
 `;
 
 export const DateDisplay = styled.div`
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   font-size: 14px;
   color: #8e8e8e;
   margin-bottom: 20px;
@@ -43,14 +77,13 @@ export const Label = styled.label`
   font-weight: bold;
 `;
 
-
 export const Input = styled.input`
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   font-size: 16px;
-  padding: 10px;
+  padding: 12px;
   margin-bottom: 15px;
-  border: 1px solid #dbdbdb;
-  border-radius: 3px;
+  border: 1px solid rgba(219, 219, 219, 0.5); /* Softer border */
+  border-radius: 5px; /* More rounded corners */
   outline: none;
   transition: border-color 0.3s;
 
@@ -60,12 +93,12 @@ export const Input = styled.input`
 `;
 
 export const TextArea = styled.textarea`
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   font-size: 16px;
-  padding: 10px;
+  padding: 12px;
   margin-bottom: 15px;
-  border: 1px solid #dbdbdb;
-  border-radius: 3px;
+  border: 1px solid rgba(219, 219, 219, 0.5); /* Softer border */
+  border-radius: 5px; /* More rounded corners */
   height: 200px;
   resize: none;
   outline: none;
@@ -88,7 +121,7 @@ export const ButtonGroup = styled.div`
 export const Button = styled.button`
   background-color: #0095f6;
   color: #fff;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   font-size: 14px;
   padding: 10px 20px;
   border: none;
@@ -101,17 +134,7 @@ export const Button = styled.button`
   }
 `;
 
-
-
-//MusicModal
-export const rotate = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-`;
+// MusicModal
 
 export const ModalOverlay = styled.div`
   position: fixed;
@@ -130,8 +153,8 @@ export const ModalContainer = styled.div`
   background: #222;
   border-radius: 20px;
   padding: 40px;
-  width: 90%;
-  max-width: 600px; /* 모달 크기를 더 크게 */
+  width: 700px; /* 모달 크기를 더 크게 */
+  height: 600px;
   z-index: 1000;
   position: relative;
   display: flex;
@@ -183,12 +206,40 @@ export const AlbumName = styled.div`
   margin-bottom: 20px;
 `;
 
+export const AlbumCoverContainer = styled.div`
+  position: relative;
+  width: 350px;
+  height: 350px;
+  margin: 30px 0;
+`;
+
 export const AlbumCover = styled.img`
-  width: 200px; /* 크기를 더 크게 */
-  height: 200px; /* 크기를 더 크게 */
-  border-radius: 20px;
-  margin: 20px 0;
+  width: 350px; /* 크기를 더 크게 */
+  height: 350px; /* 크기를 더 크게 */
+  border-radius: 50%; /* Make it circular */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  animation: ${rotate} 10s linear infinite; /* Apply the rotation animation */
+`;
+
+export const StylusArm = styled.div`
+  position: absolute;
+  width: 170px;
+  height: 5px;
+  background: #000;
+  top: 50%;
+  left: 0;
+  transform: rotate(-10deg);
+  transform-origin: 0% 50%;
+  &:before {
+    content: "";
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: #000;
+    border-radius: 50%;
+    top: -5px;
+    left: -10px;
+  }
 `;
 
 export const AudioPlayer = styled.audio`
@@ -200,14 +251,14 @@ export const LikeButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: #ff4d4d;
 `;
 
 export const ModalButton = styled.button`
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: -25px;
+  right: -25px;
   background: none;
   border: none;
   font-size: 1.5rem;
@@ -235,7 +286,6 @@ export const LoadingMessage = styled.p`
   color: #fff;
   font-size: 1.2rem;
 `;
-
 
 export const ImagePreviewContainer = styled.div`
   display: flex;
@@ -266,4 +316,14 @@ export const DeleteButton = styled.button`
   justify-content: center;
   align-items: center;
   cursor: pointer;
+`;
+
+// star
+export const Star = styled.div`
+  width: 4px;
+  height: 4px;
+  background: #f8f8ff;
+  border-radius: 100%;
+  position: absolute;
+  animation: ${twinkle} 1.5s infinite ease-in-out;
 `;

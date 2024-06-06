@@ -3,8 +3,31 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../axiosInterceptor";
 import EmotionModal from "./EmotionModal";
-import MusicModal from "./musicModal";
+import MusicModal from "./MusicModal";
 import * as S from "./Styles/WriteDiary.style";
+
+const generateStarPositions = (numStars: number) => {
+  return Array.from({ length: numStars }).map(() => ({
+    top: Math.random() * 100 + "%",
+    left: Math.random() * 100 + "%",
+  }));
+};
+
+const Stars = () => {
+  const [starPositions, setStarPositions] = useState(generateStarPositions(50));
+
+  useEffect(() => {
+    setStarPositions(generateStarPositions(50));
+  }, []);
+
+  return (
+    <>
+      {starPositions.map((pos, index) => (
+        <S.Star key={index} style={{ top: pos.top, left: pos.left }} />
+      ))}
+    </>
+  );
+};
 
 function ModifyDiary() {
   const location = useLocation();
@@ -24,11 +47,7 @@ function ModifyDiary() {
   const [likedSongs, setLikedSongs] = useState<string[]>([]);
   const [like, setLike] = useState<boolean>(false); // 좋아요 상태를 추가
 
-<<<<<<< HEAD
   const socialId = localStorage.getItem("socialId") || "";
-=======
-  const socialId = localStorage.getItem('socialId') || '';
->>>>>>> 702f4b393731aad9e470b3089f9339667fd79e58
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -47,15 +66,10 @@ function ModifyDiary() {
   useEffect(() => {
     const fetchLikedSongs = async () => {
       try {
-<<<<<<< HEAD
-        const response = await axios.get(`/music/likes`);
+        const response = await axios.get(`http://localhost:8080/music/likes`);
         const likedTracks = Array.isArray(response.data)
           ? response.data.map((item: any) => item.spotify)
           : [];
-=======
-        const response = await axios.get(`http://localhost:8080/music/likes`);
-        const likedTracks = Array.isArray(response.data) ? response.data.map((item: any) => item.spotify) : [];
->>>>>>> 702f4b393731aad9e470b3089f9339667fd79e58
         setLikedSongs(likedTracks);
         localStorage.setItem("likedSongs", JSON.stringify(likedTracks));
       } catch (error) {
@@ -126,33 +140,18 @@ function ModifyDiary() {
     formData.append("year", currentYear.toString());
     formData.append("month", currentMonth.toString());
     formData.append("day", selectedDate.toString());
-<<<<<<< HEAD
-
-    const diaryData = {
-=======
     formData.append("title", title);
-  
+
     const diaryData = JSON.stringify({
->>>>>>> 702f4b393731aad9e470b3089f9339667fd79e58
       title,
       comment: content,
       emotion: selectedEmotion,
       maintain: maintainEmotion.toString(),
-<<<<<<< HEAD
-    };
-
-    formData.append("title", title);
-    formData.append("comment", content);
-    formData.append("emotion", selectedEmotion);
-    formData.append("maintain", maintainEmotion.toString());
-=======
     });
     formData.append(
       "diary",
       new Blob([diaryData], { type: "application/json" })
     );
-
->>>>>>> 702f4b393731aad9e470b3089f9339667fd79e58
 
     images.forEach((image) => formData.append("images", image));
 
@@ -160,8 +159,12 @@ function ModifyDiary() {
       const response = await api.put(`/diary/calendar`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          "Authorization-Access": `Bearer ${localStorage.getItem('accessToken')}`,
-          "Authorization-Refresh": `Bearer ${localStorage.getItem('refreshToken')}`
+          "Authorization-Access": `Bearer ${localStorage.getItem(
+            "accessToken"
+          )}`,
+          "Authorization-Refresh": `Bearer ${localStorage.getItem(
+            "refreshToken"
+          )}`,
         },
       });
 
@@ -213,54 +216,57 @@ function ModifyDiary() {
   };
 
   return (
-    <S.Container>
-      <S.Header>감성 일기 수정</S.Header>
-      <div>
-        {currentYear}년 {currentMonth}월 {selectedDate}일
-      </div>
-      <S.Form onSubmit={handleSave}>
-        <S.Input
-          type="text"
-          value={title}
-          onChange={handleTitleChange}
-          placeholder="제목을 입력하세요"
-        />
-        <S.TextArea
-          value={content}
-          onChange={handleContentChange}
-          placeholder="오늘의 이야기를 들려주세요..."
-          maxLength={1000} // This will also prevent typing beyond 1000 characters
-        />
-        <S.FileInput type="file" multiple onChange={handleFileChange} />
-        <S.ImagePreviewContainer>
-          {existingImages.map((url, index) => (
-            <S.ImagePreview key={index}>
-              <img src={url} alt={`Diary Image ${index + 1}`} />
-              <S.DeleteButton onClick={() => handleDeleteImage(url)}>
-                삭제
-              </S.DeleteButton>
-            </S.ImagePreview>
-          ))}
-        </S.ImagePreviewContainer>
-        <S.ButtonGroup>
-          <S.Button type="submit">일기 수정</S.Button>
-        </S.ButtonGroup>
-      </S.Form>
-      {isModalOpen && (
-        <EmotionModal
-          onClose={() => setIsModalOpen(false)}
-          onSelect={handleEmotionSelect}
-        />
-      )}
-      {isSongModalOpen && trackId && (
-        <MusicModal
-          trackId={trackId}
-          socialId={socialId}
-          onClose={() => setIsSongModalOpen(false)}
-          like={like} // like 값을 전달
-        />
-      )}
-    </S.Container>
+    <S.Background>
+      <Stars />
+      <S.Container>
+        <S.Header>감성 일기 수정</S.Header>
+        <div>
+          {currentYear}년 {currentMonth}월 {selectedDate}일
+        </div>
+        <S.Form onSubmit={handleSave}>
+          <S.Input
+            type="text"
+            value={title}
+            onChange={handleTitleChange}
+            placeholder="제목을 입력하세요"
+          />
+          <S.TextArea
+            value={content}
+            onChange={handleContentChange}
+            placeholder="오늘의 이야기를 들려주세요..."
+            maxLength={1000} // This will also prevent typing beyond 1000 characters
+          />
+          <S.FileInput type="file" multiple onChange={handleFileChange} />
+          <S.ImagePreviewContainer>
+            {existingImages.map((url, index) => (
+              <S.ImagePreview key={index}>
+                <img src={url} alt={`Diary Image ${index + 1}`} />
+                <S.DeleteButton onClick={() => handleDeleteImage(url)}>
+                  삭제
+                </S.DeleteButton>
+              </S.ImagePreview>
+            ))}
+          </S.ImagePreviewContainer>
+          <S.ButtonGroup>
+            <S.Button type="submit">일기 수정</S.Button>
+          </S.ButtonGroup>
+        </S.Form>
+        {isModalOpen && (
+          <EmotionModal
+            onClose={() => setIsModalOpen(false)}
+            onSelect={handleEmotionSelect}
+          />
+        )}
+        {isSongModalOpen && trackId && (
+          <MusicModal
+            trackId={trackId}
+            socialId={socialId}
+            onClose={() => setIsSongModalOpen(false)}
+            like={like} // like 값을 전달
+          />
+        )}
+      </S.Container>
+    </S.Background>
   );
 }
 

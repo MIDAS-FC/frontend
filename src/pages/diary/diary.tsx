@@ -3,8 +3,31 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../axiosInterceptor";
 import EmotionModal from "./EmotionModal";
-import MusicModal from "./musicModal";
+import MusicModal from "./MusicModal";
 import * as S from "./Styles/WriteDiary.style";
+
+const generateStarPositions = (numStars: number) => {
+  return Array.from({ length: numStars }).map(() => ({
+    top: Math.random() * 100 + "%",
+    left: Math.random() * 100 + "%",
+  }));
+};
+
+const Stars = () => {
+  const [starPositions, setStarPositions] = useState(generateStarPositions(50));
+
+  useEffect(() => {
+    setStarPositions(generateStarPositions(50));
+  }, []);
+
+  return (
+    <>
+      {starPositions.map((pos, index) => (
+        <S.Star key={index} style={{ top: pos.top, left: pos.left }} />
+      ))}
+    </>
+  );
+};
 
 function WriteDiary() {
   const location = useLocation();
@@ -124,44 +147,47 @@ function WriteDiary() {
   };
 
   return (
-    <S.Container>
-      <S.Header>감성 일기작성</S.Header>
-      <div>
-        {currentYear}년 {currentMonth}월 {selectedDate}일
-      </div>
-      <S.Form onSubmit={handleSave}>
-        <S.Input
-          type="text"
-          value={title}
-          onChange={handleTitleChange}
-          placeholder="제목을 입력하세요"
-        />
-        <S.TextArea
-          value={content}
-          onChange={handleContentChange}
-          placeholder="오늘의 이야기를 들려주세요..."
-          maxLength={1000} // This will also prevent typing beyond 1000 characters
-        />
-        <S.FileInput type="file" multiple onChange={handleFileChange} />
-        <S.ButtonGroup>
-          <S.Button type="submit">일기 작성</S.Button>
-        </S.ButtonGroup>
-      </S.Form>
-      {isModalOpen && (
-        <EmotionModal
-          onClose={() => setIsModalOpen(false)}
-          onSelect={handleEmotionSelect}
-        />
-      )}
-      {isSongModalOpen && trackId && (
-        <MusicModal
-          trackId={trackId}
-          socialId={socialId}
-          onClose={() => setIsSongModalOpen(false)}
-          like={like} // like 값을 전달
-        />
-      )}
-    </S.Container>
+    <S.Background>
+      <Stars />
+      <S.Container>
+        <S.Header>감성 일기작성</S.Header>
+        <div>
+          {currentYear}년 {currentMonth}월 {selectedDate}일
+        </div>
+        <S.Form onSubmit={handleSave}>
+          <S.Input
+            type="text"
+            value={title}
+            onChange={handleTitleChange}
+            placeholder="제목을 입력하세요"
+          />
+          <S.TextArea
+            value={content}
+            onChange={handleContentChange}
+            placeholder="오늘의 이야기를 들려주세요..."
+            maxLength={1000} // This will also prevent typing beyond 1000 characters
+          />
+          <S.FileInput type="file" multiple onChange={handleFileChange} />
+          <S.ButtonGroup>
+            <S.Button type="submit">일기 작성</S.Button>
+          </S.ButtonGroup>
+        </S.Form>
+        {isModalOpen && (
+          <EmotionModal
+            onClose={() => setIsModalOpen(false)}
+            onSelect={handleEmotionSelect}
+          />
+        )}
+        {isSongModalOpen && trackId && (
+          <MusicModal
+            trackId={trackId}
+            socialId={socialId}
+            onClose={() => setIsSongModalOpen(false)}
+            like={like} // like 값을 전달
+          />
+        )}
+      </S.Container>
+    </S.Background>
   );
 }
 

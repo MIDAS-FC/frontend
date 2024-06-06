@@ -201,7 +201,7 @@ const MusicModal: React.FC<MusicModalProps> = ({
             <p>노래를 추천중입니다...</p>
           )}
           <S.ModalButton onClick={handleClose}>
-            <FaTimes />
+            <FaTimes/>
           </S.ModalButton>
         </S.ModalContent>
       </S.ModalContainer>

@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { useAuth } from "../../../AuthProvider";
-import { Artist, TrackInfo } from "../../diary/musicModal";
+import { Artist, TrackInfo } from "../../diary/MusicModal";
 import * as S from "../Styles/SongPage.style";
 
 interface TopIdInfo {

@@ -2,7 +2,7 @@ import axios from "axios";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../AuthProvider";
-import { Artist, TrackInfo } from "../../diary/musicModal";
+import { Artist, TrackInfo } from "../../diary/MusicModal";
 import * as S from "../Styles/SongPage.style";
 
 interface LikeSongPageProps {
@@ -23,26 +23,35 @@ const LikeSongPage: React.FC<LikeSongPageProps> = ({
   const sliderContainerRef = useRef<HTMLDivElement | null>(null);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    const fetchLikes = async (pageToFetch: number) => {
-      setLoading(true);
+  // Function to fetch all track IDs page by page
+  const fetchAllTrackIds = async () => {
+    let currentPage = 1;
+    let allTrackIds: string[] = [];
+    let lastPage = false;
+
+    while (!lastPage) {
       try {
         const response = await axios.get("http://localhost:8080/music/likes", {
-          params: { page: pageToFetch, size: 5 },
+          params: { page: currentPage, size: 5 },
         });
 
         const trackIdArray = response.data.data || [];
-        setTrackIds((prevTrackIds) => [...prevTrackIds, ...trackIdArray]);
-        setLast(response.data.last);
+        allTrackIds = [...allTrackIds, ...trackIdArray];
+        lastPage = response.data.last;
+        currentPage += 1;
       } catch (error: any) {
         console.error("Error fetching liked songs:", error);
         setError("좋아요를 가져오는 중 오류가 발생했습니다.");
-      } finally {
-        setLoading(false);
+        break;
       }
-    };
-    fetchLikes(page);
-  }, [page]);
+    }
+
+    setTrackIds(allTrackIds);
+  };
+
+  useEffect(() => {
+    fetchAllTrackIds();
+  }, []);
 
   useEffect(() => {
     const fetchTrackInfo = async (trackId: string) => {
@@ -163,7 +172,8 @@ const LikeSongPage: React.FC<LikeSongPageProps> = ({
     if (sliderContainerRef.current) {
       const isAtStart = sliderContainerRef.current.scrollLeft === 0;
       if (isAtStart) {
-        sliderContainerRef.current.scrollLeft = sliderContainerRef.current.scrollWidth;
+        sliderContainerRef.current.scrollLeft =
+          sliderContainerRef.current.scrollWidth;
       } else {
         sliderContainerRef.current.scrollBy({
           left: -300,
@@ -175,7 +185,10 @@ const LikeSongPage: React.FC<LikeSongPageProps> = ({
 
   const scrollRight = () => {
     if (sliderContainerRef.current) {
-      const isAtEnd = sliderContainerRef.current.scrollLeft + sliderContainerRef.current.clientWidth >= sliderContainerRef.current.scrollWidth;
+      const isAtEnd =
+        sliderContainerRef.current.scrollLeft +
+          sliderContainerRef.current.clientWidth >=
+        sliderContainerRef.current.scrollWidth;
       if (isAtEnd) {
         sliderContainerRef.current.scrollLeft = 0;
       } else {

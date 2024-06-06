@@ -42,7 +42,7 @@ export const SliderContainer = styled.div`
 `;
 
 export const SliderItem = styled(motion.div)`
-  position:relative;
+  position: relative;
   flex: 0 0 auto;
   width: 250px;
   height: 400px;
@@ -135,14 +135,14 @@ export const LoadMoreButton = styled.button`
 `;
 
 export const LikeButton = styled.button`
-  position:absolute;
+  position: absolute;
   border: none;
   background: none;
   cursor: pointer;
   font-size: 2rem;
   color: #ff4d4d;
   right: 0;
-  top:0;
+  top: 0;
   transition: transform 0.3s ease, color 0.3s ease;
 
   &:hover {
