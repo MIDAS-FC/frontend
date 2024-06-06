@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-
-import * as S from "./Styles/Admin.style";
-import axios from "axios";
 import api from "../../axiosInterceptor";
+import * as S from "./Styles/Admin.style";
 
 const generateStarPositions = (numStars: number) => {
   return Array.from({ length: numStars }).map(() => ({

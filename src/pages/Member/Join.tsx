@@ -2,9 +2,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as S from "./Styles/Member.style";
-import api from "../../axiosInterceptor";
 
-// axios.defaults.baseURL = "/auth";
+axios.defaults.baseURL = "/auth";
 
 const generateStarPositions = (numStars: number) => {
   return Array.from({ length: numStars }).map(() => ({
@@ -44,7 +43,7 @@ const Join = () => {
   // 이메일 인증번호 보내기
   const sendEmail = async () => {
     try {
-      const response = await api.post("/email", {
+      const response = await axios.post("/email", {
         email,
         emailType: "sign-up",
         socialType: "SoundOfFlower",
@@ -61,7 +60,7 @@ const Join = () => {
   // 인증
   const verifyEmail = async () => {
     try {
-      const response = await api.post("auth/register/authentication/number", {
+      const response = await axios.post("/register/authentication/number", {
         email,
         socialType: "SoundOfFlower",
         randomNum,
@@ -81,7 +80,7 @@ const Join = () => {
   // 이메일 재전송
   const resendEmail = async () => {
     try {
-      await api.post("/resend-email", { email });
+      await axios.post("/resend-email", { email });
       alert("이메일을 재전송했습니다.");
     } catch (error) {
       console.error("이메일 재전송 오류:", error);
@@ -92,7 +91,7 @@ const Join = () => {
   // 닉네임 중복 여부 확인
   const verifyNickname = async () => {
     try {
-      const response = await api.post("/register/authentication/nickname", {
+      const response = await axios.post("/register/authentication/nickname", {
         nickName,
       });
       if (response.status === 204) {
@@ -135,7 +134,7 @@ const Join = () => {
     formData.append("signup", userRequestDtoBlob);
 
     try {
-      const response = await api.post("/register", formData);
+      const response = await axios.post("/register", formData);
 
       alert("회원가입이 완료되었습니다.");
       navigate("/Login"); //로그인 페이지로 유도

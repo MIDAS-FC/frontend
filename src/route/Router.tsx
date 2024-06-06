@@ -18,6 +18,24 @@ function Router() {
   const { isLoggedIn } = useAuth();
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (accessToken && refreshToken) {
+      axios.defaults.headers.common[
+        "authorization-access"
+      ] = `Bearer ${accessToken}`;
+      axios.defaults.headers.common[
+        "authorization-refresh"
+      ] = `Bearer ${refreshToken}`;
+    }
+    setLoading(false);
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Routes>
       <Route path="/" element={<Layout />}>

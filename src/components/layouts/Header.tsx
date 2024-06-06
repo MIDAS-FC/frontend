@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
 import logo from "../../assets/icons/logo.webp";
 import * as S from "../layouts/Styles/Header.style";
-import api from "../../axiosInterceptor";
 
 function Header() {
   const navigate = useNavigate();
@@ -33,8 +32,8 @@ function Header() {
 
   const handleLogoutClick = async () => {
     try {
-      await api.post(
-        "http://localhost:8080/auth/token/logout",
+      await axios.post(
+        "http://localhost:8080/token/logout",
         {},
         {
           headers: {
@@ -52,8 +51,8 @@ function Header() {
       localStorage.removeItem("email");
       localStorage.removeItem("role");
 
-      delete api.defaults.headers.common["Authorization-Access"];
-      delete api.defaults.headers.common["Authorization-Refresh"];
+      delete axios.defaults.headers.common["Authorization-Access"];
+      delete axios.defaults.headers.common["Authorization-Refresh"];
 
       setIsLoggedIn(false);
       navigate("/");

@@ -11,14 +11,13 @@ const gradientBackground = `
 `;
 
 export const Star = styled.div`
-    width: 4px;
-    height: 4px;
-    background: #f8f8ff;
-    border-radius: 100%;
-    position: absolute;
-    animation: ${twinkle} 1.5s infinite ease-in-out;
+  width: 4px;
+  height: 4px;
+  background: #f8f8ff;
+  border-radius: 100%;
+  position: absolute;
+  animation: ${twinkle} 1.5s infinite ease-in-out;
 `;
-
 
 export const PageContainer = styled.div`
   display: flex;

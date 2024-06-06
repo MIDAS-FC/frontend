@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
 import * as S from "./Styles/Member.style";
-import api from "../../axiosInterceptor";
 
 const generateStarPositions = (numStars: number) => {
   return Array.from({ length: numStars }).map(() => ({
@@ -47,7 +46,7 @@ const Login = () => {
     };
 
     try {
-      const response = await api.post("/token/login", user, {
+      const response = await axios.post("/token/login", user, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -69,18 +68,11 @@ const Login = () => {
       localStorage.setItem("isLoggedIn", "true"); // 로그인 상태 저장
       localStorage.setItem("fileUrl", fileUrl);
 
-      // // axios 기본 헤더에 토큰 설정
-      // axios.defaults.headers.common[
-      //   "authorization-access"
-      // ] = `Bearer ${accessToken}`;
-      // axios.defaults.headers.common[
-      //   "authorization-refresh"
-      // ] = `Bearer ${refreshToken}`;
-
-      api.defaults.headers.common[
+      // axios 기본 헤더에 토큰 설정
+      axios.defaults.headers.common[
         "authorization-access"
       ] = `Bearer ${accessToken}`;
-      api.defaults.headers.common[
+      axios.defaults.headers.common[
         "authorization-refresh"
       ] = `Bearer ${refreshToken}`;
 

@@ -8,7 +8,7 @@ export const HeaderContainer = styled.header<HeaderContainerProps>`
   display: flex;
   align-items: center;
   padding: 10px;
-  background:none;
+  background: none;
   transition: background 0.3s ease;
   position: fixed;
   top: 0;
@@ -31,7 +31,7 @@ export const LeftButtonContainer = styled.div`
 export const RightButtonContainer = styled.div`
   align-items: center;
   justify-content: flex-end;
-  position:absolute;
+  position: absolute;
   right: 50px;
 `;
 
@@ -49,11 +49,10 @@ export const Button = styled.button`
   background: none;
   color: #fff;
   transition: transform 1s;
-  cursor:pointer;
+  cursor: pointer;
   &:hover {
     animation: ${twinkle} 1.5s infinite ease-in-out;
   }
-  
 `;
 
 export const LinkButton = styled.button`

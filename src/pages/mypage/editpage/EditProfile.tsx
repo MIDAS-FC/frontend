@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import api from "../../../axiosInterceptor";
 import * as S from "../Styles/EditProfile.style";
 import EditPopup from "./EditPopup";
-import api from "../../../axiosInterceptor";
 
 function EditProfile() {
   const [showPopup, setShowPopup] = useState(false);

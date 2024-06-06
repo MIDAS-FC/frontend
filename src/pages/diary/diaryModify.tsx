@@ -42,7 +42,7 @@ function ModifyDiary() {
   useEffect(() => {
     const fetchLikedSongs = async () => {
       try {
-        const response = await api.get(`/music/likes`);
+        const response = await axios.get(`/music/likes`);
         const likedTracks = Array.isArray(response.data)
           ? response.data.map((item: any) => item.spotify)
           : [];
@@ -226,9 +226,7 @@ function ModifyDiary() {
       {isSongModalOpen && trackId && (
         <MusicModal
           trackId={trackId}
-          likedSongs={likedSongs}
           socialId={socialId}
-          toggleLike={toggleLike}
           onClose={() => setIsSongModalOpen(false)}
         />
       )}

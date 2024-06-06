@@ -1,99 +1,74 @@
-import { AnimatePresence } from "framer-motion";
+import axios from "axios";
+import { motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-import api from "../../../axiosInterceptor";
+import { useAuth } from "../../../AuthProvider";
+import { Artist, TrackInfo } from "../../diary/musicModal";
 import * as S from "../Styles/SongPage.style";
 
-export interface Artist {
-  name: string;
-}
-
-interface Album {
-  name: string;
-  images: { url: string }[];
-  release_date: string;
-}
-export interface TrackInfo {
-  id: string;
-  name: string;
-  artists: Artist[];
-  album: Album;
-  popularity: number;
-  preview_url: string;
-  duration_ms: number;
-}
-
-// 좋아요 누른 리스트
-function LikeSongPage() {
-  // track Id
+const LikeSongPage: React.FC = () => {
+  const { email: socialId, nickname } = useAuth(); // Assuming the email is used as socialId
   const [trackIds, setTrackIds] = useState<string[]>([]);
-  // track Id 노래에 대한 정보
   const [trackInfos, setTrackInfos] = useState<TrackInfo[]>([]);
-  // 현재 페이지
   const [page, setPage] = useState(1);
-  // 리스트가 끝이면 true 아니면 false
   const [last, setLast] = useState(false);
-  // 선택한 노래
-  const [selectedSong, setSelectedSong] = useState<TrackInfo | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [selectedTrack, setSelectedTrack] = useState<TrackInfo | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
-  // 슬라이더 관련
-  const sliderRef = useRef<HTMLDivElement | null>(null);
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
   const loader = useRef<HTMLDivElement | null>(null);
+  const sliderContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // /music/likes => 좋아요 누른 노래 Id 불러오기
   useEffect(() => {
     const fetchLikes = async (pageToFetch: number) => {
+      setLoading(true);
       try {
-        const response = await api.get("http://localhost:8080/music/likes", {
-          params: { page: pageToFetch, size: 5 }, // 한번에 5개씩 보여주기
+        const response = await axios.get("http://localhost:8080/music/likes", {
+          params: { page: pageToFetch, size: 5 },
         });
 
-        const trackIdArray = Array.isArray(response.data.data)
-          ? response.data.data
-          : Object.keys(response.data.data);
+        console.log("response.data:", response.data);
 
-        // 중복 방지
-        const newTrackIds = trackIdArray.filter(
-          (id: string) => !trackIds.includes(id)
-        );
-
-        setTrackIds((prevTrackIds) => {
-          const uniqueTrackIds = new Set([...prevTrackIds, ...newTrackIds]);
-          return Array.from(uniqueTrackIds);
-        });
+        const trackIdArray = response.data.data || [];
+        setTrackIds((prevTrackIds) => [...prevTrackIds, ...trackIdArray]);
         setLast(response.data.last);
       } catch (error: any) {
         console.error("Error fetching liked songs:", error);
+        setError("좋아요를 가져오는 중 오류가 발생했습니다.");
+      } finally {
+        setLoading(false);
       }
     };
     fetchLikes(page);
   }, [page]);
 
-  // spotify와 연결
   useEffect(() => {
-    const fetchTrackInfos = async () => {
-      const trackInfoArray: TrackInfo[] = [];
-      for (const id of trackIds) {
-        try {
-          const response = await api.get(
-            `http://localhost:8000/spotify/track/${id}`
-          );
-          const trackData: TrackInfo = {
-            ...response.data,
-          };
-          trackInfoArray.push(trackData);
-        } catch (error) {
-          console.error("Error fetching track info:", error);
-        }
+    const fetchTrackInfo = async (trackId: string) => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/spotify/track/${trackId}`
+        );
+        console.log("fetchTrackInfo response:", response.data);
+        return response.data.response; // TrackInfo 타입 객체를 반환합니다.
+      } catch (error) {
+        console.error("Error fetching track info:", error);
+        return null;
       }
-      setTrackInfos(trackInfoArray);
     };
-    fetchTrackInfos();
-  }, []);
 
-  // 무한스크롤 관련
+    const fetchAllTrackInfos = async () => {
+      const newTrackInfos = await Promise.all(trackIds.map(fetchTrackInfo));
+      setTrackInfos((prevTrackInfos) => [
+        ...prevTrackInfos,
+        ...(newTrackInfos.filter((info) => info !== null) as TrackInfo[]),
+      ]);
+    };
+
+    if (trackIds.length > 0) {
+      fetchAllTrackInfos();
+    }
+  }, [trackIds]);
+
   useEffect(() => {
     const options = {
       root: null,
@@ -101,7 +76,7 @@ function LikeSongPage() {
       threshold: 1.0,
     };
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !last) {
+      if (entries[0].isIntersecting && !last && !loading) {
         setPage((prevPage) => prevPage + 1);
       }
     }, options);
@@ -113,138 +88,118 @@ function LikeSongPage() {
         observer.unobserve(loader.current);
       }
     };
-  }, [last]);
+  }, [last, loading]);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    isDragging.current = true;
-    startX.current = e.pageX - sliderRef.current!.offsetLeft;
-    scrollLeft.current = sliderRef.current!.scrollLeft;
-    sliderRef.current!.style.cursor = "grabbing";
-    sliderRef.current!.style.scrollBehavior = "auto";
+  const handleLikeButtonClick = (track: TrackInfo) => {
+    setSelectedTrack(track);
+    setShowModal(true);
   };
 
-  const handleMouseLeave = () => {
-    isDragging.current = false;
-    sliderRef.current!.style.cursor = "grab";
-    sliderRef.current!.style.scrollBehavior = "smooth";
-  };
+  // Implement mouse drag for horizontal scroll
+  useEffect(() => {
+    const slider = sliderContainerRef.current;
+    let isDown = false;
+    let startX: number;
+    let scrollLeft: number;
 
-  const handleMouseUp = () => {
-    isDragging.current = false;
-    sliderRef.current!.style.cursor = "grab";
-    sliderRef.current!.style.scrollBehavior = "smooth";
-  };
+    const handleMouseDown = (e: MouseEvent) => {
+      isDown = true;
+      slider?.classList.add("active");
+      startX = e.pageX - slider!.offsetLeft;
+      scrollLeft = slider!.scrollLeft;
+    };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging.current) return;
-    e.preventDefault();
-    const x = e.pageX - sliderRef.current!.offsetLeft;
-    const walk = (x - startX.current) * 1.5;
-    sliderRef.current!.scrollLeft = scrollLeft.current - walk;
-  };
+    const handleMouseLeave = () => {
+      isDown = false;
+      slider?.classList.remove("active");
+    };
 
-  // 슬라이더 요소 클릭
-  const handleSongClick = (song: TrackInfo) => {
-    setSelectedSong(song);
-  };
+    const handleMouseUp = () => {
+      isDown = false;
+      slider?.classList.remove("active");
+    };
 
-  const handleClosePopup = () => {
-    setSelectedSong(null);
-  };
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - slider!.offsetLeft;
+      const walk = (x - startX) * 3; // scroll-fast
+      slider!.scrollLeft = scrollLeft - walk;
+    };
 
-  // ms  -> 분 초
-  const formatDuration = (duration_ms: number) => {
-    const seconds = Math.floor(duration_ms / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `  ${minutes}분 ${
-      remainingSeconds < 10 ? "0" : ""
-    }${remainingSeconds}초`;
-  };
+    if (slider) {
+      slider.addEventListener("mousedown", handleMouseDown);
+      slider.addEventListener("mouseleave", handleMouseLeave);
+      slider.addEventListener("mouseup", handleMouseUp);
+      slider.addEventListener("mousemove", handleMouseMove);
+    }
+
+    return () => {
+      if (slider) {
+        slider.removeEventListener("mousedown", handleMouseDown);
+        slider.removeEventListener("mouseleave", handleMouseLeave);
+        slider.removeEventListener("mouseup", handleMouseUp);
+        slider.removeEventListener("mousemove", handleMouseMove);
+      }
+    };
+  }, []);
+
+  console.log("trackInfos:", trackInfos);
 
   return (
     <S.Container>
-      <S.HeaderText>좋아요 많은 곡 Top 10</S.HeaderText>
-      {trackInfos.length === 0 ? (
-        <S.NoSongsMessage>
-          <strong>Loading...</strong>
-        </S.NoSongsMessage>
-      ) : (
-        <S.SliderContainer
-          ref={sliderRef}
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseLeave}
-          onMouseUp={handleMouseUp}
-          onMouseMove={handleMouseMove}
-        >
-          {trackInfos.map((song, index) => (
-            <S.SliderItem key={`${song.id}-${index}`}>
-              {song.album && song.album.images ? (
-                <>
-                  <S.AlbumCover
-                    src={song.album.images[0].url}
-                    alt="song album"
-                    draggable="false"
-                    onClick={() => handleSongClick(song)}
-                  />
-                  <S.SongDetails>
-                    <S.SongTitle>{song.album.name}</S.SongTitle>
-                    <S.ArtistName>
-                      {song.artists.map((artist) => artist.name).join(" ")}
-                    </S.ArtistName>
-                  </S.SongDetails>
-                </>
-              ) : (
-                <span>불러오지 못했습니다.</span>
-              )}
-            </S.SliderItem>
-          ))}
-        </S.SliderContainer>
-      )}
-      {/* 
-      팝업 페이지 */}
-      <AnimatePresence>
-        {selectedSong && (
-          <S.Overlay
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <S.Popup
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0 }}
-            >
-              <S.PopupAlbumCover
-                src={selectedSong.album.images[0].url}
-                alt="album cover"
-                draggable="false"
-              />
-              <S.PopupSongTitle>{selectedSong.album.name}</S.PopupSongTitle>
-              <S.PopupArtistName>
-                {selectedSong.artists?.map((artist) => artist.name).join(" ")}
-              </S.PopupArtistName>
-              <S.PopupSongInfo>
-                <S.PopupSongDetail>
-                  <strong>Duration:</strong>
-                  {formatDuration(selectedSong.duration_ms)}
-                </S.PopupSongDetail>
-                <S.PopupSongDetail>
-                  <strong>Popularity: </strong>
-                  {selectedSong.popularity}
-                </S.PopupSongDetail>
-                <S.PopupSongDetail>
-                  <strong>Release Date: </strong>
-                  {selectedSong.album.release_date}
-                </S.PopupSongDetail>
-              </S.PopupSongInfo>
-              <S.CloseButton onClick={handleClosePopup}>닫기</S.CloseButton>
-            </S.Popup>
-          </S.Overlay>
+      <S.HeaderText>{nickname}님의 playlist</S.HeaderText>
+      {error && <p>{error}</p>}
+      <S.ScrollableContainer>
+        {trackInfos.length === 0 ? (
+          <S.NoSongsMessage>
+            <strong>Loading...</strong>
+          </S.NoSongsMessage>
+        ) : (
+          <S.SliderContainer ref={sliderContainerRef}>
+            {trackInfos.map((song, index) => (
+              <motion.div
+                key={`${song.id}-${index}`}
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <S.SliderItem>
+                  {song.album && song.album.images ? (
+                    <>
+                      <S.AlbumCover
+                        src={
+                          song.album.images[0]?.url || "default_image_url_here"
+                        }
+                        alt="song album"
+                        draggable="false"
+                      />
+                      <S.SongDetails>
+                        <S.LikeButton
+                          onClick={() => handleLikeButtonClick(song)}
+                        >
+                          {song.isLiked ? "🤍" : "❤️"}
+                        </S.LikeButton>
+                        <S.SongTitle>{song.name}</S.SongTitle>
+                        <S.ArtistName>
+                          {song.artists
+                            .map((artist: Artist) => artist.name)
+                            .join(", ")}
+                        </S.ArtistName>
+                      </S.SongDetails>
+                    </>
+                  ) : (
+                    <span>불러오지 못했습니다.</span>
+                  )}
+                </S.SliderItem>
+              </motion.div>
+            ))}
+            <div ref={loader} style={{ height: "1px" }} />
+          </S.SliderContainer>
         )}
-      </AnimatePresence>
+      </S.ScrollableContainer>
     </S.Container>
   );
-}
+};
 
 export default LikeSongPage;

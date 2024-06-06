@@ -1,6 +1,6 @@
+import axios from "axios";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-import api from "../../../axiosInterceptor";
 import * as S from "../Styles/SongPage.style";
 
 export interface Artist {
@@ -42,7 +42,7 @@ function TopSongPage() {
   useEffect(() => {
     const fetchTopSongs = async () => {
       try {
-        const response = await api.get("http://localhost:8080/music/top10");
+        const response = await axios.get("http://localhost:8080/music/top10");
         const trackIdArray = Array.isArray(response.data)
           ? response.data
           : Object.keys(response.data);
@@ -62,7 +62,7 @@ function TopSongPage() {
 
       for (const id of trackIds) {
         try {
-          const response = await api.get(
+          const response = await axios.get(
             `http://localhost:8000/spotify/track/${id}`
           );
           const trackData: TrackInfo = {
